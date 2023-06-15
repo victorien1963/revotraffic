@@ -9,3 +9,123 @@
   max-height: 10vh;
   min-height: 10vh;
 }
+
+.breadcrumbs-two {
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumbs-two li {
+  float: left;
+  width: 18.3%;
+}
+
+.breadcrumbs-two a {
+  display: flex;
+  text-transform: uppercase;
+  float: left;
+  text-decoration: none;
+  color: #FFF;
+  position: relative;
+  text-align: center;
+  width: 100%;
+  height: 80px;
+  line-height: 1.3;
+  font-size: 15px;
+}
+
+.breadcrumbs-two a span {
+  display: inline-block;
+  max-width: 100%;
+  width: 150px;
+  margin: auto;
+  position: relative;
+  color: white;
+  font-size: 1.25rem;
+  /* top: 20px; */
+}
+
+.breadcrumbs-two a::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  margin-top: -40px;
+  border-width: 40px 0 40px 30px;
+  border-style: solid;
+  border-color: #ddd #ddd #ddd transparent;
+  left: -30px;
+}
+
+.breadcrumbs-two a::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  margin-top: -40px;
+  border-top: 40px solid transparent;
+  border-bottom: 40px solid transparent;
+  border-left: 30px solid #ddd;
+  right: -30px;
+}
+
+.bread1 a {
+  background-color: #8ac43c;
+}
+
+.bread1 a::before {
+  border-color: #8ac43c #8ac43c #8ac43c transparent;
+}
+
+.bread1 a::after {
+  border-color: transparent #8ac43c transparent #8ac43c;
+}
+
+.bread2 a {
+  background-color: #69aa4e;
+}
+
+.bread2 a::before {
+  border-color: #69aa4e #69aa4e #69aa4e transparent;
+}
+
+.bread2 a::after {
+  border-color: transparent #69aa4e transparent #69aa4e;
+}
+
+.bread3 a {
+  background-color: #448e60;
+}
+
+.bread3 a::before {
+  border-color: #448e60 #448e60 #448e60 transparent;
+}
+
+.bread3 a::after {
+  border-color: transparent #448e60 transparent #448e60;
+}
+
+.bread4 a {
+    background-color: #1f7171;
+}
+
+.bread4 a::before {
+  border-color: #1f7171 #1f7171 #1f7171 transparent;
+}
+
+.bread4 a::after {
+  border-color: transparent #1f7171 transparent #1f7171;
+}
+
+.bread5 a {
+  background-color: #005581;
+}
+
+.bread5 a::before {
+  border-color: #005581 #005581 #005581 transparent;
+}
+
+.bread5 a::after {
+  border-color: transparent #005581 transparent #005581;
+}
