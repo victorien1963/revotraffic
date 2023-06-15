@@ -1,11 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap');
+
 .App {
   text-align: center;
   width: 100vw;
   height: 100vh;
+  font-family: 'Noto Sans TC', sans-serif;
 }
 
 .Nav {
   height: 10vh;
   max-height: 10vh;
   min-height: 10vh;
+}
+
+.btn-revo {
+  color: #0e594f !important;
+  background-color: #60ca9e !important;
+  border-color: #60ca9e !important;
+}
+
+.btn-revo:hover, .btn-revo:active, .btn-revo:focus {
+  color: #536a28 !important;
+  background-color: #bde570 !important;
+  border-color: #bde570 !important;
+}
+
+.bg-revo-linear {
+  background: linear-gradient(to top, #38c2ab, #bae571) !important;
+}
+
+.bg-revo {
+  background-color: #72cbae !important;
 }
