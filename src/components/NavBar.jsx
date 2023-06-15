@@ -1,15 +1,33 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Container, Navbar } from 'react-bootstrap'
+import { Container, Navbar, Image, Button } from 'react-bootstrap'
+import { RTLogo2 } from '../assets'
 
 function NavBar(props) {
   const { setting } = props
   console.log(setting)
 
   return (
-    <Navbar bg="dark" variant="dark">
-      <Container>
-        <Navbar.Brand href="#home">路口、路段車流影像 Dashboard</Navbar.Brand>
+    <Navbar className="bg-revo p-0" style={{ height: '4.2rem' }}>
+      <Container fluid className="px-4">
+        <Navbar.Brand className="d-flex" href="#home" title="回首頁">
+          <Image
+            src={RTLogo2}
+            className="m-auto pe-2"
+            style={{ width: '3.5rem' }}
+          />
+          <div className="fw-bolder my-auto text-light fs-5">RevoTraffic</div>
+        </Navbar.Brand>
+        <Button
+          className="fw-bolder my-auto"
+          style={{ cursor: 'pointer' }}
+          size="sm"
+          variant="outline-light"
+          title="登出"
+          // onClick={() => '' }
+        >
+          登 出
+        </Button>
       </Container>
     </Navbar>
   )
