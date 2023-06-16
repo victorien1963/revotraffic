@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
@@ -158,11 +159,18 @@ function Projects({ setting }) {
   return (
     <>
       <Row>
-        <Col xs={2} className="d-flex">
-          <h5 className="my-auto">請選擇執行計畫</h5>
+        <Col xs={2} className="d-flex px-4 ">
+          <h5 className="my-auto text-revo-light fw-bold">請選擇執行計畫</h5>
         </Col>
-        <Col xs={1}>
-          <Button onClick={() => setshow(true)}>新增</Button>
+        <Col xs={1} className="d-flex ps-0">
+          <Button
+            className="me-auto"
+            variant="revo"
+            size="sm"
+            onClick={() => setshow(true)}
+          >
+            新 增 ✚
+          </Button>
         </Col>
       </Row>
       {project.id ? (
@@ -191,11 +199,13 @@ function Projects({ setting }) {
               ))}
             </ListGroup>
           ) : (
-            <span className="ps-3">目前無資料</span>
+            <card className="d-flex ps-3 border">
+              <h5 className="m-auto text-revo-light">目前尚無資料</h5>
+            </card>
           )}
         </Row>
       ) : (
-        <Row className="flex-grow-1">
+        <Row className="flex-grow-1 pt-3 pb-5 px-4">
           {projects.length ? (
             <ListGroup>
               {projects.map(({ id, name }) => (
@@ -220,7 +230,9 @@ function Projects({ setting }) {
               ))}
             </ListGroup>
           ) : (
-            <span className="ps-3">目前無資料</span>
+            <card className="d-flex ps-3 border">
+              <h5 className="m-auto text-revo-light">目前尚無資料</h5>
+            </card>
           )}
         </Row>
       )}

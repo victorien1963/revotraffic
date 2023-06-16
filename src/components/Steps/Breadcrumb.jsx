@@ -6,7 +6,7 @@ function Breadcrumb({ setting }) {
   const { paths } = setting
 
   return (
-    <Container fluid className="p-3">
+    <Container fluid className="p-0">
       <Row>
         {paths.map((path, i) => (
           <>

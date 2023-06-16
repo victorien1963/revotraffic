@@ -13,7 +13,7 @@ function Home({ setting }) {
     settoolState({ ...toolState, [e.target.name]: e.target.value })
 
   return (
-    <Container fluid className="h-100 p-3 d-flex flex-column">
+    <Container fluid className="h-100 d-flex flex-column">
       <Row>
         <ToolBar
           setting={{

@@ -7,7 +7,7 @@ function NavBar({ setting }) {
   const { handleLogout } = setting
 
   return (
-    <Navbar className="bg-revo p-0" style={{ height: '4.2rem' }}>
+    <Navbar className="bg-revo p-0">
       <Container fluid className="px-4">
         <Navbar.Brand className="d-flex" href="#home" title="回首頁">
           <Image

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Container, Row } from 'react-bootstrap'
@@ -53,6 +54,11 @@ function App() {
             </Routes>
           </Router>
         </Row>
+        {window.location.pathname !== '/' && (
+          <Row className="bg-revo py-2 text-light">
+            <small>Copyright © 2023 RevoTraffic. all rights reserved.</small>
+          </Row>
+        )}
       </Container>
     </div>
   )

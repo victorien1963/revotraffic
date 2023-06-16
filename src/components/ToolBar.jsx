@@ -71,7 +71,7 @@ function ToolBar({ setting }) {
   ]
 
   return (
-    <Container fluid className="p-3">
+    <Container fluid>
       <Row>
         <ul className="breadcrumbs-two px-0">
           {tools.map((tool, i) => (
