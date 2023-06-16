@@ -5,6 +5,8 @@ import { Welcome, Home } from './pages'
 
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-date-range/dist/styles.css'
+import 'react-date-range/dist/theme/default.css'
 import { NavBar } from './components'
 
 function App() {
@@ -15,6 +17,7 @@ function App() {
   const handleLogout = () => {
     window.location.replace('/')
   }
+
   return (
     <div
       className="App"
@@ -24,13 +27,15 @@ function App() {
       }}
     >
       <Container className="h-100 w-100 d-flex flex-column" fluid>
-        <Row className="Nav">
-          <NavBar
-            setting={{
-              handleLogout,
-            }}
-          />
-        </Row>
+        {window.location.pathname !== '/' && (
+          <Row className="Nav">
+            <NavBar
+              setting={{
+                handleLogout,
+              }}
+            />
+          </Row>
+        )}
         <Row className="flex-grow-1">
           <Router>
             <Routes className="px-0">

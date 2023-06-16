@@ -14,19 +14,18 @@
 }
 
 .breadcrumbs-two {
-  overflow: hidden;
   width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.breadcrumbs-two li {
+.breadcrumbs-two > li {
   float: left;
-  width: 18.3%;
+  width: 20%;
 }
 
-.breadcrumbs-two a {
+.breadcrumbs-two > li > a {
   display: flex;
   text-transform: uppercase;
   float: left;
@@ -40,7 +39,7 @@
   font-size: 15px;
 }
 
-.breadcrumbs-two a span {
+.breadcrumbs-two > li > a > span {
   display: inline-block;
   max-width: 100%;
   width: 150px;
@@ -51,7 +50,7 @@
   /* top: 20px; */
 }
 
-.breadcrumbs-two a::before {
+.breadcrumbs-two > li > a::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -62,7 +61,7 @@
   left: -30px;
 }
 
-.breadcrumbs-two a::after {
+.breadcrumbs-two > li > a::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -73,64 +72,74 @@
   right: -30px;
 }
 
-.bread1 a {
+.bread1 > a {
   background-color: #8ac43c;
 }
 
-.bread1 a::before {
-  border-color: #8ac43c #8ac43c #8ac43c transparent;
+.bread1 > a::before {
+  border-color: #8ac43c #8ac43c #8ac43c transparent !important;
 }
 
-.bread1 a::after {
-  border-color: transparent #8ac43c transparent #8ac43c;
+.bread1 > a::after {
+  border-color: transparent #8ac43c transparent #8ac43c !important;
 }
 
-.bread2 a {
+.bread2 > a {
   background-color: #69aa4e;
 }
 
-.bread2 a::before {
-  border-color: #69aa4e #69aa4e #69aa4e transparent;
+.bread2 > a::before {
+  border-color: #69aa4e #69aa4e #69aa4e transparent !important;
 }
 
-.bread2 a::after {
-  border-color: transparent #69aa4e transparent #69aa4e;
+.bread2 > a::after {
+  border-color: transparent #69aa4e transparent #69aa4e !important;
 }
 
-.bread3 a {
+.bread3 > a {
   background-color: #448e60;
 }
 
-.bread3 a::before {
-  border-color: #448e60 #448e60 #448e60 transparent;
+.bread3 > a::before {
+  border-color: #448e60 #448e60 #448e60 transparent !important;
 }
 
-.bread3 a::after {
-  border-color: transparent #448e60 transparent #448e60;
+.bread3 > a::after {
+  border-color: transparent #448e60 transparent #448e60 !important;
 }
 
-.bread4 a {
+.bread4 > a {
     background-color: #1f7171;
 }
 
-.bread4 a::before {
-  border-color: #1f7171 #1f7171 #1f7171 transparent;
+.bread4 > a::before {
+  border-color: #1f7171 #1f7171 #1f7171 transparent !important;
 }
 
-.bread4 a::after {
-  border-color: transparent #1f7171 transparent #1f7171;
+.bread4 > a::after {
+  border-color: transparent #1f7171 transparent #1f7171 !important;
 }
 
-.bread5 a {
+.bread5 > a {
   background-color: #005581;
 }
 
-.bread5 a::before {
-  border-color: #005581 #005581 #005581 transparent;
+.bread5 > a::before {
+  border-color: #005581 #005581 #005581 transparent !important;
 }
 
-.bread5 a::after {
-  border-color: transparent #005581 transparent #005581;
+.bread1 > a::before {
+  border-top: 0px !important;
+  border-bottom: 0px !important;
+  border-left: 0 !important;
+}
+
+.bread5 > a::after {
+  border-top: 0px !important;
+  border-bottom: 0px !important;
+  border-left: 0 !important;
+}
+
 .btn-revo {
   color: #0e594f !important;
   background-color: #60ca9e !important;

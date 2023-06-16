@@ -3,9 +3,8 @@ import PropTypes from 'prop-types'
 import { Container, Navbar, Image, Button } from 'react-bootstrap'
 import { RTLogo2 } from '../assets'
 
-function NavBar(props) {
-  const { setting } = props
-  console.log(setting)
+function NavBar({ setting }) {
+  const { handleLogout } = setting
 
   return (
     <Navbar className="bg-revo p-0" style={{ height: '4.2rem' }}>
@@ -24,7 +23,7 @@ function NavBar(props) {
           size="sm"
           variant="outline-light"
           title="登出"
-          // onClick={() => '' }
+          onClick={handleLogout}
         >
           登 出
         </Button>

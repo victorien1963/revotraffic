@@ -7,6 +7,7 @@ function Home({ setting }) {
   console.log(setting)
   const [toolState, settoolState] = useState({
     step1: '操作流程圖',
+    activeStep: 0,
   })
   const handleToolChange = (e) =>
     settoolState({ ...toolState, [e.target.name]: e.target.value })
