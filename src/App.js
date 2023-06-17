@@ -20,13 +20,7 @@ function App() {
   }
 
   return (
-    <div
-      className="App"
-      style={{
-        height: '100vh',
-        width: '100vw',
-      }}
-    >
+    <div className="App overflow-hidden">
       <Container className="h-100 w-100 d-flex flex-column" fluid>
         {window.location.pathname !== '/' && (
           <Row className="Nav">

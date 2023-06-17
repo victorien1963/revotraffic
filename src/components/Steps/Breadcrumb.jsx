@@ -9,12 +9,10 @@ function Breadcrumb({ setting }) {
     <Container fluid className="p-0">
       <Row>
         {paths.map((path, i) => (
-          <>
+          <React.Fragment key={i}>
             {i ? '>' : ''}
-            <Col xs={2} key={i}>
-              {path.label}
-            </Col>
-          </>
+            <Col xs={2}>{path.label}</Col>
+          </React.Fragment>
         ))}
       </Row>
     </Container>

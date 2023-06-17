@@ -51,9 +51,10 @@ function ProjectModal({ setting }) {
                 <Form.Control
                   name={f.name}
                   type="text"
-                  value={data[f.name]}
+                  value={data[f.name] || f.placeholder}
                   placeholder={f.placeholder}
                   onFocus={() => setshowDate(!showDate)}
+                  readOnly
                 />
                 <div
                   style={{
@@ -87,7 +88,6 @@ function ProjectModal({ setting }) {
               <Form.Control
                 name={f.name}
                 type={f.type}
-                value={data[f.name]}
                 onChange={onDataChange}
                 placeholder={f.placeholder}
                 onFocus={() => setshowDate(false)}
@@ -116,14 +116,16 @@ function Projects({ setting }) {
     handleAddProject,
     handleRemoveProject,
     handleSelectProject,
+    handleAddStep,
   } = setting
-  console.log(project)
-  console.log(projects)
+
   const [show, setshow] = useState(false)
   const handleClose = (value) => {
     setshow(false)
-    console.log(value)
-    if (value) handleAddProject(value)
+    if (value) {
+      if (project.id) handleAddStep(value)
+      handleAddProject(value)
+    }
   }
 
   const projectForm = [
@@ -160,7 +162,9 @@ function Projects({ setting }) {
     <>
       <Row>
         <Col xs={2} className="d-flex px-4 ">
-          <h5 className="my-auto text-revo-light fw-bold">請選擇執行計畫</h5>
+          <h5 className="my-auto text-revo-light fw-bold">
+            {project.id ? '請選擇交維階段' : '請選擇執行計畫'}
+          </h5>
         </Col>
         <Col xs={1} className="d-flex ps-0">
           <Button
@@ -174,35 +178,10 @@ function Projects({ setting }) {
         </Col>
       </Row>
       {project.id ? (
-        <Row className="flex-grow-1">
-          {projects.steps ? (
-            <ListGroup>
-              {projects.steps.map(({ id, name }) => (
-                <ListGroupItem className="d-flex" key={id}>
-                  <p className="my-auto">{name}</p>
-                  <Button
-                    className="ms-auto"
-                    style={{ boxShadow: 'none', color: '#317985' }}
-                    variant="link"
-                    onClick={() => handleRemoveProject(id)}
-                  >
-                    刪 除
-                  </Button>
-                  <Button
-                    style={{ boxShadow: 'none', color: '#317985' }}
-                    variant="link"
-                    onClick={() => handleSelectProject(id)}
-                  >
-                    選 擇
-                  </Button>
-                </ListGroupItem>
-              ))}
-            </ListGroup>
-          ) : (
-            <card className="d-flex ps-3 border">
-              <h5 className="m-auto text-revo-light">目前尚無資料</h5>
-            </card>
-          )}
+        <Row className="flex-grow-1 pt-3 pb-5 px-4">
+          <div className="d-flex ps-3 border">
+            <h5 className="m-auto text-revo-light">目前尚無資料</h5>
+          </div>
         </Row>
       ) : (
         <Row className="flex-grow-1 pt-3 pb-5 px-4">
@@ -230,9 +209,9 @@ function Projects({ setting }) {
               ))}
             </ListGroup>
           ) : (
-            <card className="d-flex ps-3 border">
+            <div className="d-flex ps-3 border">
               <h5 className="m-auto text-revo-light">目前尚無資料</h5>
-            </card>
+            </div>
           )}
         </Row>
       )}
@@ -278,10 +257,20 @@ function Step1({ setting }) {
           handleSelectProject: (id) =>
             handleDataChange({
               target: {
-                name: 'selected',
+                name: 'selectedProject',
                 value: id,
               },
             }),
+          handleAddStep: (value) =>
+            handleDataChange(
+              {
+                target: {
+                  name: 'time',
+                  value,
+                },
+              },
+              'step2'
+            ),
         }}
       />
     ),
