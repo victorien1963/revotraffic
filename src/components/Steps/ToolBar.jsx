@@ -63,9 +63,25 @@ function ToolBar({ setting }) {
     },
     {
       label: 'AI號控調校',
+      dropdowns: [
+        {
+          label: '模型上傳',
+          name: 'step4',
+          value: '模型上傳',
+        },
+        {
+          label: '模型驅動',
+          name: 'step4',
+          value: '模型驅動',
+        },
+      ],
     },
     {
       label: '結果報表',
+      click: {
+        name: 'step5',
+        value: '結果報表',
+      },
     },
   ]
 
@@ -86,6 +102,14 @@ function ToolBar({ setting }) {
                 role="button"
                 data-bs-toggle={`${tool.dropdowns ? 'dropdown' : ''}`}
                 aria-expanded="false"
+                onClick={() => {
+                  if (tool.click)
+                    handleToolChange({
+                      target: {
+                        ...tool.click,
+                      },
+                    })
+                }}
               >
                 <span>
                   <strong>{tool.label}</strong>

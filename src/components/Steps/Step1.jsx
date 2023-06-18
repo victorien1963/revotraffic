@@ -189,7 +189,9 @@ function Projects({ setting }) {
             <ListGroup>
               {projects.map(({ id, name }) => (
                 <ListGroupItem className="d-flex" key={id}>
-                  <p className="my-auto">{name}</p>
+                  <p className="my-auto">
+                    {id}-{name}
+                  </p>
                   <Button
                     className="ms-auto"
                     style={{ boxShadow: 'none', color: '#317985' }}

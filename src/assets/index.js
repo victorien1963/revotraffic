@@ -15,8 +15,10 @@ import gallery6 from './images/gallery_6.png'
 import gallery7 from './images/gallery_7.png'
 import vissimRlSummary from './images/vissim_rl_summary.png'
 import camera14 from './images/camera_14.mp4'
+import camera7projection from './images/camera_7_projection.mp4'
 
 export {
+  // image
   nenerabi,
   nenerabi2,
   meowmeow,
@@ -33,5 +35,7 @@ export {
   gallery6,
   gallery7,
   vissimRlSummary,
+  // video
   camera14,
+  camera7projection,
 }

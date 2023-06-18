@@ -14,6 +14,7 @@ function Steps() {
     step1: '操作流程圖',
     step2: 'selector',
     step3: '影像辨識',
+    step4: 'selector',
     activeStep: 0,
   })
   const handleToolChange = (e) => {
@@ -71,7 +72,9 @@ function Steps() {
       />
     ),
     step3: <Step3 setting={{ toolState, handleDataChange }} />,
-    step4: <Step4 setting={{ toolState, handleDataChange }} />,
+    step4: (
+      <Step4 setting={{ toolState, handleDataChange, handleToolChange }} />
+    ),
     step5: <Step5 setting={{ toolState, handleDataChange }} />,
   }
 

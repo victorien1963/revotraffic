@@ -9,11 +9,13 @@ import {
   ProgressBar,
   Form,
   Image,
+  Table,
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import {
   camera14,
+  camera7projection,
   gallery1,
   gallery2,
   gallery3,
@@ -103,6 +105,34 @@ function Step3({ setting }) {
     gallery7,
   ]
 
+  const headers = ['CarType', 'minD', 'maxD', 'ax', 'bx_add', 'bx_mult']
+  const csvData = [
+    {
+      CarType: 'MotorBike',
+      minD: '1.76',
+      maxD: '16.7',
+      ax: '0.4',
+      bx_add: '-0.53475',
+      bx_mult: '5.587497',
+    },
+    {
+      CarType: 'SmallCar',
+      minD: '1.13',
+      maxD: '19.33',
+      ax: '2.1',
+      bx_add: '0.212431',
+      bx_mult: '5.832322',
+    },
+    {
+      CarType: 'BigCar',
+      minD: '3.2',
+      maxD: '15.08',
+      ax: '2',
+      bx_add: '1.900348',
+      bx_mult: '18.22893',
+    },
+  ]
+
   const optionComponent = {
     每15分鐘各方向交通量: <div />,
     每小時各方向交通量: <div />,
@@ -120,7 +150,30 @@ function Step3({ setting }) {
       </Row>
     ),
     期望加減速率: <div />,
-    車間距: <div />,
+    '車間距（計算量）': (
+      <Table bordered responsive>
+        <tbody>
+          <tr>
+            {headers.map((header) => (
+              <td>{header}</td>
+            ))}
+          </tr>
+          {csvData.map((d) => (
+            <tr>
+              {headers.map((header) => (
+                <td>{d[header]}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    ),
+    '車間距（視覺化）': (
+      <video width="auto" height="100%" controls>
+        <track kind="captions" />
+        <source src={camera7projection} />
+      </video>
+    ),
     '車輛辨識與追蹤（視覺化）': (
       <video width="100%" height="auto" controls>
         <track kind="captions" />
@@ -201,7 +254,10 @@ function Step3({ setting }) {
                 label: '期望加減速率',
               },
               {
-                label: '車間距',
+                label: '車間距（視覺化）',
+              },
+              {
+                label: '車間距（計算量）',
               },
               {
                 label: '車輛辨識與追蹤（視覺化）',
