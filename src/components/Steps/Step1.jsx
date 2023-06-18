@@ -10,11 +10,11 @@ import {
   Button,
   ListGroup,
   ListGroupItem,
-  Image,
+  // Image,
   Form,
   Modal,
 } from 'react-bootstrap'
-import { nenerabi } from '../../assets'
+// import { nenerabi } from '../../assets'
 
 function ProjectModal({ setting }) {
   const { show, form, handleClose } = setting
@@ -40,12 +40,15 @@ function ProjectModal({ setting }) {
       style={{ zIndex: '1501' }}
       show={show}
       onHide={() => handleClose()}
-      className="p-2"
+      className="py-2 px-4"
     >
-      <Modal.Body>
+      <Modal.Header closeButton />
+      <Modal.Body className="p-4">
         {form.map((f, i) => (
           <React.Fragment key={i}>
-            <Form.Label>{f.label}</Form.Label>
+            <Form.Label className="mb-1 mt-3 fw-bold text-revo">
+              {f.label}
+            </Form.Label>
             {f.type === 'date' ? (
               <>
                 <Form.Control
@@ -96,10 +99,19 @@ function ProjectModal({ setting }) {
           </React.Fragment>
         ))}
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="justify-content-center">
         <Button
-          style={{ boxShadow: 'none', color: '#317985' }}
-          variant="link"
+          className="ms-auto"
+          style={{ boxShadow: 'none' }}
+          variant="secondary"
+          onClick={() => handleClose()}
+        >
+          取 消
+        </Button>
+        <Button
+          className="me-auto"
+          style={{ boxShadow: 'none' }}
+          variant="revo"
           onClick={() => handleClose(data)}
         >
           確 認
@@ -131,13 +143,13 @@ function Projects({ setting }) {
   const projectForm = [
     {
       name: 'id',
-      label: '計畫編號',
+      label: '計劃編號',
       placeholder: '',
       type: 'text',
     },
     {
       name: 'name',
-      label: '計畫名稱',
+      label: '計劃名稱',
       placeholder: '',
       type: 'text',
     },
@@ -161,16 +173,15 @@ function Projects({ setting }) {
   return (
     <>
       <Row>
-        <Col xs={2} className="d-flex px-4 ">
+        <Col xs={2} className="d-flex px-5">
           <h5 className="my-auto text-revo-light fw-bold">
-            {project.id ? '請選擇交維階段' : '請選擇執行計畫'}
+            {project.id ? '請選擇交維階段' : '請選擇執行計劃'}
           </h5>
         </Col>
         <Col xs={1} className="d-flex ps-0">
           <Button
             className="me-auto"
             variant="revo"
-            size="sm"
             onClick={() => setshow(true)}
           >
             新 增 ✚
@@ -178,13 +189,13 @@ function Projects({ setting }) {
         </Col>
       </Row>
       {project.id ? (
-        <Row className="flex-grow-1 pt-3 pb-5 px-4">
+        <Row className="flex-grow-1 pt-3 pb-5 px-5">
           <div className="d-flex ps-3 border">
             <h5 className="m-auto text-revo-light">目前尚無資料</h5>
           </div>
         </Row>
       ) : (
-        <Row className="flex-grow-1 pt-3 pb-5 px-4">
+        <Row className="flex-grow-1 pt-3 pb-5 px-5">
           {projects.length ? (
             <ListGroup>
               {projects.map(({ id, name }) => (
@@ -193,19 +204,19 @@ function Projects({ setting }) {
                     {id}-{name}
                   </p>
                   <Button
-                    className="ms-auto"
-                    style={{ boxShadow: 'none', color: '#317985' }}
-                    variant="link"
-                    onClick={() => handleRemoveProject(id)}
-                  >
-                    刪 除
-                  </Button>
-                  <Button
-                    style={{ boxShadow: 'none', color: '#317985' }}
-                    variant="link"
+                    className="ms-auto me-2"
+                    style={{ boxShadow: 'none' }}
+                    variant="revo"
                     onClick={() => handleSelectProject(id)}
                   >
                     選 擇
+                  </Button>
+                  <Button
+                    style={{ boxShadow: 'none' }}
+                    variant="danger"
+                    onClick={() => handleRemoveProject(id)}
+                  >
+                    刪 除
                   </Button>
                 </ListGroupItem>
               ))}
@@ -231,7 +242,13 @@ function Projects({ setting }) {
 function FlowChart() {
   return (
     <Row className="h-100 d-flex">
-      <Image className="mx-auto w-50" src={nenerabi} fluid />
+      <p
+        className="text-center align-self-center fw-bolder pb-5"
+        style={{ color: '#9fdd80', fontSize: '4rem' }}
+      >
+        Hello user !
+      </p>
+      {/* <Image className="mx-auto w-50" src={nenerabi} fluid /> */}
     </Row>
   )
 }
@@ -240,7 +257,7 @@ function Step1({ setting }) {
   const { project, projects, toolState, handleDataChange } = setting
   const components = {
     操作流程圖: <FlowChart />,
-    計畫一覽表: (
+    計劃一覽表: (
       <Projects
         setting={{
           project,

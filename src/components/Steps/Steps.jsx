@@ -98,9 +98,14 @@ function Steps() {
       />
 
       <Row
+        className="px-4"
         style={{
           height: '10%',
           minHeight: '10%',
+          alignContent: 'center',
+          color: '#0e594f',
+          fontWeight: '600',
+          fontSize: '1rem',
         }}
       >
         <Breadcrumb
