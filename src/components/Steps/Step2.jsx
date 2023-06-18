@@ -148,6 +148,7 @@ function Road({ setting }) {
       <Row className="flex-grow-1 pt-3 pb-5 px-4">
         {videos.map(({ name }, i) => (
           <Col
+            xs={3}
             className="d-flex flex-column"
             key={name}
             onClick={() => setselected(i)}
@@ -156,7 +157,7 @@ function Road({ setting }) {
               style={{
                 height: '10%',
               }}
-            >{`${i}.${name}`}</p>
+            >{`${i + 1}.${name}`}</p>
             <Image
               className="mx-auto w-100 "
               src={i % 2 === 0 ? camera7preview : camera14preview}
@@ -243,7 +244,7 @@ function Video({ setting }) {
                   style={{
                     height: '10%',
                   }}
-                >{`${i}.${name}`}</p>
+                >{`${i + 1}.${name}`}</p>
                 <div>
                   <Image
                     className="mx-auto"
