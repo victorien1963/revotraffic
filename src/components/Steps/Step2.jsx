@@ -13,9 +13,48 @@ import {
   FormLabel,
   Button,
   Image,
+  Modal,
 } from 'react-bootstrap'
-import { faCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { camera7preview, camera14preview } from '../../assets'
+
+function NumberTag({ setting }) {
+  console.log(setting)
+  return <div />
+}
+
+function RoadTag({ setting }) {
+  console.log(setting)
+  return <div />
+}
+
+function RoadModal({ setting }) {
+  const { show, handleClose } = setting
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      show={show}
+      onHide={() => handleClose()}
+      className="p-2"
+    >
+      <Modal.Body>
+        <Col xs={7}>
+          <Image className="mx-auto w-100 " src={camera14preview} fluid />
+        </Col>
+        <Col />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          style={{ boxShadow: 'none', color: '#317985' }}
+          variant="link"
+          onClick={() => handleClose()}
+        >
+          確 認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
 
 function Road({ setting }) {
   // const { videos, roads, handleDataChange, handleToolChange } = setting
@@ -45,31 +84,35 @@ function Road({ setting }) {
       name: 'type',
       label: '類型',
       placeholder: '',
-      type: 'text',
+      type: 'tab',
+      content: [
+        { label: '路口', value: '路口' },
+        { label: '路段', value: '路段' },
+      ],
     },
     {
       name: 'way',
       label: '方向',
       placeholder: '',
-      type: 'text',
+      type: 'check',
     },
     {
       name: 'entry',
       label: '出入口',
       placeholder: '',
-      type: 'text',
+      type: 'check',
     },
     {
       name: 'path',
       label: '車道數',
       placeholder: '',
-      type: 'text',
+      type: 'check',
     },
     {
       name: 'roadName',
       label: '各方向路名',
       placeholder: '',
-      type: 'text',
+      type: 'check',
     },
   ]
 
@@ -81,58 +124,105 @@ function Road({ setting }) {
   return selected !== '' ? (
     <Row className="flex-grow-1 pt-3 pb-5 px-4">
       <Col>
-        {form.map((f, i) => (
-          <React.Fragment key={i}>
-            <Form.Label>{f.label}</Form.Label>
-            {f.type === 'date' ? (
-              <>
-                <Form.Control
-                  name={f.name}
-                  type="text"
-                  value={data[f.name] || f.placeholder}
-                  placeholder={f.placeholder}
-                  onFocus={() => setshowDate(!showDate)}
-                  readOnly
-                />
-                <div
-                  style={{
-                    height: showDate ? '100%' : '0%',
-                    transition: 'height .3s ease-in',
-                  }}
-                >
-                  {showDate && (
-                    <DateRange
-                      ranges={[date]}
-                      editableDateInputs
-                      onChange={({ selection }) => {
-                        setdate(selection)
-                        onDataChange({
-                          target: {
-                            name: 'date',
-                            value: `${moment(selection.startDate).format(
-                              'yyyy-MM-DD'
-                            )}-${moment(selection.endDate).format(
-                              'yyyy-MM-DD'
-                            )}`,
-                          },
-                        })
-                      }}
-                      moveRangeOnFirstSelection={false}
-                    />
-                  )}
-                </div>
-              </>
-            ) : (
-              <Form.Control
-                name={f.name}
-                type={f.type}
-                onChange={onDataChange}
-                placeholder={f.placeholder}
-                onFocus={() => setshowDate(false)}
-              />
-            )}
-          </React.Fragment>
-        ))}
+        {form.map((f, i) => {
+          switch (f.type) {
+            case 'check':
+              return (
+                <React.Fragment key={i}>
+                  <Row className="py-3">
+                    <Col xs={2}>
+                      <Form.Label>{f.label}</Form.Label>
+                    </Col>
+                    <Col>
+                      <FontAwesomeIcon
+                        className="h5 mt-2"
+                        icon={faCheckCircle}
+                      />
+                    </Col>
+                  </Row>
+                </React.Fragment>
+              )
+            case 'tab':
+              return (
+                <React.Fragment key={i}>
+                  <Row className="py-3">
+                    <Col xs={2}>
+                      <Form.Label>{f.label}</Form.Label>
+                    </Col>
+                    {f.content.map((c) => (
+                      <Col>{c.label}</Col>
+                    ))}
+                  </Row>
+                </React.Fragment>
+              )
+            case 'date':
+              return (
+                <React.Fragment key={i}>
+                  <Row className="py-3">
+                    <Col xs={2}>
+                      <Form.Label>{f.label}</Form.Label>
+                    </Col>
+                    <Col>
+                      <Form.Control
+                        name={f.name}
+                        type="text"
+                        value={data[f.name] || f.placeholder}
+                        placeholder={f.placeholder}
+                        onFocus={() => setshowDate(!showDate)}
+                        readOnly
+                      />
+                      <div
+                        style={{
+                          height: showDate ? '100%' : '0%',
+                          transition: 'height .3s ease-in',
+                        }}
+                      >
+                        {showDate && (
+                          <DateRange
+                            ranges={[date]}
+                            editableDateInputs
+                            onChange={({ selection }) => {
+                              setdate(selection)
+                              onDataChange({
+                                target: {
+                                  name: 'date',
+                                  value: `${moment(selection.startDate).format(
+                                    'yyyy-MM-DD'
+                                  )}-${moment(selection.endDate).format(
+                                    'yyyy-MM-DD'
+                                  )}`,
+                                },
+                              })
+                            }}
+                            moveRangeOnFirstSelection={false}
+                          />
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
+                </React.Fragment>
+              )
+            default:
+              return (
+                <React.Fragment key={i}>
+                  <Row className="py-3">
+                    <Col xs={2}>
+                      <Form.Label>{f.label}</Form.Label>
+                    </Col>
+                    <Col>
+                      <Form.Control
+                        name={f.name}
+                        type={f.type}
+                        onChange={onDataChange}
+                        placeholder={f.placeholder}
+                        onFocus={() => setshowDate(false)}
+                      />
+                    </Col>
+                  </Row>
+                </React.Fragment>
+              )
+          }
+        })}
       </Col>
       <Col>
         <Image className="mx-auto w-100 " src={camera7preview} fluid />
@@ -373,6 +463,18 @@ Video.propTypes = {
 }
 
 Road.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+RoadModal.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+RoadTag.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+NumberTag.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
