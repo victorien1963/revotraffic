@@ -15,7 +15,7 @@ import {
   Image,
 } from 'react-bootstrap'
 import { faCircle } from '@fortawesome/free-solid-svg-icons'
-import { nenerabi2 } from '../../assets'
+import { camera7preview, camera14preview } from '../../assets'
 
 function Road({ setting }) {
   // const { videos, roads, handleDataChange, handleToolChange } = setting
@@ -135,7 +135,7 @@ function Road({ setting }) {
         ))}
       </Col>
       <Col>
-        <Image className="mx-auto w-100 " src={nenerabi2} fluid />
+        <Image className="mx-auto w-100 " src={camera7preview} fluid />
       </Col>
     </Row>
   ) : (
@@ -157,7 +157,11 @@ function Road({ setting }) {
                 height: '10%',
               }}
             >{`${i}.${name}`}</p>
-            <Image className="mx-auto w-100 " src={nenerabi2} fluid />
+            <Image
+              className="mx-auto w-100 "
+              src={i % 2 === 0 ? camera7preview : camera14preview}
+              fluid
+            />
           </Col>
         ))}
       </Row>
@@ -167,9 +171,11 @@ function Road({ setting }) {
 
 function Video({ setting }) {
   const { videos, handleDataChange, handleToolChange } = setting
+  const [file, setfile] = useState(null)
   const [uploading, setuploading] = useState(false)
   const handleUpload = (e) => {
     setuploading(true)
+    setfile(URL.createObjectURL(e.target.files[0]))
     handleDataChange({
       target: {
         name: 'videos',
@@ -209,12 +215,16 @@ function Video({ setting }) {
           />
         </Col>
       </Row>
-      <Row className="flex-grow-1 pt-3 pb-5 px-4">
+      <Row className="flex-grow-1 pt-3 pb-5 px-4 overflow-hidden">
         {uploading ? (
           <>
             <Col xs={4} />
             <Col xs={4}>
-              <Image className="mx-auto w-100" src={nenerabi2} fluid />
+              <video width="auto" height="700px" controls>
+                <track kind="captions" />
+                <source src={file} />
+              </video>
+              {/* <Image className="mx-auto w-100" src={camera7preview} fluid /> */}
             </Col>
             <Col className="d-flex p-5" xs={4}>
               <Button
@@ -228,13 +238,19 @@ function Video({ setting }) {
         ) : videos.length ? (
           <>
             {videos.map(({ name }, i) => (
-              <Col className="d-flex flex-column" key={name}>
+              <Col xs={3} className="d-flex flex-column" key={name}>
                 <p
                   style={{
                     height: '10%',
                   }}
                 >{`${i}.${name}`}</p>
-                <Image className="mx-auto w-100 " src={nenerabi2} fluid />
+                <div>
+                  <Image
+                    className="mx-auto"
+                    src={i % 2 === 0 ? camera7preview : camera14preview}
+                    fluid
+                  />
+                </div>
                 <Button
                   className="mt-3 ms-auto"
                   onClick={() => handleRemoveVideo(i)}
