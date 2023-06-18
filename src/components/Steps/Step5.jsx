@@ -1,6 +1,15 @@
-import React from 'react'
+/* eslint-disable no-promise-executor-return */
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Container, Row, Col, FormLabel, Form, Button } from 'react-bootstrap'
+import {
+  Container,
+  Row,
+  Col,
+  FormLabel,
+  Form,
+  Button,
+  Spinner,
+} from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 
@@ -46,7 +55,23 @@ function CheckTable({ setting }) {
 }
 
 function Step5({ setting }) {
-  console.log(setting)
+  const { handleDataChange } = setting
+  const initExport = {
+    loading: false,
+    show: false,
+  }
+  const [exports, setexports] = useState(initExport)
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+  const exportExcel = () => {
+    setexports({ loading: true, show: false })
+  }
+  useEffect(() => {
+    const generate = async () => {
+      await delay(1000)
+      setexports({ loading: false, show: true })
+    }
+    if (exports.loading) generate()
+  }, [exports.loading])
 
   return (
     <Container>
@@ -109,8 +134,44 @@ function Step5({ setting }) {
           ))}
         </Col>
         <Col xs={4} className="h-100 d-flex flex-column">
-          <FormLabel>選擇存檔路徑</FormLabel>
-          <Form.Control />
+          <FormLabel className="text-start">選擇存檔路徑</FormLabel>
+          <Row>
+            <Form.Control
+              className="w-75"
+              value="C://users/User/downloads/export.xlsx"
+            />
+            <Button
+              className="my-auto ms-3 me-auto"
+              style={{
+                width: '15%',
+              }}
+              onClick={exportExcel}
+            >
+              匯出Excel
+            </Button>
+          </Row>
+          <Row className="py-5">
+            {exports.loading && (
+              <Spinner className="m-auto" animation="border" />
+            )}
+            {exports.show && (
+              <>
+                <Col className="d-flex">
+                  <h4 className="text-start">已匯出至目的資料夾</h4>
+                </Col>
+                <Col xs={2} className="d-flex">
+                  <FontAwesomeIcon
+                    className="m-auto h4"
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                    icon={faCheckCircle}
+                    onClick={() => {}}
+                  />
+                </Col>
+              </>
+            )}
+          </Row>
           <Row
             className="pt-3 pb-5 px-4 d-flex mt-auto"
             style={{
@@ -122,7 +183,7 @@ function Step5({ setting }) {
               style={{
                 width: '15%',
               }}
-              onClick={() => {}}
+              onClick={() => handleDataChange({}, 'step1')}
             >
               完成
             </Button>
