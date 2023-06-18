@@ -15,35 +15,195 @@ import {
   Image,
   Modal,
 } from 'react-bootstrap'
-import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
+import {
+  fa1,
+  fa2,
+  fa3,
+  fa4,
+  faCheckCircle,
+  faCircle,
+} from '@fortawesome/free-solid-svg-icons'
 import { camera7preview, camera14preview } from '../../assets'
 
 function NumberTag({ setting }) {
-  console.log(setting)
-  return <div />
+  const { id, style } = setting
+  const numbers = {
+    1: fa1,
+    2: fa2,
+    3: fa3,
+    4: fa4,
+  }
+  return (
+    <div className="position-absolute d-flex" style={style}>
+      <FontAwesomeIcon
+        className="h5 mt-2"
+        style={{
+          cursor: 'pointer',
+        }}
+        icon={numbers[id]}
+      />
+    </div>
+  )
 }
 
 function RoadTag({ setting }) {
-  console.log(setting)
-  return <div />
+  const { id, style, content, draging, setdraging } = setting
+  return (
+    <div
+      id={id}
+      onDragStart={() => {
+        if (draging !== id) setdraging(id)
+      }}
+      onDrag={() => {}}
+      className="position-absolute d-flex"
+      draggable="true"
+      style={style}
+    >
+      {content}
+    </div>
+  )
 }
 
 function RoadModal({ setting }) {
   const { show, handleClose } = setting
+  const initDraggables = [
+    {
+      id: 1,
+      style: { width: '200px', top: '0%', left: '110%' },
+      content: (
+        <>
+          <FormLabel className="my-auto px-3">東</FormLabel>
+          <Form.Control />
+        </>
+      ),
+    },
+    {
+      id: 2,
+      style: { width: '200px', top: '10%', left: '110%' },
+      content: (
+        <>
+          <FormLabel className="my-auto px-3">西</FormLabel>
+          <Form.Control />
+        </>
+      ),
+    },
+    {
+      id: 3,
+      style: { width: '200px', top: '20%', left: '110%' },
+      content: (
+        <>
+          <FormLabel className="my-auto px-3">南</FormLabel>
+          <Form.Control />
+        </>
+      ),
+    },
+    {
+      id: 4,
+      style: { width: '200px', top: '30%', left: '110%' },
+      content: (
+        <>
+          <FormLabel className="my-auto px-3">北</FormLabel>
+          <Form.Control />
+        </>
+      ),
+    },
+  ]
+  const [draggables, setdraggables] = useState(initDraggables)
+  const [draging, setdraging] = useState(0)
+
+  const initClicks = {
+    entry: [],
+    outry: [],
+  }
+  const [clicks, setclicks] = useState(initClicks)
+  const [clicking, setclicking] = useState('')
   return (
     <Modal
       style={{ zIndex: '1501' }}
+      size="xl"
       show={show}
       onHide={() => handleClose()}
       className="p-2"
     >
-      <Modal.Body>
-        <Col xs={7}>
-          <Image className="mx-auto w-100 " src={camera14preview} fluid />
-        </Col>
-        <Col />
+      <Modal.Body className="d-flex">
+        <div className="position-relative w-50">
+          <Image
+            className="mx-auto w-100 h-100"
+            src={camera14preview}
+            fluid
+            onClick={(e) => {
+              if (!clicking) return
+              const target = e.target.getBoundingClientRect()
+              const left = e.clientX - target.x
+              const top = e.clientY - target.y
+              setclicks({
+                ...clicks,
+                [clicking]: [
+                  ...clicks[clicking],
+                  {
+                    id: clicks[clicking].length + 1,
+                    style: {
+                      top,
+                      left,
+                      width: '50px',
+                      height: '50px',
+                      color: clicking === 'entry' ? 'white' : 'black',
+                    },
+                  },
+                ],
+              })
+            }}
+            onDrop={(e) => {
+              const target = e.target.getBoundingClientRect()
+              const left = e.clientX - target.x
+              const top = e.clientY - target.y
+              setdraggables(
+                draggables.map((d) =>
+                  parseInt(d.id, 10) === parseInt(draging, 10)
+                    ? { ...d, style: { ...d.style, top, left } }
+                    : d
+                )
+              )
+            }}
+            onDragOver={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+            }}
+          />
+          {draggables.map((d) => (
+            <RoadTag key={d.id} setting={{ ...d, draging, setdraging }} />
+          ))}
+          {clicks.entry.map((e) => (
+            <NumberTag key={e.id} setting={{ ...e }} />
+          ))}
+          {clicks.outry.map((o) => (
+            <NumberTag key={o.id} setting={{ ...o }} />
+          ))}
+        </div>
+        <div className="w-25 ms-auto d-flex flex-column">
+          <Button className="my-2" onClick={() => setclicking('entry')}>
+            入口車道
+          </Button>
+          <Button className="my-2" onClick={() => setclicking('outry')}>
+            出口車道
+          </Button>
+          <div className="d-flex mt-auto">
+            <Button className="mx-2" onClick={() => handleClose()}>
+              確認
+            </Button>
+            <Button
+              className="mx-2"
+              onClick={() => {
+                setdraggables(initDraggables)
+                setclicks(initClicks)
+              }}
+            >
+              重來
+            </Button>
+          </div>
+        </div>
       </Modal.Body>
-      <Modal.Footer>
+      {/* <Modal.Footer>
         <Button
           style={{ boxShadow: 'none', color: '#317985' }}
           variant="link"
@@ -51,14 +211,14 @@ function RoadModal({ setting }) {
         >
           確 認
         </Button>
-      </Modal.Footer>
+      </Modal.Footer> */}
     </Modal>
   )
 }
 
 function Road({ setting }) {
   // const { videos, roads, handleDataChange, handleToolChange } = setting
-  const { roads, videos } = setting
+  const { roads, videos, handleDataChange } = setting
   console.log(roads)
   const [selected, setselected] = useState('')
   const [showDate, setshowDate] = useState(false)
@@ -120,142 +280,168 @@ function Road({ setting }) {
   const onDataChange = (e) =>
     setdata({ ...data, [e.target.name]: e.target.value })
 
-  console.log(selected)
-  return selected !== '' ? (
-    <Row className="flex-grow-1 pt-3 pb-5 px-4">
-      <Col>
-        {form.map((f, i) => {
-          switch (f.type) {
-            case 'check':
-              return (
-                <React.Fragment key={i}>
-                  <Row className="py-3">
-                    <Col xs={2}>
-                      <Form.Label>{f.label}</Form.Label>
-                    </Col>
-                    <Col>
-                      <FontAwesomeIcon
-                        className="h5 mt-2"
-                        icon={faCheckCircle}
-                      />
-                    </Col>
-                  </Row>
-                </React.Fragment>
-              )
-            case 'tab':
-              return (
-                <React.Fragment key={i}>
-                  <Row className="py-3">
-                    <Col xs={2}>
-                      <Form.Label>{f.label}</Form.Label>
-                    </Col>
-                    {f.content.map((c) => (
-                      <Col>{c.label}</Col>
-                    ))}
-                  </Row>
-                </React.Fragment>
-              )
-            case 'date':
-              return (
-                <React.Fragment key={i}>
-                  <Row className="py-3">
-                    <Col xs={2}>
-                      <Form.Label>{f.label}</Form.Label>
-                    </Col>
-                    <Col>
-                      <Form.Control
-                        name={f.name}
-                        type="text"
-                        value={data[f.name] || f.placeholder}
-                        placeholder={f.placeholder}
-                        onFocus={() => setshowDate(!showDate)}
-                        readOnly
-                      />
-                      <div
-                        style={{
-                          height: showDate ? '100%' : '0%',
-                          transition: 'height .3s ease-in',
-                        }}
-                      >
-                        {showDate && (
-                          <DateRange
-                            ranges={[date]}
-                            editableDateInputs
-                            onChange={({ selection }) => {
-                              setdate(selection)
-                              onDataChange({
-                                target: {
-                                  name: 'date',
-                                  value: `${moment(selection.startDate).format(
-                                    'yyyy-MM-DD'
-                                  )}-${moment(selection.endDate).format(
-                                    'yyyy-MM-DD'
-                                  )}`,
-                                },
-                              })
-                            }}
-                            moveRangeOnFirstSelection={false}
-                          />
-                        )}
-                      </div>
-                    </Col>
-                  </Row>
-                </React.Fragment>
-              )
-            default:
-              return (
-                <React.Fragment key={i}>
-                  <Row className="py-3">
-                    <Col xs={2}>
-                      <Form.Label>{f.label}</Form.Label>
-                    </Col>
-                    <Col>
-                      <Form.Control
-                        name={f.name}
-                        type={f.type}
-                        onChange={onDataChange}
-                        placeholder={f.placeholder}
-                        onFocus={() => setshowDate(false)}
-                      />
-                    </Col>
-                  </Row>
-                </React.Fragment>
-              )
-          }
-        })}
-      </Col>
-      <Col>
-        <Image className="mx-auto w-100 " src={camera7preview} fluid />
-      </Col>
-    </Row>
-  ) : (
+  const [show, setshow] = useState(false)
+
+  return (
     <>
-      <Row className="pt-3 pb-5 px-4">
-        <Col xs={2}>
-          <FormLabel htmlFor="file">選擇影片</FormLabel>
-        </Col>
-      </Row>
-      <Row className="flex-grow-1 pt-3 pb-5 px-4">
-        {videos.map(({ name }, i) => (
-          <Col
-            xs={3}
-            className="d-flex flex-column"
-            key={name}
-            onClick={() => setselected(i)}
-          >
-            <p
-              style={{
-                height: '10%',
-              }}
-            >{`${i + 1}.${name}`}</p>
-            <Image
-              className="mx-auto w-100 "
-              src={i % 2 === 0 ? camera7preview : camera14preview}
-              fluid
-            />
+      {selected !== '' ? (
+        <Row className="flex-grow-1 pt-3 pb-5 px-4">
+          <Col>
+            {form.map((f, i) => {
+              switch (f.type) {
+                case 'check':
+                  return (
+                    <React.Fragment key={i}>
+                      <Row className="py-3">
+                        <Col xs={2}>
+                          <Form.Label>{f.label}</Form.Label>
+                        </Col>
+                        <Col>
+                          <FontAwesomeIcon
+                            className="h5 mt-2"
+                            style={{
+                              cursor: 'pointer',
+                            }}
+                            icon={faCheckCircle}
+                            onClick={() => setshow(true)}
+                          />
+                        </Col>
+                      </Row>
+                    </React.Fragment>
+                  )
+                case 'tab':
+                  return (
+                    <React.Fragment key={i}>
+                      <Row className="py-3">
+                        <Col xs={2}>
+                          <Form.Label>{f.label}</Form.Label>
+                        </Col>
+                        {f.content.map((c) => (
+                          <Col>{c.label}</Col>
+                        ))}
+                      </Row>
+                    </React.Fragment>
+                  )
+                case 'date':
+                  return (
+                    <React.Fragment key={i}>
+                      <Row className="py-3">
+                        <Col xs={2}>
+                          <Form.Label>{f.label}</Form.Label>
+                        </Col>
+                        <Col>
+                          <Form.Control
+                            name={f.name}
+                            type="text"
+                            value={data[f.name] || f.placeholder}
+                            placeholder={f.placeholder}
+                            onFocus={() => setshowDate(!showDate)}
+                            readOnly
+                          />
+                          <div
+                            style={{
+                              height: showDate ? '100%' : '0%',
+                              transition: 'height .3s ease-in',
+                            }}
+                          >
+                            {showDate && (
+                              <DateRange
+                                ranges={[date]}
+                                editableDateInputs
+                                onChange={({ selection }) => {
+                                  setdate(selection)
+                                  onDataChange({
+                                    target: {
+                                      name: 'date',
+                                      value: `${moment(
+                                        selection.startDate
+                                      ).format('yyyy-MM-DD')}-${moment(
+                                        selection.endDate
+                                      ).format('yyyy-MM-DD')}`,
+                                    },
+                                  })
+                                }}
+                                moveRangeOnFirstSelection={false}
+                              />
+                            )}
+                          </div>
+                        </Col>
+                      </Row>
+                    </React.Fragment>
+                  )
+                default:
+                  return (
+                    <React.Fragment key={i}>
+                      <Row className="py-3">
+                        <Col xs={2}>
+                          <Form.Label>{f.label}</Form.Label>
+                        </Col>
+                        <Col>
+                          <Form.Control
+                            name={f.name}
+                            type={f.type}
+                            onChange={onDataChange}
+                            placeholder={f.placeholder}
+                            onFocus={() => setshowDate(false)}
+                          />
+                        </Col>
+                      </Row>
+                    </React.Fragment>
+                  )
+              }
+            })}
           </Col>
-        ))}
-      </Row>
+          <Col className="d-flex flex-column">
+            <Image className="mx-auto w-75" src={camera7preview} fluid />
+            <div className="d-flex mt-auto">
+              <Button className="ms-auto me-2" onClick={() => setshow(true)}>
+                預覽
+              </Button>
+              <Button
+                className="mx-2"
+                onClick={() => handleDataChange({}, 'step3')}
+              >
+                確認
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      ) : (
+        <>
+          <Row className="pt-3 pb-5 px-4">
+            <Col xs={2}>
+              <FormLabel htmlFor="file">選擇影片</FormLabel>
+            </Col>
+          </Row>
+          <Row className="flex-grow-1 pt-3 pb-5 px-4">
+            {videos.map(({ name }, i) => (
+              <Col
+                xs={3}
+                className="d-flex flex-column"
+                key={name}
+                onClick={() => setselected(i)}
+              >
+                <p
+                  style={{
+                    height: '10%',
+                  }}
+                >{`${i + 1}.${name}`}</p>
+                <Image
+                  className="mx-auto w-100 "
+                  src={i % 2 === 0 ? camera7preview : camera14preview}
+                  fluid
+                />
+              </Col>
+            ))}
+          </Row>
+        </>
+      )}
+      <RoadModal
+        setting={{
+          show,
+          handleClose: () => setshow(false),
+        }}
+      />
     </>
   )
 }
