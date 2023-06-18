@@ -123,10 +123,15 @@ function LineModal({ setting }) {
           )}
         </div>
         <div className="w-25 ms-auto d-flex flex-column">
-          <Button className="mt-auto" onClick={() => handleClose(points)}>
+          <Button
+            variant="revo"
+            className="mt-auto"
+            onClick={() => handleClose(points)}
+          >
             確認
           </Button>
           <Button
+            variant="secondary"
             className="mt-3"
             onClick={() => {
               setpoints(initPoints)
@@ -223,10 +228,11 @@ function ProjectedModal({ setting }) {
           )}
         </div>
         <div className="w-25 ms-auto d-flex flex-column">
-          <Button className="mt-auto" onClick={generatePic}>
+          <Button variant="revo" className="mt-auto" onClick={generatePic}>
             確認
           </Button>
           <Button
+            variant="secondary"
             className="mt-3"
             onClick={() => {
               setpoints(initPoints)
@@ -421,12 +427,14 @@ function RoadModal({ setting }) {
           </Button>
           <div className="d-flex mt-auto">
             <Button
+              variant="revo"
               className="mx-2"
               onClick={() => handleClose({ draggables, clicks })}
             >
               確認
             </Button>
             <Button
+              variant="secondary"
               className="mx-2"
               onClick={() => {
                 setdraggables(initDraggables)
@@ -703,6 +711,7 @@ function Road({ setting }) {
                 預覽
               </Button>
               <Button
+                variant="revo"
                 className="mx-2"
                 onClick={() =>
                   type === 'road'
@@ -722,7 +731,7 @@ function Road({ setting }) {
         </Row>
       ) : (
         <>
-          <Row className="pt-3 pb-5 px-4">
+          <Row className="pt-3 pb-5 px-5">
             <Col xs={2}>
               <FormLabel htmlFor="file">選擇影片</FormLabel>
             </Col>
@@ -832,10 +841,12 @@ function Video({ setting }) {
     })
   return (
     <>
-      <Row className="pt-3 pb-5 px-4">
+      <Row className="pt-3 pb-2 px-4" style={{ height: '10vh' }}>
         <Col xs={2}>
-          <Button>
-            <FormLabel htmlFor="file">選擇檔案</FormLabel>
+          <Button variant="revo">
+            <FormLabel htmlFor="file" className="mb-0">
+              選擇影片檔案
+            </FormLabel>
           </Button>
           <Form.Control
             id="file"
@@ -847,7 +858,7 @@ function Video({ setting }) {
             }}
           />
         </Col>
-        <Col>
+        <Col className="ps-0">
           <Form.Control
             type="text"
             value={videos.length ? videos[videos.length - 1].name : ''}
@@ -855,35 +866,50 @@ function Video({ setting }) {
           />
         </Col>
       </Row>
-      <Row className="flex-grow-1 pt-3 pb-5 px-4 overflow-hidden">
+      <Row
+        className="flex-grow-1 pt-3 pb-5 px-5 overflow-hidden"
+        style={{ height: '50vh' }}
+      >
         {uploading ? (
           <>
-            <Col xs={4} />
+            <Col xs={2} />
             <Col xs={4}>
-              <video width="auto" height="700px" controls>
+              <video width="auto" height="420px" controls>
                 <track kind="captions" />
                 <source src={file} />
               </video>
               {/* <Image className="mx-auto w-100" src={camera7preview} fluid /> */}
             </Col>
-            <Col className="d-flex p-5" xs={4}>
+            <Col className="d-flex pb-1">
               <Button
-                className="mt-auto ms-auto"
+                variant="revo"
+                className="mt-auto ms-auto me-2"
                 onClick={() => setuploading(false)}
               >
                 確認
               </Button>
+              {/* <Button
+                variant="secondary"
+                className="mt-auto"
+                // onClick={() => setuploading()}
+              >
+                清除
+              </Button> */}
             </Col>
           </>
         ) : videos.length ? (
           <>
             {videos.map(({ name }, i) => (
-              <Col xs={3} className="d-flex flex-column" key={name}>
+              <Col
+                xs={3}
+                className="d-flex flex-column h5 text-revo"
+                key={name}
+              >
                 <p
                   style={{
                     height: '10%',
                   }}
-                >{`${i + 1}.${name}`}</p>
+                >{`${`${i + 1} `}.${name}`}</p>
                 <div>
                   <Image
                     className="mx-auto"
@@ -892,15 +918,18 @@ function Video({ setting }) {
                   />
                 </div>
                 <Button
-                  className="mt-3 ms-auto"
+                  variant="danger"
+                  className="mt-3 mx-auto"
+                  size="sm"
                   onClick={() => handleRemoveVideo(i)}
                 >
-                  刪除
+                  ✖ 移 除
                 </Button>
               </Col>
             ))}
-            <Col xs={2} className="d-flex p-5">
+            <Col className="d-flex p-5">
               <Button
+                variant="revo"
                 className="mt-auto ms-auto"
                 onClick={() =>
                   handleToolChange({
@@ -938,7 +967,7 @@ function Step2({ setting }) {
   } = setting
   const components = {
     selector: (
-      <Row className="h-100">
+      <Row className="h-100 px-5">
         {[
           {
             label: '影片上傳',
@@ -961,15 +990,15 @@ function Step2({ setting }) {
             value: '軌跡標記',
           },
         ].map((s) => (
-          <Col xs={3} className="d-flex" key={s.value}>
+          <Col xs={3} className="d-flex px-3" key={s.value}>
             <div
-              className="my-auto p-5 w-100"
+              className="my-auto py-5 w-100"
               style={{
                 height: '500px',
               }}
             >
               <Card
-                className="h-75 w-100 d-flex"
+                className="h-75 w-100 d-flex bg-revo-light fs-5 fw-bold text-revo"
                 onClick={() =>
                   handleToolChange({
                     target: { name: 'step2', value: s.value },
