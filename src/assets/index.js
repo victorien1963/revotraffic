@@ -16,6 +16,8 @@ import gallery7 from './images/gallery_7.png'
 import vissimRlSummary from './images/vissim_rl_summary.png'
 import camera14 from './images/camera_14.mp4'
 import camera7projection from './images/camera_7_projection.mp4'
+import v04 from './images/04.mp4'
+import v04Rl from './images/04_rl.mp4'
 
 export {
   // image
@@ -38,4 +40,6 @@ export {
   // video
   camera14,
   camera7projection,
+  v04,
+  v04Rl,
 }

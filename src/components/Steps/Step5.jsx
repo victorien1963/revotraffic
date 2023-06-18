@@ -9,9 +9,13 @@ import {
   Form,
   Button,
   Spinner,
+  OverlayTrigger,
+  Tooltip,
+  Image,
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import { vissimRlSummary } from '../../assets'
 
 function CheckTable({ setting }) {
   const { options } = setting
@@ -128,7 +132,27 @@ function Step5({ setting }) {
                 />
               </Col>
               <Col className="d-flex">
-                <h4 className="text-start">{option.label}</h4>
+                <OverlayTrigger
+                  placement="right"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={
+                    <Tooltip
+                      className="quesTip"
+                      style={{
+                        zIndex: '9999',
+                      }}
+                    >
+                      <Image
+                        className="w-100 py-3"
+                        height="auto"
+                        src={vissimRlSummary}
+                        fluid
+                      />
+                    </Tooltip>
+                  }
+                >
+                  <h4 className="text-start">{option.label}</h4>
+                </OverlayTrigger>
               </Col>
             </Row>
           ))}
