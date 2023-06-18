@@ -21,6 +21,7 @@ function Steps() {
   }
 
   const [datas, setdatas] = useState({
+    roadLine: null,
     roadAdjust: null,
     roads2: null,
     roads: null,
@@ -29,8 +30,16 @@ function Steps() {
     projects: [],
     selectedProject: '',
   })
-  const { roadAdjust, roads2, roads, videos, time, projects, selectedProject } =
-    datas
+  const {
+    roadLine,
+    roadAdjust,
+    roads2,
+    roads,
+    videos,
+    time,
+    projects,
+    selectedProject,
+  } = datas
   const project = useMemo(
     () =>
       selectedProject ? projects.find(({ id }) => id === selectedProject) : {},
@@ -51,6 +60,7 @@ function Steps() {
           videos,
           roads,
           roads2,
+          roadLine,
           roadAdjust,
           time,
           toolState,

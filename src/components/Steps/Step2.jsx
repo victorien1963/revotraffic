@@ -44,6 +44,102 @@ function PointTag({ setting }) {
   )
 }
 
+function LineModal({ setting }) {
+  const { show, data, handleClose } = setting
+  const initPoints = []
+  const [points, setpoints] = useState(data || initPoints)
+  const handleRemovePoint = (id) => {
+    setpoints(points.filter((point) => id !== point.id))
+  }
+
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      size="xl"
+      show={show}
+      onHide={() => handleClose([points])}
+      className="p-2"
+    >
+      <Modal.Body className="d-flex">
+        <div className="position-relative w-75 me-3">
+          <Image
+            className="mx-auto w-100"
+            height="auto"
+            src={camera7preview}
+            fluid
+            onClick={(e) => {
+              if (points.length > 1) return
+              const target = e.target.getBoundingClientRect()
+              const left = e.clientX - target.x
+              const top = e.clientY - target.y
+              setpoints([
+                ...points,
+                {
+                  id: points.length + 1,
+                  style: {
+                    top,
+                    left,
+                    width: '10px',
+                    height: '10px',
+                    color: 'red',
+                  },
+                },
+              ])
+            }}
+          />
+          {points.map((point) => (
+            <PointTag
+              key={point.id}
+              setting={{ ...point, handleRemovePoint }}
+            />
+          ))}
+          {points.length === 2 && (
+            <hr
+              className="position-absolute"
+              style={{
+                top: (points[0].style.top + points[1].style.top) / 2 + 5,
+                left:
+                  (points[0].style.left + points[1].style.left) / 2 -
+                  Math.sqrt(
+                    Math.abs(points[0].style.top - points[1].style.top) ** 2 +
+                      Math.abs(points[0].style.left - points[1].style.left) ** 2
+                  ) /
+                    2 +
+                  5,
+                width: Math.sqrt(
+                  Math.abs(points[0].style.top - points[1].style.top) ** 2 +
+                    Math.abs(points[0].style.left - points[1].style.left) ** 2
+                ),
+                rotate: `${
+                  90 -
+                  (180 / Math.PI) *
+                    Math.atan2(
+                      points[0].style.left - points[1].style.left,
+                      points[0].style.top - points[1].style.top
+                    )
+                }deg`,
+              }}
+            />
+          )}
+        </div>
+        <div className="w-25 ms-auto d-flex flex-column">
+          <Button className="mt-auto" onClick={() => handleClose(points)}>
+            確認
+          </Button>
+          <Button
+            className="mt-3"
+            onClick={() => {
+              setpoints(initPoints)
+            }}
+          >
+            重來
+          </Button>
+        </div>
+      </Modal.Body>
+    </Modal>
+  )
+}
+
 function ProjectedModal({ setting }) {
   const { show, data, handleClose } = setting
   const initPoints = []
@@ -348,7 +444,8 @@ function RoadModal({ setting }) {
 
 function Road({ setting }) {
   // const { videos, roads, handleDataChange, handleToolChange } = setting
-  const { roads, roads2, roadAdjust, videos, handleDataChange } = setting
+  const { roads, roads2, roadAdjust, roadLine, videos, handleDataChange } =
+    setting
   const [selected, setselected] = useState('')
   const [showDate, setshowDate] = useState(false)
   const [date, setdate] = useState({
@@ -450,6 +547,7 @@ function Road({ setting }) {
 
   const [show, setshow] = useState(false)
   const [showProject, setshowProject] = useState(false)
+  const [showLine, setshowLine] = useState(false)
 
   return (
     <>
@@ -614,7 +712,7 @@ function Road({ setting }) {
                           value: 'project',
                         },
                       })
-                    : handleDataChange({}, 'step3')
+                    : setshowLine(true)
                 }
               >
                 確認
@@ -683,6 +781,27 @@ function Road({ setting }) {
                 },
               })
             setshowProject(false)
+          },
+        }}
+      />
+      <LineModal
+        setting={{
+          data: roadLine,
+          show: showLine,
+          handleClose: (value) => {
+            if (value) {
+              handleDataChange(
+                {
+                  target: {
+                    name: 'roadLine',
+                    value,
+                  },
+                },
+                'step3'
+              )
+            } else {
+              setshowLine(false)
+            }
           },
         }}
       />
@@ -812,6 +931,7 @@ function Step2({ setting }) {
     roads,
     roads2,
     roadAdjust,
+    roadLine,
     toolState,
     handleDataChange,
     handleToolChange,
@@ -880,6 +1000,7 @@ function Step2({ setting }) {
           roads,
           roads2,
           roadAdjust,
+          roadLine,
           handleDataChange,
         }}
       />
@@ -910,6 +1031,10 @@ RoadModal.propTypes = {
 }
 
 ProjectedModal.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+LineModal.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
