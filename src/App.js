@@ -31,7 +31,7 @@ function App() {
             />
           </Row>
         )}
-        <Row className="flex-grow-1">
+        <Row className="flex-grow-1 overflow-hidden">
           <Router>
             <Routes className="px-0">
               <Route

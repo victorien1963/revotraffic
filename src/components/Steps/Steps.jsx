@@ -13,6 +13,7 @@ function Steps() {
   const [toolState, settoolState] = useState({
     step1: '操作流程圖',
     step2: 'selector',
+    step3: '影像辨識',
     activeStep: 0,
   })
   const handleToolChange = (e) => {
@@ -82,7 +83,10 @@ function Steps() {
   }, [project, step])
 
   return (
-    <Container fluid className="w-100 h-100 d-flex flex-column p-0">
+    <Container
+      fluid
+      className="w-100 h-100 d-flex flex-column p-0 overflow-hidden"
+    >
       <ToolBar
         setting={{
           toolState,
@@ -93,6 +97,7 @@ function Steps() {
       <Row
         style={{
           height: '10%',
+          minHeight: '10%',
         }}
       >
         <Breadcrumb
@@ -101,7 +106,7 @@ function Steps() {
           }}
         />
       </Row>
-      <Row className="flex-grow-1">{steps[step]}</Row>
+      <Row className="flex-grow-1 overflow-hidden">{steps[step]}</Row>
     </Container>
   )
 }

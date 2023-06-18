@@ -14,6 +14,7 @@ import gallery5 from './images/gallery_5.png'
 import gallery6 from './images/gallery_6.png'
 import gallery7 from './images/gallery_7.png'
 import vissimRlSummary from './images/vissim_rl_summary.png'
+import camera14 from './images/camera_14.mp4'
 
 export {
   nenerabi,
@@ -32,4 +33,5 @@ export {
   gallery6,
   gallery7,
   vissimRlSummary,
+  camera14,
 }
