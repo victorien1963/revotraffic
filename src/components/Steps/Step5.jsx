@@ -33,7 +33,7 @@ function CheckTable({ setting }) {
           />
         </Col>
         <Col className="border d-flex">
-          <p className="m-auto">全選</p>
+          <p className="my-auto">全選</p>
         </Col>
       </Row>
       {[...options, { label: '' }].map((option) => (
@@ -50,7 +50,7 @@ function CheckTable({ setting }) {
             />
           </Col>
           <Col className="border d-flex">
-            <p className="m-auto">{option.label}</p>
+            <p className="my-auto">{option.label}</p>
           </Col>
         </Row>
       ))}
@@ -80,8 +80,10 @@ function Step5({ setting }) {
   return (
     <Container>
       <Row className="h-100 overflow-hidden px-3">
-        <Col xs={4} className="h-100">
-          <FormLabel>選擇模型</FormLabel>
+        <Col xs={4} className="h-50">
+          <FormLabel className="text-revo fw-bold modal-table">
+            選擇模型
+          </FormLabel>
           <CheckTable
             setting={{
               options: [
@@ -99,7 +101,7 @@ function Step5({ setting }) {
           />
         </Col>
         <Col xs={4} className="h-100">
-          <FormLabel>選擇欲匯出之報表</FormLabel>
+          <FormLabel className="text-revo fw-bold">選擇欲匯出之報表</FormLabel>
           {[
             {
               label: '全選',
@@ -120,7 +122,7 @@ function Step5({ setting }) {
               label: '方法比較影片',
             },
           ].map((option) => (
-            <Row className="py-5">
+            <Row className="py-4">
               <Col xs={2} className="d-flex">
                 <FontAwesomeIcon
                   className="m-auto"
@@ -151,41 +153,44 @@ function Step5({ setting }) {
                     </Tooltip>
                   }
                 >
-                  <h4 className="text-start">{option.label}</h4>
+                  <h6 className="text-start">{option.label}</h6>
                 </OverlayTrigger>
               </Col>
             </Row>
           ))}
         </Col>
         <Col xs={4} className="h-100 d-flex flex-column">
-          <FormLabel className="text-start">選擇存檔路徑</FormLabel>
+          <FormLabel className="text-revo fw-bold">選擇存檔路徑</FormLabel>
           <Row>
             <Form.Control
-              className="w-75"
+              className="w-60"
               value="C://users/User/downloads/export.xlsx"
             />
             <Button
               className="my-auto ms-3 me-auto"
               style={{
-                width: '15%',
+                width: '25%',
               }}
               onClick={exportExcel}
+              variant="revo2"
             >
-              匯出Excel
+              匯出 Excel
             </Button>
           </Row>
-          <Row className="py-5">
+          <Row className="py-4">
             {exports.loading && (
               <Spinner className="m-auto" animation="border" />
             )}
             {exports.show && (
               <>
                 <Col className="d-flex">
-                  <h4 className="text-start">已匯出至目的資料夾</h4>
+                  <h5 className="text-start fw-bold text-revo">
+                    已匯出至目的資料夾
+                  </h5>
                 </Col>
-                <Col xs={2} className="d-flex">
+                <Col xs={2} className="d-flex pe-5">
                   <FontAwesomeIcon
-                    className="m-auto h4"
+                    className="m-auto h5 text-revo"
                     style={{
                       cursor: 'pointer',
                     }}
@@ -203,6 +208,7 @@ function Step5({ setting }) {
             }}
           >
             <Button
+              variant="revo"
               className="my-auto ms-auto"
               style={{
                 width: '15%',

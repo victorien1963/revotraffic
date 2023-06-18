@@ -187,7 +187,7 @@ function Step3({ setting }) {
       <Row className="h-100 overflow-hidden">
         <Col xs={5} className="h-100 py-3">
           <div className="w-100 h-35">
-            <FormLabel>分析影片 - 路口</FormLabel>
+            <FormLabel className="text-revo fw-bold">分析影片 - 路口</FormLabel>
             <CheckTable
               setting={{
                 options: [
@@ -210,8 +210,12 @@ function Step3({ setting }) {
               }}
             />
           </div>
-          <div className="d-flex py-3 mt-auto">
-            <Button className="my-auto mx-3" onClick={startProgress}>
+          <div className="d-flex ps-3 py-3 mt-auto">
+            <Button
+              variant="revo"
+              className="my-auto mx-3"
+              onClick={startProgress}
+            >
               執行辨識
             </Button>
             <ProgressBar
@@ -228,15 +232,15 @@ function Step3({ setting }) {
                 label={`${progress}%`}
               />
               <ProgressBar
-                className="bg-grey text-lucaLight"
+                className="bg-revo-light text-lucaLight"
                 now={100 - progress}
               />
             </ProgressBar>
           </div>
         </Col>
-        <Col xs={5} className="h-100 py-3 mh-100">
+        <Col xs={5} className="h-100 pt-5 mh-100">
           <Form.Select
-            className="w-100 mb-3"
+            className="w-100 mb-3 mt-3"
             aria-label="Default select example"
             onChange={(e) => setselected(e.target.value)}
           >
@@ -272,8 +276,8 @@ function Step3({ setting }) {
             {optionComponent[selected] || <div />}
           </div>
         </Col>
-        <Col xs={2}>
-          <Button className="my-auto" onClick={() => {}}>
+        <Col xs={2} className="pt-5 mt-3">
+          <Button variant="revo2" className="my-auto" onClick={() => {}}>
             匯出Excel
           </Button>
         </Col>

@@ -143,6 +143,10 @@
   border-left: 0 !important;
 }
 
+.bread4 > a::after {
+  right: -34px !important;
+}
+
 .bread5 > a::after {
   border-top: 0px !important;
   border-bottom: 0px !important;
@@ -163,10 +167,22 @@
   border-color: #bde570 !important;
 }
 
-.btn-revo:hover, .btn-revo:active, .btn-revo:focus {
+.btn-revo:hover, .btn-revo:active {
   color: #0e594f !important;
   background-color: #60ca9e !important;
   border-color: #60ca9e !important;
+}
+
+.btn-revo2 {
+  color: #093731 !important;
+  background-color: #88d7b6 !important;
+  border-color: #88d7b6 !important;
+}
+
+.btn-revo2:hover, .btn-revo2:active {
+  color: #536a28 !important;
+  background-color: #bde570 !important;
+  border-color: #bde570 !important;
 }
 
 .bg-revo-linear {
@@ -177,10 +193,22 @@
   background-color: #72cbae !important;
 }
 
+.bg-revo-mid {
+  background-color: #cde8db !important;
+}
+
+.bg-revo-light {
+  background-color: #ebf4f0 !important;
+}
+
 .h-35 {
   height: 35% !important;
 }
 
-.bg-revo-light {
-  background-color: #dff0ea !important;
+.w-60 {
+  width: 60% !important;
+}
+
+.modal-table > .container > .row > div:nth-child(2) > p {
+  text-align: start !important;
 }

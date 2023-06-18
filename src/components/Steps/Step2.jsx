@@ -122,22 +122,22 @@ function LineModal({ setting }) {
             />
           )}
         </div>
-        <div className="w-25 ms-auto d-flex flex-column">
-          <Button
-            variant="revo"
-            className="mt-auto"
-            onClick={() => handleClose(points)}
-          >
-            確認
-          </Button>
+        <div className="w-25 me-auto d-flex">
           <Button
             variant="secondary"
-            className="mt-3"
+            className="mt-auto"
             onClick={() => {
               setpoints(initPoints)
             }}
           >
             重來
+          </Button>
+          <Button
+            variant="revo"
+            className="mt-auto ms-2"
+            onClick={() => handleClose(points)}
+          >
+            確認
           </Button>
         </div>
       </Modal.Body>
@@ -177,6 +177,7 @@ function ProjectedModal({ setting }) {
       onHide={() => handleClose([points])}
       className="p-2"
     >
+      <Modal.Header closeButton />
       <Modal.Body className="d-flex">
         <div className="position-relative w-50 me-3">
           <Image
@@ -227,19 +228,19 @@ function ProjectedModal({ setting }) {
             </div>
           )}
         </div>
-        <div className="w-25 ms-auto d-flex flex-column">
-          <Button variant="revo" className="mt-auto" onClick={generatePic}>
-            確認
-          </Button>
+        <div className="w-25 me-auto d-flex">
           <Button
             variant="secondary"
-            className="mt-3"
+            className="mt-auto"
             onClick={() => {
               setpoints(initPoints)
               setproject(initProject)
             }}
           >
             重來
+          </Button>
+          <Button variant="revo" className="mt-auto ms-2" onClick={generatePic}>
+            確認
           </Button>
         </div>
       </Modal.Body>
@@ -418,7 +419,7 @@ function RoadModal({ setting }) {
             <NumberTag key={o.id} setting={{ ...o }} />
           ))}
         </div>
-        <div className="w-25 ms-auto d-flex flex-column">
+        <div className="w-25 me-auto d-flex">
           <Button className="my-2" onClick={() => setclicking('entry')}>
             入口車道
           </Button>
@@ -426,13 +427,6 @@ function RoadModal({ setting }) {
             出口車道
           </Button>
           <div className="d-flex mt-auto">
-            <Button
-              variant="revo"
-              className="mx-2"
-              onClick={() => handleClose({ draggables, clicks })}
-            >
-              確認
-            </Button>
             <Button
               variant="secondary"
               className="mx-2"
@@ -442,6 +436,13 @@ function RoadModal({ setting }) {
               }}
             >
               重來
+            </Button>
+            <Button
+              variant="revo"
+              className="mx-2 ms-2"
+              onClick={() => handleClose({ draggables, clicks })}
+            >
+              確認
             </Button>
           </div>
         </div>
@@ -569,7 +570,7 @@ function Road({ setting }) {
                     <React.Fragment key={i}>
                       <Row className="py-3">
                         <Col xs={2}>
-                          <Form.Label>{f.label}</Form.Label>
+                          <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
                           <FontAwesomeIcon
@@ -589,7 +590,7 @@ function Road({ setting }) {
                     <React.Fragment key={i}>
                       <Row className="py-3">
                         <Col xs={2}>
-                          <Form.Label>{f.label}</Form.Label>
+                          <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
                           <FontAwesomeIcon
@@ -609,11 +610,13 @@ function Road({ setting }) {
                     <React.Fragment key={i}>
                       <Row className="py-3">
                         <Col xs={2}>
-                          <Form.Label>{f.label}</Form.Label>
+                          <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         {f.content.map((c) => (
                           <Col
-                            className={`${type === c.value ? 'bg-revo' : ''}`}
+                            className={`py-1 ${
+                              type === c.value ? 'bg-revo-mid rounded' : ''
+                            }`}
                             key={c.value}
                             onClick={() => {
                               if (c.value === 'project') setshowProject(true)
@@ -635,7 +638,7 @@ function Road({ setting }) {
                     <React.Fragment key={i}>
                       <Row className="py-3">
                         <Col xs={2}>
-                          <Form.Label>{f.label}</Form.Label>
+                          <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
                           <Form.Control
@@ -650,6 +653,8 @@ function Road({ setting }) {
                             style={{
                               height: showDate ? '100%' : '0%',
                               transition: 'height .3s ease-in',
+                              position: 'absolute',
+                              left: '-50',
                             }}
                           >
                             {showDate && (
@@ -682,7 +687,7 @@ function Road({ setting }) {
                     <React.Fragment key={i}>
                       <Row className="py-3">
                         <Col xs={2}>
-                          <Form.Label>{f.label}</Form.Label>
+                          <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
                           <Form.Control
@@ -703,6 +708,7 @@ function Road({ setting }) {
             <Image className="mx-auto w-75" src={camera7preview} fluid />
             <div className="d-flex mt-auto">
               <Button
+                variant="warning"
                 className="ms-auto me-2"
                 onClick={() =>
                   type === 'road' ? setshow(true) : setshowProject(true)
@@ -841,7 +847,7 @@ function Video({ setting }) {
     })
   return (
     <>
-      <Row className="pt-3 pb-2 px-4" style={{ height: '10vh' }}>
+      <Row className="pt-3 pb-2 px-2" style={{ height: '10vh' }}>
         <Col xs={2}>
           <Button variant="revo">
             <FormLabel htmlFor="file" className="mb-0">
@@ -872,7 +878,7 @@ function Video({ setting }) {
       >
         {uploading ? (
           <>
-            <Col xs={2} />
+            <Col xs={4} />
             <Col xs={4}>
               <video width="auto" height="420px" controls>
                 <track kind="captions" />
@@ -919,7 +925,7 @@ function Video({ setting }) {
                 </div>
                 <Button
                   variant="danger"
-                  className="mt-3 mx-auto"
+                  className="mt-auto mx-auto"
                   size="sm"
                   onClick={() => handleRemoveVideo(i)}
                 >
@@ -999,6 +1005,8 @@ function Step2({ setting }) {
             >
               <Card
                 className="h-75 w-100 d-flex bg-revo-light fs-5 fw-bold text-revo"
+                style={{ cursor: 'pointer' }}
+                title={s.value}
                 onClick={() =>
                   handleToolChange({
                     target: { name: 'step2', value: s.value },

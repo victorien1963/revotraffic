@@ -20,7 +20,7 @@ import {
 function CheckTable({ setting }) {
   const { options } = setting
   return (
-    <Container className="h-75 d-flex flex-column px-5 py-3">
+    <Container className="h-75 d-flex flex-column px-5 py-3 pt-0">
       {[...options, { label: '' }].map((option) => (
         <Row key={option.label} className="flex-grow-1">
           <Col xs={2} className="border d-flex">
@@ -81,8 +81,10 @@ function Files({ setting }) {
           }}
         >
           <Col xs={1}>
-            <Button>
-              <FormLabel htmlFor={f.label}>選擇檔案</FormLabel>
+            <Button variant="revo">
+              <FormLabel className="mb-0" htmlFor={f.label}>
+                選擇檔案
+              </FormLabel>
             </Button>
             <Form.Control
               id={f.label}
@@ -109,12 +111,13 @@ function Files({ setting }) {
       ))}
 
       <Row
-        className="pt-3 pb-5 px-4 d-flex"
+        className="pt-3 pb-5 px-4 pe-5 d-flex"
         style={{
           height: '10%',
         }}
       >
         <Button
+          variant="revo2"
           className="my-auto ms-auto"
           style={{
             width: '5%',
@@ -188,9 +191,9 @@ function Step4({ setting }) {
     ),
     模型驅動: (
       <>
-        <Row className="h-100 overflow-hidden px-3">
-          <Col xs={3} className="h-100 mh-100">
-            <FormLabel>選擇模型</FormLabel>
+        <Row className="h-100 overflow-hidden px-4">
+          <Col xs={4} className="h-100 mh-100">
+            <FormLabel className="text-revo fw-bold">選擇模型</FormLabel>
             <Form.Select
               className="w-100 mb-3"
               aria-label="Default select example"
@@ -211,8 +214,10 @@ function Step4({ setting }) {
             </Form.Select>
           </Col>
           <Col xs={2} className="h-100 mh-100">
-            <Row className="d-flex px-0">
+            <Row className="d-flex">
+              <FormLabel className="text-revo fw-bold">&ensp;</FormLabel>
               <Button
+                variant="revo2"
                 className="w-75"
                 onClick={() => {
                   setchecked(!checked)
@@ -231,7 +236,9 @@ function Step4({ setting }) {
           </Col>
           <Col xs={1} className="h-100 mh-100">
             <Row className="d-flex px-0">
+              <FormLabel className="text-revo fw-bold">&ensp;</FormLabel>
               <Button
+                variant="revo2"
                 className="w-100"
                 onClick={() => {
                   setshow(true)
@@ -242,7 +249,7 @@ function Step4({ setting }) {
             </Row>
           </Col>
           <Col className="h-50">
-            <FormLabel>已執行列表</FormLabel>
+            <FormLabel className="text-revo fw-bold">已執行列表</FormLabel>
             <CheckTable
               setting={{
                 options: [
@@ -266,17 +273,22 @@ function Step4({ setting }) {
           onHide={() => setshow(false)}
           className="p-2"
         >
-          <Modal.Body className="d-flex flex-column text-center">
+          <Modal.Header closeButton />
+          <Modal.Body className="d-flex flex-column text-center pb-5">
             <div className="d-flex h-50">
-              <FontAwesomeIcon className="m-auto p-5 h1" icon={faCheckCircle} />
+              <FontAwesomeIcon
+                className="m-auto p-5 text-revo"
+                style={{ fontSize: '4rem' }}
+                icon={faCheckCircle}
+              />
             </div>
-            <h4>已寄送模型調校工單至email:</h4>
+            <h4 className="text-revo fw-bold">已寄送模型調校工單至email:</h4>
             <h4>smalloshin@gmail.com</h4>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className="justify-content-center">
             <Button
               style={{ boxShadow: 'none', color: '#317985' }}
-              variant="link"
+              variant="revo2"
               onClick={() => setshow(false)}
             >
               確 認
