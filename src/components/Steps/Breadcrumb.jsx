@@ -11,7 +11,7 @@ function Breadcrumb({ setting }) {
         {paths.map((path, i) => (
           <React.Fragment key={i}>
             {i ? '>' : ''}
-            <Col xs={2}>{path.label}</Col>
+            <Col xs={3}>{path.label}</Col>
           </React.Fragment>
         ))}
       </Row>
