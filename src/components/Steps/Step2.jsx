@@ -807,13 +807,30 @@ function Road({ setting }) {
                     height: '10%',
                   }}
                 >{`${i + 1}.${name}`}</p>
-                <Image
-                  title="選擇影片"
-                  style={{ cursor: 'pointer' }}
-                  className="mx-auto w-100 "
-                  src={i % 2 === 0 ? camera7preview : camera14preview}
-                  fluid
-                />
+                <div className="position-relative">
+                  <Image
+                    title="選擇影片"
+                    style={{ cursor: 'pointer' }}
+                    className="mx-auto w-100 "
+                    src={i % 2 === 0 ? camera7preview : camera14preview}
+                    fluid
+                  />
+                  <div
+                    className="position-absolute p-2"
+                    style={{
+                      top: '0%',
+                      right: '0%',
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      style={{
+                        cursor: 'pointer',
+                      }}
+                      icon={faCheckCircle}
+                      onClick={() => {}}
+                    />
+                  </div>
+                </div>
               </Col>
             ))}
           </Row>
@@ -971,27 +988,12 @@ function Video({ setting }) {
                     marginBottom: '0',
                   }}
                 >{`${`${i + 1} `}.${name}`}</p>
-                <div className="position-relative">
+                <div>
                   <Image
                     className="mx-auto"
                     src={i % 2 === 0 ? camera7preview : camera14preview}
                     fluid
                   />
-                  <div
-                    className="position-absolute p-2"
-                    style={{
-                      top: '0%',
-                      right: '0%',
-                    }}
-                  >
-                    <FontAwesomeIcon
-                      style={{
-                        cursor: 'pointer',
-                      }}
-                      icon={faCheckCircle}
-                      onClick={() => {}}
-                    />
-                  </div>
                 </div>
                 <Button
                   variant="danger"
