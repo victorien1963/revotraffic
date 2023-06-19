@@ -804,7 +804,6 @@ function Road({ setting }) {
           data: roadLine,
           show: showLine,
           handleClose: (value) => {
-            console.log(value)
             if (value) {
               handleDataChange(
                 {
