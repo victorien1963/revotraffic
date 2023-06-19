@@ -99,6 +99,49 @@ function Step5({ setting }) {
 
   const [show, setshow] = useState(false)
 
+  const reports = [
+    {
+      label: '路口延滯時間',
+      hover: <Image className="w-100 py-3" height="auto" src={report1} fluid />,
+    },
+    {
+      label: '停等車隊長度',
+      hover: <Image className="w-100 py-3" height="auto" src={report2} fluid />,
+    },
+    {
+      label: '路段旅行速率',
+    },
+    {
+      label: '成效比較報總表',
+      hover: (
+        <Image
+          className="w-100 py-3"
+          height="auto"
+          src={vissimRlSummary}
+          fluid
+        />
+      ),
+    },
+    {
+      label: '方法比較影片',
+      click: () => {
+        setshow(true)
+      },
+    },
+  ]
+  const [checked, setchecked] = useState([])
+  useEffect(() => {
+    setchecked(reports.map(() => true))
+  }, [])
+  const handleCheck = (i) =>
+    setchecked(checked.map((c, j) => (i === j ? !c : c)))
+  const handleCheckAll = () =>
+    setchecked(
+      checked.every((c) => c)
+        ? checked.map(() => false)
+        : checked.map(() => true)
+    )
+
   return (
     <>
       <Container>
@@ -127,62 +170,39 @@ function Step5({ setting }) {
             <FormLabel className="text-revo fw-bold">
               選擇欲匯出之報表
             </FormLabel>
-            {[
-              {
-                label: '全選',
-              },
-              {
-                label: '路口延滯時間',
-                hover: (
-                  <Image
-                    className="w-100 py-3"
-                    height="auto"
-                    src={report1}
-                    fluid
-                  />
-                ),
-              },
-              {
-                label: '停等車隊長度',
-                hover: (
-                  <Image
-                    className="w-100 py-3"
-                    height="auto"
-                    src={report2}
-                    fluid
-                  />
-                ),
-              },
-              {
-                label: '路段旅行速率',
-              },
-              {
-                label: '成效比較報總表',
-                hover: (
-                  <Image
-                    className="w-100 py-3"
-                    height="auto"
-                    src={vissimRlSummary}
-                    fluid
-                  />
-                ),
-              },
-              {
-                label: '方法比較影片',
-                click: () => {
-                  setshow(true)
-                },
-              },
-            ].map((option) => (
+            <Row className="py-4" onClick={handleCheckAll}>
+              <Col xs={2} className="d-flex">
+                <FontAwesomeIcon
+                  className="m-auto"
+                  style={{
+                    cursor: 'pointer',
+                    color: checked.every((c) => c) ? '#698b87' : 'grey',
+                  }}
+                  icon={faCheckCircle}
+                />
+              </Col>
+              <Col className="d-flex">
+                <h6
+                  className="text-start"
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                >
+                  全選
+                </h6>
+              </Col>
+            </Row>
+            {reports.map((option, i) => (
               <Row className="py-4">
                 <Col xs={2} className="d-flex">
                   <FontAwesomeIcon
                     className="m-auto"
                     style={{
                       cursor: 'pointer',
+                      color: checked[i] ? '#698b87' : 'grey',
                     }}
                     icon={faCheckCircle}
-                    onClick={() => {}}
+                    onClick={() => handleCheck(i)}
                   />
                 </Col>
                 <Col className="d-flex">
