@@ -826,11 +826,12 @@ function Road({ setting }) {
                   <div
                     className="position-absolute p-2"
                     style={{
-                      top: '0%',
-                      right: '0%',
+                      top: '-10%',
+                      right: '-10%',
                     }}
                   >
                     <FontAwesomeIcon
+                      className="fs-1 text-revo"
                       style={{
                         cursor: 'pointer',
                       }}
