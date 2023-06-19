@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import {
   Container,
@@ -28,35 +28,53 @@ import {
 
 function CheckTable({ setting }) {
   const { options } = setting
+  const [checked, setchecked] = useState([])
+  useEffect(() => {
+    setchecked(options.map(() => true))
+  }, [])
+  const handleCheck = (i) =>
+    setchecked(checked.map((c, j) => (i === j ? !c : c)))
+  const handleCheckAll = () =>
+    setchecked(
+      checked.every((c) => c)
+        ? checked.map(() => false)
+        : checked.map(() => true)
+    )
   return (
     <Container className="h-75 d-flex flex-column px-5 py-3">
-      <Row className="flex-grow-1">
+      <Row className="flex-grow-1" onClick={handleCheckAll}>
         <Col xs={2} className="border d-flex">
-          <FontAwesomeIcon
-            className="m-auto"
-            style={{
-              cursor: 'pointer',
-            }}
-            icon={faCheckCircle}
-            onClick={() => {}}
-          />
+          {checked.every((c) => c) && (
+            <FontAwesomeIcon
+              className="m-auto"
+              style={{
+                cursor: 'pointer',
+              }}
+              icon={faCheckCircle}
+            />
+          )}
         </Col>
         <Col className="border d-flex">
           <p className="m-auto">全選</p>
         </Col>
       </Row>
-      {[...options, { label: '' }].map((option) => (
-        <Row key={option.label} className="flex-grow-1">
+      {[...options, { label: '...' }].map((option, i) => (
+        <Row
+          key={option.label}
+          className="flex-grow-1"
+          onClick={() => handleCheck(i)}
+        >
           <Col xs={2} className="border d-flex">
-            <FontAwesomeIcon
-              className="m-auto"
-              style={{
-                cursor: 'pointer',
-                color: option.label ? 'black' : 'transparent',
-              }}
-              icon={faCheckCircle}
-              onClick={() => {}}
-            />
+            {checked[i] && (
+              <FontAwesomeIcon
+                className="m-auto"
+                style={{
+                  cursor: 'pointer',
+                  color: option.label ? 'black' : 'transparent',
+                }}
+                icon={faCheckCircle}
+              />
+            )}
           </Col>
           <Col className="border d-flex">
             <p className="m-auto">{option.label}</p>

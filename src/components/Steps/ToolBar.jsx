@@ -4,10 +4,11 @@ import PropTypes from 'prop-types'
 import { Container, Row } from 'react-bootstrap'
 
 function ToolBar({ setting }) {
-  const { handleToolChange } = setting
+  const { step, handleToolChange } = setting
   const tools = [
     {
       label: '首頁',
+      name: 'step1',
       dropdowns: [
         {
           label: '操作流程圖',
@@ -23,6 +24,7 @@ function ToolBar({ setting }) {
     },
     {
       label: '影片上傳標記',
+      name: 'step2',
       dropdowns: [
         {
           label: '影片上傳',
@@ -48,6 +50,7 @@ function ToolBar({ setting }) {
     },
     {
       label: 'AI影像辨識',
+      name: 'step3',
       dropdowns: [
         {
           label: '影像辨識',
@@ -63,6 +66,7 @@ function ToolBar({ setting }) {
     },
     {
       label: 'AI號控調校',
+      name: 'step4',
       dropdowns: [
         {
           label: '模型上傳',
@@ -78,6 +82,7 @@ function ToolBar({ setting }) {
     },
     {
       label: '結果報表',
+      name: 'step5',
       click: {
         name: 'step5',
         value: '結果報表',
@@ -112,7 +117,9 @@ function ToolBar({ setting }) {
                 }}
               >
                 <span>
-                  <strong>{tool.label}</strong>
+                  <strong>{`${tool.name === step ? '➤ ' : ''}${
+                    tool.label
+                  }`}</strong>
                 </span>
               </a>
               {tool.dropdowns && (

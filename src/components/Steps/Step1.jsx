@@ -142,7 +142,7 @@ function Projects({ setting }) {
     setshow(false)
     if (value) {
       if (project.id) handleAddStep(value)
-      handleAddProject(value)
+      else handleAddProject(value)
     }
   }
 
@@ -286,7 +286,8 @@ function Step1({ setting }) {
                 value: id,
               },
             }),
-          handleAddStep: (value) =>
+          handleAddStep: (value) => {
+            console.log(value)
             handleDataChange(
               {
                 target: {
@@ -295,7 +296,8 @@ function Step1({ setting }) {
                 },
               },
               'step2'
-            ),
+            )
+          },
         }}
       />
     ),

@@ -971,12 +971,27 @@ function Video({ setting }) {
                     marginBottom: '0',
                   }}
                 >{`${`${i + 1} `}.${name}`}</p>
-                <div>
+                <div className="position-relative">
                   <Image
                     className="mx-auto"
                     src={i % 2 === 0 ? camera7preview : camera14preview}
                     fluid
                   />
+                  <div
+                    className="position-absolute p-2"
+                    style={{
+                      top: '0%',
+                      right: '0%',
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      style={{
+                        cursor: 'pointer',
+                      }}
+                      icon={faCheckCircle}
+                      onClick={() => {}}
+                    />
+                  </div>
                 </div>
                 <Button
                   variant="danger"

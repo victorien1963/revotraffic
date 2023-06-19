@@ -11,8 +11,7 @@ import 'react-date-range/dist/theme/default.css'
 import { NavBar } from './components'
 
 function App() {
-  const handleLogin = (data) => {
-    console.log(data)
+  const handleLogin = () => {
     window.location.replace('/Home')
   }
   const handleLogout = () => {
@@ -45,6 +44,7 @@ function App() {
                 }
               />
               <Route path="/Home" element={<Home />} />
+              <Route path="/*" element={<Home />} />
             </Routes>
           </Router>
         </Row>

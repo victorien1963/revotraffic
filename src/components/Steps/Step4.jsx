@@ -58,7 +58,7 @@ function Files({ setting }) {
     { label: 'file6', file: '', date: '' },
     { label: 'file7', file: '', date: '' },
   ])
-  console.log(files)
+
   const handleUpload = (e) =>
     setfiles(
       files.map((f) =>
