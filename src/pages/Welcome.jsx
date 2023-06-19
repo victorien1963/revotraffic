@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Row, Col, Image, Container, Form, Button } from 'react-bootstrap'
-import { RTLogo2 } from '../assets'
+import { RTLogo4 } from '../assets'
 
 function Welcome({ setting }) {
   const { handleLogin } = setting
@@ -34,19 +34,22 @@ function Welcome({ setting }) {
     <Container
       fluid
       className="welcomePage bg-revo-linear d-flex h-100"
-      style={{
-        cursor: 'pointer',
-      }}
+      // style={{
+      //   cursor: 'pointer',
+      // }}
     >
       <div className="m-auto">
         <Row className="py-0">
-          <Image src={RTLogo2} className="m-auto" style={{ width: '24rem' }} />
+          <Image
+            src={RTLogo4}
+            className="m-auto"
+            style={{ width: '24rem', opacity: '.8' }}
+          />
         </Row>
         <Row className="h6 fw-light mt-0 pt-0">
           <Col xs={9}>
             {form.map((f, i) => (
               <React.Fragment className="d-flex" key={i}>
-                {/* <Form.Label>{f.label}</Form.Label> */}
                 <Form.Control
                   name={f.name}
                   type={f.type}
@@ -55,13 +58,14 @@ function Welcome({ setting }) {
                   placeholder={f.placeholder}
                   size="sm"
                   className="m-2"
+                  style={{ opacity: '.8' }}
                 />
               </React.Fragment>
             ))}
           </Col>
           <Col xs={3} className="d-flex">
             <Button
-              variant="outline-light"
+              variant="outline-dark"
               size="md"
               className="m-auto"
               title="登入"

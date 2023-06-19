@@ -229,7 +229,7 @@ function Step3({ setting }) {
               }}
             />
           </div>
-          <div className="d-flex p-3 mt-auto">
+          <div className="d-flex p-3 pt-3 mt-auto">
             <Button
               variant="revo"
               className="my-auto mx-3"
@@ -250,10 +250,7 @@ function Step3({ setting }) {
                 now={progress}
                 label={`${progress}%`}
               />
-              <ProgressBar
-                className="bg-revo-light text-lucaLight"
-                now={100 - progress}
-              />
+              <ProgressBar className="bg-revo-mid" now={100 - progress} />
             </ProgressBar>
           </div>
         </Col>
@@ -305,7 +302,7 @@ function Step3({ setting }) {
             style={{ bottom: '8%', right: '3%' }}
             onClick={() => {}}
           >
-            確 認
+            下一步
           </Button>
         </Col>
       </Row>

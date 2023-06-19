@@ -65,8 +65,9 @@ function LineModal({ setting }) {
     >
       <Modal.Header closeButton />
       <Modal.Body className="d-flex">
-        <div className="position-relative w-75 me-3">
+        <div className="position-relative w-60 me-3">
           <Image
+            style={{ cursor: 'pointer' }}
             className="mx-auto w-100"
             height="auto"
             src={camera7preview}
@@ -136,7 +137,7 @@ function LineModal({ setting }) {
               setpoints(initPoints)
             }}
           >
-            重來
+            清除
           </Button>
           <Button
             variant="revo"
@@ -243,7 +244,7 @@ function ProjectedModal({ setting }) {
               setproject(initProject)
             }}
           >
-            重來
+            清除
           </Button>
           <Button variant="revo" className="mt-auto ms-2" onClick={generatePic}>
             校正
@@ -464,7 +465,7 @@ function RoadModal({ setting }) {
                 setclicks(initClicks)
               }}
             >
-              重來
+              清除
             </Button>
             <Button
               variant="revo"
@@ -625,7 +626,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={2}>
+                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
@@ -645,7 +646,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={2}>
+                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         {f.content.map((c) => (
@@ -653,6 +654,7 @@ function Road({ setting }) {
                             className={`py-1 ${
                               type === c.value ? 'bg-revo-mid rounded' : ''
                             }`}
+                            style={{ cursor: 'pointer' }}
                             key={c.value}
                             onClick={() => {
                               if (c.value === 'project') setshowProject(true)
@@ -673,7 +675,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="pt-3 pb-2">
-                        <Col xs={2}>
+                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
@@ -716,7 +718,7 @@ function Road({ setting }) {
                               )}
                             </div>
                             <Button
-                              variant="revo2"
+                              variant="revo"
                               onClick={() => setshowDate(!showDate)}
                             >
                               確認
@@ -728,9 +730,11 @@ function Road({ setting }) {
                         className="lh-sm me-auto small ps-5 text-secondary"
                         style={{ textAlign: 'start' }}
                       >
-                        路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
-                        <br />
-                        路段名稱格式：路名＋路，Ex.中正路
+                        <div className="ps-5 ms-4">
+                          路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
+                          <br />
+                          路段名稱格式：路名＋路，Ex.中正路
+                        </div>
                       </div>
                     </React.Fragment>
                   )
@@ -738,7 +742,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={2}>
+                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
@@ -769,7 +773,7 @@ function Road({ setting }) {
                 預覽
               </Button>
               <Button
-                variant="revo"
+                variant="revo2"
                 className="mx-2"
                 onClick={() =>
                   type === 'road'
@@ -789,12 +793,17 @@ function Road({ setting }) {
         </Row>
       ) : (
         <>
-          <Row className="pt-3 pb-5 px-0">
+          <Row className="pt-3 pb-4 px-0">
             <Col xs={2}>
-              <FormLabel htmlFor="file">點擊以選擇影片</FormLabel>
+              <FormLabel htmlFor="file" className="text-revo fs-6 fw-bold">
+                點擊以選擇影片
+              </FormLabel>
             </Col>
           </Row>
-          <Row className="pt-5 pb-5 px-4 border rounded mx-5">
+          <Row
+            className="pt-2 pb-5 px-4 border rounded mx-5"
+            style={{ minHeight: '82%' }}
+          >
             {videos.map(({ name }, i) => (
               <Col
                 xs={3}
@@ -938,23 +947,15 @@ function Video({ setting }) {
                 <track kind="captions" />
                 <source src={file} />
               </video>
-              {/* <Image className="mx-auto w-100" src={camera7preview} fluid /> */}
             </Col>
             <Col className="d-flex pb-1">
               <Button
-                variant="revo"
+                variant="revo2"
                 className="mt-auto ms-auto me-2"
                 onClick={() => setuploading(false)}
               >
-                確認
+                上傳
               </Button>
-              {/* <Button
-                variant="secondary"
-                className="mt-auto"
-                // onClick={() => setuploading()}
-              >
-                清除
-              </Button> */}
             </Col>
           </>
         ) : videos.length ? (
