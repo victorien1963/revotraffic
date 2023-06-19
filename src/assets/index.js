@@ -3,6 +3,9 @@ import nenerabi2 from './images/nenerabi2.jpeg'
 import meowmeow from './images/meow thumbs up.jpeg'
 import RTLogo from './images/RT_logo.png'
 import RTLogo2 from './images/RT_logo_2.png'
+import RTLogo3 from './images/RT_logo_3.png'
+import RTLogo4 from './images/RT_logo_4.png'
+import RTLogo5 from './images/RT_logo_5.png'
 import camera7preview from './images/camera_7_preview.png'
 import camera7projected from './images/camera_7_projected.png'
 import camera14preview from './images/camera_14_preview.png'
@@ -28,6 +31,9 @@ export {
   meowmeow,
   RTLogo,
   RTLogo2,
+  RTLogo3,
+  RTLogo4,
+  RTLogo5,
   camera7preview,
   camera7projected,
   camera14preview,

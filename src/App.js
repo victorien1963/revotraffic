@@ -49,7 +49,7 @@ function App() {
           </Router>
         </Row>
         {window.location.pathname !== '/' && (
-          <Row className="bg-revo py-2 text-light">
+          <Row className="bg-revo2 py-2 text-light">
             <small>Copyright © 2023 RevoTraffic. all rights reserved.</small>
           </Row>
         )}
