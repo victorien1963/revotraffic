@@ -23,6 +23,7 @@ function Steps() {
   }
 
   const [datas, setdatas] = useState({
+    modals: [],
     roadLine: null,
     roadAdjust: null,
     roads2: null,
@@ -33,6 +34,7 @@ function Steps() {
     selectedProject: '',
   })
   const {
+    modals,
     roadLine,
     roadAdjust,
     roads2,
@@ -73,7 +75,9 @@ function Steps() {
     ),
     step3: <Step3 setting={{ toolState, handleDataChange }} />,
     step4: (
-      <Step4 setting={{ toolState, handleDataChange, handleToolChange }} />
+      <Step4
+        setting={{ modals, toolState, handleDataChange, handleToolChange }}
+      />
     ),
     step5: <Step5 setting={{ toolState, handleDataChange }} />,
   }

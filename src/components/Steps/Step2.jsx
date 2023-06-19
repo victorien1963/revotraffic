@@ -1049,11 +1049,13 @@ function Step2({ setting }) {
             label: '影片上傳',
             name: 'step2',
             value: '影片上傳',
+            check: videos.length !== 0,
           },
           {
             label: '路口、路段標記',
             name: 'step2',
             value: '路口、路段標記',
+            check: roads && roads2 && roadAdjust && roadLine,
           },
           {
             label: '車種標記',
@@ -1085,7 +1087,13 @@ function Step2({ setting }) {
               >
                 <span className="m-auto">{s.label}</span>
               </Card>
-              <FontAwesomeIcon className="h5 mt-2" icon={faCircle} />
+              <FontAwesomeIcon
+                style={{
+                  color: s.check ? '#698b87' : 'grey',
+                }}
+                className="h5 mt-2"
+                icon={faCheckCircle}
+              />
             </div>
           </Col>
         ))}

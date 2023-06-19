@@ -14,7 +14,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheckCircle,
-  faCircle,
   faCircleXmark,
   faEnvelope,
 } from '@fortawesome/free-solid-svg-icons'
@@ -135,7 +134,7 @@ function Files({ setting }) {
 }
 
 function Step4({ setting }) {
-  const { toolState, handleToolChange, handleDataChange } = setting
+  const { modals, toolState, handleToolChange, handleDataChange } = setting
   // const [selected, setselected] = useState('')
   const [checked, setchecked] = useState(false)
   const [show, setshow] = useState(false)
@@ -148,6 +147,7 @@ function Step4({ setting }) {
             label: '模型上傳',
             name: 'step4',
             value: '模型上傳',
+            check: modals.length > 0,
           },
           {
             label: '模型驅動',
@@ -178,7 +178,13 @@ function Step4({ setting }) {
                   {s.label}
                 </span>
               </Card>
-              <FontAwesomeIcon className="h5 mt-2" icon={faCircle} />
+              <FontAwesomeIcon
+                style={{
+                  color: s.check ? '#698b87' : 'grey',
+                }}
+                className="h5 mt-2"
+                icon={faCheckCircle}
+              />
             </div>
           </Col>
         ))}
@@ -189,7 +195,7 @@ function Step4({ setting }) {
         setting={{
           handleUploadAll: (files) => {
             handleDataChange({
-              target: { name: 'files', value: files },
+              target: { name: 'modals', value: files },
             })
             handleToolChange({
               target: { name: 'step4', value: 'selector' },

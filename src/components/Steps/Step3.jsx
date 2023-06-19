@@ -86,7 +86,7 @@ function CheckTable({ setting }) {
 }
 
 function Step3({ setting }) {
-  const { toolState } = setting
+  const { toolState, handleDataChange } = setting
   const [selected, setselected] = useState('')
   const [progress, setprogress] = useState(0)
   const startProgress = async () => {
@@ -303,7 +303,7 @@ function Step3({ setting }) {
             variant="revo"
             className="position-absolute"
             style={{ bottom: '8%', right: '3%' }}
-            onClick={() => {}}
+            onClick={() => handleDataChange({}, 'step4')}
           >
             確 認
           </Button>
