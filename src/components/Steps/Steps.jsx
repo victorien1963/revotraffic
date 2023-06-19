@@ -109,6 +109,7 @@ function Steps() {
     >
       <ToolBar
         setting={{
+          step,
           toolState,
           handleToolChange,
         }}
