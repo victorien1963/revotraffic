@@ -80,10 +80,27 @@ function Steps() {
 
   const paths = useMemo(() => {
     if (!project.id) return []
-    if (step === 'step1')
-      return [{ label: project.name }, { label: '請選擇交維階段' }]
-    return [{ label: project.name }, { label: '交維階段' }]
-  }, [project, step])
+    if (!time.name)
+      return [
+        { label: `${project.id}-${project.name}` },
+        { label: '請選擇交維階段' },
+      ]
+    if (step === 'step2')
+      return [
+        { label: `${project.id} - ${project.name}` },
+        { label: `${time.date} - ${time.name}` },
+        {
+          label:
+            toolState.step2 === '路口、路段標記'
+              ? '路口、路段資訊'
+              : '影片上傳',
+        },
+      ]
+    return [
+      { label: `${project.id} - ${project.name}` },
+      { label: `${time.date} - ${time.name}` },
+    ]
+  }, [project, step, toolState])
 
   return (
     <Container

@@ -45,6 +45,7 @@ function App() {
                 }
               />
               <Route path="/Home" element={<Home />} />
+              <Route path="/*" element={<Home />} />
             </Routes>
           </Router>
         </Row>

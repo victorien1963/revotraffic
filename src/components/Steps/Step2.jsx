@@ -57,7 +57,7 @@ function LineModal({ setting }) {
       style={{ zIndex: '1501' }}
       size="xl"
       show={show}
-      onHide={() => handleClose([points])}
+      onHide={() => handleClose(points)}
       className="p-2"
     >
       <Modal.Body className="d-flex">
@@ -419,7 +419,7 @@ function RoadModal({ setting }) {
             <NumberTag key={o.id} setting={{ ...o }} />
           ))}
         </div>
-        <div className="w-25 me-auto d-flex">
+        <div className="w-25 ms-auto d-flex flex-column">
           <Button className="my-2" onClick={() => setclicking('entry')}>
             入口車道
           </Button>
@@ -804,6 +804,7 @@ function Road({ setting }) {
           data: roadLine,
           show: showLine,
           handleClose: (value) => {
+            console.log(value)
             if (value) {
               handleDataChange(
                 {
@@ -916,12 +917,27 @@ function Video({ setting }) {
                     height: '10%',
                   }}
                 >{`${`${i + 1} `}.${name}`}</p>
-                <div>
+                <div className="position-relative">
                   <Image
                     className="mx-auto"
                     src={i % 2 === 0 ? camera7preview : camera14preview}
                     fluid
                   />
+                  <div
+                    className="position-absolute p-2"
+                    style={{
+                      top: '0%',
+                      right: '0%',
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      style={{
+                        cursor: 'pointer',
+                      }}
+                      icon={faCheckCircle}
+                      onClick={() => {}}
+                    />
+                  </div>
                 </div>
                 <Button
                   variant="danger"
