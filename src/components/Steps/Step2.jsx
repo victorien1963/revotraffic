@@ -927,7 +927,7 @@ function Video({ setting }) {
         </Col>
       </Row>
       <Row
-        className="pt-5 pb-0 px-5 overflow-hidden border rounded mx-5"
+        className="py-3 px-3 overflow-hidden border rounded mx-5"
         style={{ height: '82%' }}
       >
         {uploading ? (
@@ -940,7 +940,7 @@ function Video({ setting }) {
               </video>
               {/* <Image className="mx-auto w-100" src={camera7preview} fluid /> */}
             </Col>
-            <Col className="d-flex pb-4">
+            <Col className="d-flex pb-1">
               <Button
                 variant="revo"
                 className="mt-auto ms-auto me-2"
@@ -988,7 +988,7 @@ function Video({ setting }) {
                 </Button>
               </Col>
             ))}
-            <Col className="d-flex p-5 pb-1">
+            <Col className="d-flex p-5 pe-0 pb-1">
               <Button
                 variant="revo"
                 className="mt-auto ms-auto"
