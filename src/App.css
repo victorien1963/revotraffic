@@ -229,8 +229,16 @@
   width: 20% !important;
 }
 
-
-
 .modal-table > .container > .row > div:nth-child(2) > p {
   text-align: start !important;
+}
+
+.tooltip-inner {
+  min-width: 45rem !important;
+  width: 45rem !important;
+}
+
+.tooltip-inner > img {
+  min-width: 40rem !important;
+  width: 40rem !important;
 }

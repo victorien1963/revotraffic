@@ -19,14 +19,7 @@ import {
   Spinner,
   InputGroup,
 } from 'react-bootstrap'
-import {
-  fa1,
-  fa2,
-  fa3,
-  fa4,
-  faCheckCircle,
-  faCircle,
-} from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { camera7preview, camera14preview, camera7projected } from '../../assets'
 
 function PointTag({ setting }) {
@@ -264,20 +257,14 @@ function ProjectedModal({ setting }) {
 function NumberTag({ setting }) {
   const { id, style } = setting
   const numbers = {
-    1: fa1,
-    2: fa2,
-    3: fa3,
-    4: fa4,
+    1: '➊',
+    2: '➋',
+    3: '➌',
+    4: '➍',
   }
   return (
-    <div className="position-absolute d-flex" style={style}>
-      <FontAwesomeIcon
-        className="h5 mt-2"
-        style={{
-          cursor: 'pointer',
-        }}
-        icon={numbers[id]}
-      />
+    <div className="position-absolute d-flex h1" style={style}>
+      {numbers[id]}
     </div>
   )
 }
@@ -384,6 +371,7 @@ function RoadModal({ setting }) {
       onHide={() => handleClose()}
       className="p-2"
     >
+      <Modal.Header closeButton />
       <Modal.Body className="d-flex">
         <div className="position-relative w-50">
           <Image
