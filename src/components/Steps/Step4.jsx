@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import {
@@ -14,7 +15,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheckCircle,
   faCircle,
-  faTimes,
+  faCircleXmark,
+  faEnvelope,
 } from '@fortawesome/free-solid-svg-icons'
 
 function CheckTable({ setting }) {
@@ -101,6 +103,7 @@ function Files({ setting }) {
           </Col>
           <Col>
             <Form.Control
+              placeholder="請輸入名稱..."
               name={f.label}
               type="text"
               value={f.date}
@@ -154,20 +157,26 @@ function Step4({ setting }) {
         ].map((s) => (
           <Col xs={3} className="d-flex" key={s.value}>
             <div
-              className="my-auto p-5 w-100"
+              className="my-auto py-5 px-3 w-100"
               style={{
                 height: '500px',
               }}
             >
               <Card
-                className="h-75 w-100 d-flex"
+                className="h-75 w-100 d-flex bg-revo-light"
                 onClick={() =>
                   handleToolChange({
                     target: { name: 'step4', value: s.value },
                   })
                 }
               >
-                <span className="m-auto">{s.label}</span>
+                <span
+                  className="fs-5 fw-bold text-revo my-auto"
+                  style={{ cursor: 'pointer' }}
+                  title={s.label}
+                >
+                  {s.label}
+                </span>
               </Card>
               <FontAwesomeIcon className="h5 mt-2" icon={faCircle} />
             </div>
@@ -195,7 +204,7 @@ function Step4({ setting }) {
           <Col xs={4} className="h-100 mh-100">
             <FormLabel className="text-revo fw-bold">選擇模型</FormLabel>
             <Form.Select
-              className="w-100 mb-3"
+              className="w-100 mb-3 mx-3"
               aria-label="Default select example"
               // onChange={(e) => setselected(e.target.value)}
             >
@@ -213,42 +222,38 @@ function Step4({ setting }) {
               ))}
             </Form.Select>
           </Col>
-          <Col xs={2} className="h-100 mh-100">
+          <Col xs={4} className="h-100 mh-100">
             <Row className="d-flex">
-              <FormLabel className="text-revo fw-bold">&ensp;</FormLabel>
+              <FormLabel className="text-revo fw-bold text-center">
+                功能列表
+              </FormLabel>
               <Button
-                variant="revo2"
-                className="w-75"
+                variant="revo"
+                className="w-80 mx-auto"
                 onClick={() => {
                   setchecked(!checked)
                 }}
               >
-                是否啟動AI調校監控
+                {checked ? '已啟動AI調校監控' : '未啟動AI調校監控'}&ensp;
+                <FontAwesomeIcon
+                  icon={checked ? faCheckCircle : faCircleXmark}
+                />
               </Button>
-              <FontAwesomeIcon
-                className="my-auto w-25 px-0"
-                style={{
-                  cursor: 'pointer',
-                }}
-                icon={checked ? faCheckCircle : faTimes}
-              />
             </Row>
-          </Col>
-          <Col xs={1} className="h-100 mh-100">
-            <Row className="d-flex px-0">
-              <FormLabel className="text-revo fw-bold">&ensp;</FormLabel>
+            <Row className="d-flex px-0 mt-3">
               <Button
-                variant="revo2"
-                className="w-100"
+                variant="revo"
+                className="w-80 mx-auto"
                 onClick={() => {
                   setshow(true)
                 }}
               >
-                發送派工單
+                發送派工單&ensp;
+                <FontAwesomeIcon icon={faEnvelope} />
               </Button>
             </Row>
           </Col>
-          <Col className="h-50">
+          <Col xs={4} className="h-50">
             <FormLabel className="text-revo fw-bold">已執行列表</FormLabel>
             <CheckTable
               setting={{

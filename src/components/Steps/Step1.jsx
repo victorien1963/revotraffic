@@ -13,6 +13,7 @@ import {
   // Image,
   Form,
   Modal,
+  InputGroup,
 } from 'react-bootstrap'
 // import { nenerabi } from '../../assets'
 
@@ -50,7 +51,7 @@ function ProjectModal({ setting }) {
               {f.label}
             </Form.Label>
             {f.type === 'date' ? (
-              <>
+              <InputGroup>
                 <Form.Control
                   name={f.name}
                   type="text"
@@ -63,6 +64,8 @@ function ProjectModal({ setting }) {
                   style={{
                     height: showDate ? '100%' : '0%',
                     transition: 'height .3s ease-in',
+                    position: 'absolute',
+                    left: '-50',
                   }}
                 >
                   {showDate && (
@@ -86,7 +89,10 @@ function ProjectModal({ setting }) {
                     />
                   )}
                 </div>
-              </>
+                <Button variant="revo2" onClick={() => setshowDate(!showDate)}>
+                  確認
+                </Button>
+              </InputGroup>
             ) : (
               <Form.Control
                 name={f.name}
