@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from 'react'
@@ -16,6 +17,7 @@ import {
   Image,
   Modal,
   Spinner,
+  InputGroup,
 } from 'react-bootstrap'
 import {
   fa1,
@@ -51,6 +53,7 @@ function LineModal({ setting }) {
   const handleRemovePoint = (id) => {
     setpoints(points.filter((point) => id !== point.id))
   }
+  console.log(points)
 
   return (
     <Modal
@@ -60,6 +63,7 @@ function LineModal({ setting }) {
       onHide={() => handleClose(points)}
       className="p-2"
     >
+      <Modal.Header closeButton />
       <Modal.Body className="d-flex">
         <div className="position-relative w-75 me-3">
           <Image
@@ -95,8 +99,10 @@ function LineModal({ setting }) {
           ))}
           {points.length === 2 && (
             <hr
-              className="position-absolute"
+              className="position-absolute text-warning"
               style={{
+                border: '2px dashed #ffc107',
+                opacity: '1',
                 top: (points[0].style.top + points[1].style.top) / 2 + 5,
                 left:
                   (points[0].style.left + points[1].style.left) / 2 -
@@ -122,7 +128,7 @@ function LineModal({ setting }) {
             />
           )}
         </div>
-        <div className="w-25 me-auto d-flex">
+        <div className="ms-auto d-flex">
           <Button
             variant="secondary"
             className="mt-auto"
@@ -228,7 +234,7 @@ function ProjectedModal({ setting }) {
             </div>
           )}
         </div>
-        <div className="w-25 me-auto d-flex">
+        <div className="ms-auto d-flex">
           <Button
             variant="secondary"
             className="mt-auto"
@@ -240,6 +246,13 @@ function ProjectedModal({ setting }) {
             重來
           </Button>
           <Button variant="revo" className="mt-auto ms-2" onClick={generatePic}>
+            校正
+          </Button>
+          <Button
+            variant="revo2"
+            className="mt-auto ms-2"
+            onClick={() => handleClose()}
+          >
             確認
           </Button>
         </div>
@@ -298,40 +311,48 @@ function RoadModal({ setting }) {
   const initDraggables = [
     {
       id: 1,
-      style: { width: '200px', top: '0%', left: '110%' },
+      style: { width: '200px', top: '2%', left: '110%' },
       content: (
         <>
-          <FormLabel className="my-auto px-3">東</FormLabel>
+          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
+            東
+          </FormLabel>
           <Form.Control />
         </>
       ),
     },
     {
       id: 2,
-      style: { width: '200px', top: '10%', left: '110%' },
+      style: { width: '200px', top: '16%', left: '110%' },
       content: (
         <>
-          <FormLabel className="my-auto px-3">西</FormLabel>
+          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
+            西
+          </FormLabel>
           <Form.Control />
         </>
       ),
     },
     {
       id: 3,
-      style: { width: '200px', top: '20%', left: '110%' },
+      style: { width: '200px', top: '30%', left: '110%' },
       content: (
         <>
-          <FormLabel className="my-auto px-3">南</FormLabel>
+          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
+            南
+          </FormLabel>
           <Form.Control />
         </>
       ),
     },
     {
       id: 4,
-      style: { width: '200px', top: '30%', left: '110%' },
+      style: { width: '200px', top: '44%', left: '110%' },
       content: (
         <>
-          <FormLabel className="my-auto px-3">北</FormLabel>
+          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
+            北
+          </FormLabel>
           <Form.Control />
         </>
       ),
@@ -420,13 +441,21 @@ function RoadModal({ setting }) {
           ))}
         </div>
         <div className="w-25 ms-auto d-flex flex-column">
-          <Button className="my-2" onClick={() => setclicking('entry')}>
+          <Button
+            className="my-2"
+            variant="outline-dark"
+            onClick={() => setclicking('entry')}
+          >
             入口車道
           </Button>
-          <Button className="my-2" onClick={() => setclicking('outry')}>
+          <Button
+            className="my-2"
+            variant="outline-dark"
+            onClick={() => setclicking('outry')}
+          >
             出口車道
           </Button>
-          <div className="d-flex mt-auto">
+          <div className="d-flex mt-auto ms-auto">
             <Button
               variant="secondary"
               className="mx-2"
@@ -441,6 +470,13 @@ function RoadModal({ setting }) {
               variant="revo"
               className="mx-2 ms-2"
               onClick={() => handleClose({ draggables, clicks })}
+            >
+              校正
+            </Button>
+            <Button
+              variant="revo2"
+              className="mt-auto ms-2"
+              onClick={() => handleClose()}
             >
               確認
             </Button>
@@ -636,50 +672,66 @@ function Road({ setting }) {
                 case 'date':
                   return (
                     <React.Fragment key={i}>
-                      <Row className="py-3">
+                      <Row className="pt-3 pb-2">
                         <Col xs={2}>
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
-                          <Form.Control
-                            name={f.name}
-                            type="text"
-                            value={data[f.name] || f.placeholder}
-                            placeholder={f.placeholder}
-                            onFocus={() => setshowDate(!showDate)}
-                            readOnly
-                          />
-                          <div
-                            style={{
-                              height: showDate ? '100%' : '0%',
-                              transition: 'height .3s ease-in',
-                              position: 'absolute',
-                              left: '-50',
-                            }}
-                          >
-                            {showDate && (
-                              <DateRange
-                                ranges={[date]}
-                                editableDateInputs
-                                onChange={({ selection }) => {
-                                  setdate(selection)
-                                  onDataChange({
-                                    target: {
-                                      name: 'date',
-                                      value: `${moment(
-                                        selection.startDate
-                                      ).format('yyyy-MM-DD')}-${moment(
-                                        selection.endDate
-                                      ).format('yyyy-MM-DD')}`,
-                                    },
-                                  })
-                                }}
-                                moveRangeOnFirstSelection={false}
-                              />
-                            )}
-                          </div>
+                          <InputGroup>
+                            <Form.Control
+                              name={f.name}
+                              type="text"
+                              value={data[f.name] || f.placeholder}
+                              placeholder={f.placeholder}
+                              onFocus={() => setshowDate(!showDate)}
+                              readOnly
+                            />
+                            <div
+                              style={{
+                                height: showDate ? '100%' : '0%',
+                                transition: 'height .3s ease-in',
+                                position: 'absolute',
+                                left: '-50',
+                              }}
+                            >
+                              {showDate && (
+                                <DateRange
+                                  ranges={[date]}
+                                  editableDateInputs
+                                  onChange={({ selection }) => {
+                                    setdate(selection)
+                                    onDataChange({
+                                      target: {
+                                        name: 'date',
+                                        value: `${moment(
+                                          selection.startDate
+                                        ).format('yyyy-MM-DD')}-${moment(
+                                          selection.endDate
+                                        ).format('yyyy-MM-DD')}`,
+                                      },
+                                    })
+                                  }}
+                                  moveRangeOnFirstSelection={false}
+                                />
+                              )}
+                            </div>
+                            <Button
+                              variant="revo2"
+                              onClick={() => setshowDate(!showDate)}
+                            >
+                              確認
+                            </Button>
+                          </InputGroup>
                         </Col>
                       </Row>
+                      <div
+                        className="lh-sm me-auto small ps-5 text-secondary"
+                        style={{ textAlign: 'start' }}
+                      >
+                        路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
+                        <br />
+                        路段名稱格式：路名＋路，Ex.中正路
+                      </div>
                     </React.Fragment>
                   )
                 default:
@@ -737,16 +789,16 @@ function Road({ setting }) {
         </Row>
       ) : (
         <>
-          <Row className="pt-3 pb-5 px-5">
+          <Row className="pt-3 pb-5 px-0">
             <Col xs={2}>
-              <FormLabel htmlFor="file">選擇影片</FormLabel>
+              <FormLabel htmlFor="file">點擊以選擇影片</FormLabel>
             </Col>
           </Row>
-          <Row className="flex-grow-1 pt-3 pb-5 px-4">
+          <Row className="pt-5 pb-5 px-4 border rounded mx-5">
             {videos.map(({ name }, i) => (
               <Col
                 xs={3}
-                className="d-flex flex-column"
+                className="flex-column h5 text-revo"
                 key={name}
                 onClick={() => setselected(i)}
               >
@@ -756,6 +808,8 @@ function Road({ setting }) {
                   }}
                 >{`${i + 1}.${name}`}</p>
                 <Image
+                  title="選擇影片"
+                  style={{ cursor: 'pointer' }}
                   className="mx-auto w-100 "
                   src={i % 2 === 0 ? camera7preview : camera14preview}
                   fluid
@@ -851,7 +905,7 @@ function Video({ setting }) {
         <Col xs={2}>
           <Button variant="revo">
             <FormLabel htmlFor="file" className="mb-0">
-              選擇影片檔案
+              ⇪ 上傳影片檔案
             </FormLabel>
           </Button>
           <Form.Control
@@ -864,7 +918,7 @@ function Video({ setting }) {
             }}
           />
         </Col>
-        <Col className="ps-0">
+        <Col className="ps-0 pe-5">
           <Form.Control
             type="text"
             value={videos.length ? videos[videos.length - 1].name : ''}
@@ -873,8 +927,8 @@ function Video({ setting }) {
         </Col>
       </Row>
       <Row
-        className="flex-grow-1 pt-3 pb-5 px-5 overflow-hidden"
-        style={{ height: '50vh' }}
+        className="pt-5 pb-0 px-5 overflow-hidden border rounded mx-5"
+        style={{ height: '82%' }}
       >
         {uploading ? (
           <>
@@ -886,7 +940,7 @@ function Video({ setting }) {
               </video>
               {/* <Image className="mx-auto w-100" src={camera7preview} fluid /> */}
             </Col>
-            <Col className="d-flex pb-1">
+            <Col className="d-flex pb-4">
               <Button
                 variant="revo"
                 className="mt-auto ms-auto me-2"
@@ -914,6 +968,7 @@ function Video({ setting }) {
                 <p
                   style={{
                     height: '10%',
+                    marginBottom: '0',
                   }}
                 >{`${`${i + 1} `}.${name}`}</p>
                 <div className="position-relative">
@@ -940,7 +995,7 @@ function Video({ setting }) {
                 </div>
                 <Button
                   variant="danger"
-                  className="mt-auto mx-auto"
+                  className="mb-auto mt-2 mx-auto"
                   size="sm"
                   onClick={() => handleRemoveVideo(i)}
                 >
@@ -948,7 +1003,7 @@ function Video({ setting }) {
                 </Button>
               </Col>
             ))}
-            <Col className="d-flex p-5">
+            <Col className="d-flex p-5 pb-1">
               <Button
                 variant="revo"
                 className="mt-auto ms-auto"
@@ -966,7 +1021,7 @@ function Video({ setting }) {
             </Col>
           </>
         ) : (
-          <div className="d-flex ps-3 border">
+          <div className="d-flex ps-3">
             <h5 className="m-auto text-revo-light">目前尚無資料</h5>
           </div>
         )}

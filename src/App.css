@@ -198,16 +198,30 @@
 }
 
 .bg-revo-light {
-  background-color: #ebf4f0 !important;
+  background-color: #f4fcf8 !important;
 }
 
 .h-35 {
   height: 35% !important;
 }
 
+.h-82 {
+  height: 82% !important;
+}
+
 .w-60 {
   width: 60% !important;
 }
+
+.w-80 {
+  width: 80% !important;
+}
+
+.w-20 {
+  width: 20% !important;
+}
+
+
 
 .modal-table > .container > .row > div:nth-child(2) > p {
   text-align: start !important;

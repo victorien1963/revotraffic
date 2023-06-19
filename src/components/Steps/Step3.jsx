@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import {
@@ -175,7 +176,7 @@ function Step3({ setting }) {
       </video>
     ),
     '車輛辨識與追蹤（視覺化）': (
-      <video width="100%" height="auto" controls>
+      <video width="80%" height="auto" controls>
         <track kind="captions" />
         <source src={camera14} />
       </video>
@@ -277,8 +278,16 @@ function Step3({ setting }) {
           </div>
         </Col>
         <Col xs={2} className="pt-5 mt-3">
-          <Button variant="revo2" className="my-auto" onClick={() => {}}>
+          <Button variant="revo2" className="me-auto" onClick={() => {}}>
             匯出Excel
+          </Button>
+          <Button
+            variant="revo"
+            className="position-absolute"
+            style={{ bottom: '8%', right: '3%' }}
+            onClick={() => {}}
+          >
+            確 認
           </Button>
         </Col>
       </Row>
