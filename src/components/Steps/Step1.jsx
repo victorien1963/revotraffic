@@ -287,7 +287,6 @@ function Step1({ setting }) {
               },
             }),
           handleAddStep: (value) => {
-            console.log(value)
             handleDataChange(
               {
                 target: {

@@ -53,7 +53,6 @@ function LineModal({ setting }) {
   const handleRemovePoint = (id) => {
     setpoints(points.filter((point) => id !== point.id))
   }
-  console.log(points)
 
   return (
     <Modal

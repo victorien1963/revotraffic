@@ -24,6 +24,7 @@ import {
   gallery5,
   gallery6,
   gallery7,
+  camera,
 } from '../../assets'
 
 function CheckTable({ setting }) {
@@ -154,7 +155,11 @@ function Step3({ setting }) {
 
   const optionComponent = {
     每15分鐘各方向交通量: <div />,
-    每小時各方向交通量: <div />,
+    每小時各方向交通量: (
+      <Row className="h-100 overflow-scroll justify-content-start">
+        <Image className="w-100 py-3" height="auto" src={camera} fluid />
+      </Row>
+    ),
     '軌跡分群與轉向量（視覺化）': (
       <Row className="h-100 overflow-scroll justify-content-start">
         {gallerys.map((gallery, i) => (
@@ -194,7 +199,7 @@ function Step3({ setting }) {
       </video>
     ),
     '車輛辨識與追蹤（視覺化）': (
-      <video width="80%" height="auto" controls>
+      <video width="auto" height="100%" controls>
         <track kind="captions" />
         <source src={camera14} />
       </video>
@@ -204,7 +209,7 @@ function Step3({ setting }) {
   const components = {
     影像辨識: (
       <Row className="h-100 overflow-hidden">
-        <Col xs={5} className="h-100 py-3">
+        <Col xs={3} className="h-100 py-3 pe-0">
           <div className="w-100 h-35">
             <FormLabel className="text-revo fw-bold">分析影片 - 路口</FormLabel>
             <CheckTable
@@ -229,16 +234,16 @@ function Step3({ setting }) {
               }}
             />
           </div>
-          <div className="d-flex p-3 pt-3 mt-auto">
+          <div className="d-flex p-3 mt-auto">
             <Button
               variant="revo"
-              className="my-auto mx-3"
+              className="my-auto mx-3 w-35"
               onClick={startProgress}
             >
               執行辨識
             </Button>
             <ProgressBar
-              className="w-75 rounded-pill fs-6 my-auto flex-fill"
+              className="rounded-pill fs-6 my-auto flex-fill"
               style={{ height: '30px' }}
             >
               <ProgressBar
@@ -250,11 +255,14 @@ function Step3({ setting }) {
                 now={progress}
                 label={`${progress}%`}
               />
-              <ProgressBar className="bg-revo-mid" now={100 - progress} />
+              <ProgressBar
+                className="bg-revo-light text-lucaLight"
+                now={100 - progress}
+              />
             </ProgressBar>
           </div>
         </Col>
-        <Col xs={5} className="h-100 pt-5 mh-100">
+        <Col xs={6} className="h-100 pt-5 mh-100 ps-0">
           <Form.Select
             className="w-100 mb-3 mt-3"
             aria-label="Default select example"
@@ -288,21 +296,67 @@ function Step3({ setting }) {
               </option>
             ))}
           </Form.Select>
-          <div className="h-75 overrflow-hidden">
+          <div className="h-57 overrflow-hidden">
             {optionComponent[selected] || <div />}
           </div>
         </Col>
-        <Col xs={2} className="pt-5 mt-3">
+        <Col xs={2} className="pt-5 mt-3 h-100">
           <Button variant="revo2" className="me-auto" onClick={() => {}}>
             匯出Excel
           </Button>
+          {selected === '每小時各方向交通量' && (
+            <div className="h-57 overflow-scroll">
+              <FormLabel className="small pt-2 mb-0">
+                人工辨識（15分鐘交通量）
+              </FormLabel>
+              <Table bordered responsive>
+                <tbody>
+                  <tr className="py-0">
+                    <td className="p-0" colSpan={3}>
+                      每小時通過路口的數量
+                    </td>
+                  </tr>
+                  <tr className="py-0">
+                    <td className="p-0">機車</td>
+                    <td className="p-0">小客車</td>
+                    <td className="p-0">大客車</td>
+                  </tr>
+                  {Array.from({ length: 16 }).map(() => (
+                    <tr className="py-0">
+                      <td className="p-0">
+                        <Form.Control
+                          style={{
+                            borderColor: 'transparent',
+                          }}
+                        />
+                      </td>
+                      <td className="p-0">
+                        <Form.Control
+                          style={{
+                            borderColor: 'transparent',
+                          }}
+                        />
+                      </td>
+                      <td className="p-0">
+                        <Form.Control
+                          style={{
+                            borderColor: 'transparent',
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          )}
           <Button
             variant="revo"
             className="position-absolute"
             style={{ bottom: '8%', right: '3%' }}
             onClick={() => handleDataChange({}, 'step4')}
           >
-            下一步
+            {selected === '每小時各方向交通量' ? '交 通 量 檢 核' : '確 認'}
           </Button>
         </Col>
       </Row>
