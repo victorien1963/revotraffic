@@ -211,7 +211,7 @@ function Step3({ setting }) {
               }}
             />
           </div>
-          <div className="d-flex ps-3 py-3 mt-auto">
+          <div className="d-flex p-3 mt-auto">
             <Button
               variant="revo"
               className="my-auto mx-3"
