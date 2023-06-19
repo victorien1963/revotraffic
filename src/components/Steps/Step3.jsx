@@ -300,12 +300,12 @@ function Step3({ setting }) {
             {optionComponent[selected] || <div />}
           </div>
         </Col>
-        <Col xs={2} className="pt-5 mt-3 h-100">
-          <Button variant="revo2" className="me-auto" onClick={() => {}}>
+        <Col className="pt-5 mt-3 h-100 d-flex flex-column">
+          <Button variant="revo2" className="ms-auto me-5" onClick={() => {}}>
             匯出Excel
           </Button>
           {selected === '每小時各方向交通量' && (
-            <div className="h-57 overflow-scroll">
+            <div className="h-57 overflow-scroll pe-5">
               <FormLabel className="small pt-2 mb-0">
                 人工辨識（15分鐘交通量）
               </FormLabel>

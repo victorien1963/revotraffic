@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Container, Row } from 'react-bootstrap'
+import { Container, Row, Toast, ToastContainer } from 'react-bootstrap'
 import { Welcome, Home } from './pages'
 
 import './App.css'
@@ -11,8 +11,11 @@ import 'react-date-range/dist/theme/default.css'
 import { NavBar } from './components'
 
 function App() {
-  const handleLogin = () => {
-    window.location.replace('/Home')
+  const [toast, settoast] = useState({ show: false, text: '' })
+  const handleLogin = (data) => {
+    if (data.id === 'admin@sinotech.com.tw' && data.password === 'sinotech')
+      window.location.replace('/Home')
+    else settoast({ show: true, text: '帳 戶 密 碼 錯 誤' })
   }
   const handleLogout = () => {
     window.location.replace('/')
@@ -54,6 +57,17 @@ function App() {
           </Row>
         )}
       </Container>
+      <ToastContainer className="p-3" position="bottom-end">
+        <Toast
+          onClose={() => settoast({ ...toast, show: false })}
+          show={toast.show}
+          delay={3000}
+          autohide
+          style={{ width: '100%' }}
+        >
+          <Toast.Body>{toast.text}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   )
 }
