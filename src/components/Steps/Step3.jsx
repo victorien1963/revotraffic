@@ -24,7 +24,7 @@ import {
   gallery5,
   gallery6,
   gallery7,
-  camera,
+  turning,
 } from '../../assets'
 
 function CheckTable({ setting }) {
@@ -59,7 +59,7 @@ function CheckTable({ setting }) {
           <p className="m-auto">全選</p>
         </Col>
       </Row>
-      {[...options, { label: '...' }].map((option, i) => (
+      {options.map((option, i) => (
         <Row
           key={option.label}
           className="flex-grow-1"
@@ -157,7 +157,7 @@ function Step3({ setting }) {
     每15分鐘各方向交通量: <div />,
     每小時各方向交通量: (
       <Row className="h-100 overflow-scroll justify-content-start">
-        <Image className="w-100 py-3" height="auto" src={camera} fluid />
+        <Image className="w-100 py-3" height="auto" src={turning} fluid />
       </Row>
     ),
     '軌跡分群與轉向量（視覺化）': (
@@ -267,7 +267,11 @@ function Step3({ setting }) {
             className="w-100 mb-3 mt-3"
             aria-label="Default select example"
             onChange={(e) => setselected(e.target.value)}
+            value={selected}
           >
+            <option value="" className="d-none">
+              下拉檢視辨識結果
+            </option>
             {[
               {
                 label: '每15分鐘各方向交通量',
@@ -296,7 +300,7 @@ function Step3({ setting }) {
               </option>
             ))}
           </Form.Select>
-          <div className="h-57 overrflow-hidden">
+          <div className="h-70 overrflow-hidden">
             {optionComponent[selected] || <div />}
           </div>
         </Col>
@@ -304,8 +308,8 @@ function Step3({ setting }) {
           <Button variant="revo2" className="ms-auto me-5" onClick={() => {}}>
             匯出Excel
           </Button>
-          {selected === '每小時各方向交通量' && (
-            <div className="h-57 overflow-scroll pe-5">
+          {/* {selected === '每小時各方向交通量' && (
+            <div className="h-70 overflow-scroll pe-5">
               <FormLabel className="small pt-2 mb-0">
                 人工辨識（15分鐘交通量）
               </FormLabel>
@@ -349,7 +353,7 @@ function Step3({ setting }) {
                 </tbody>
               </Table>
             </div>
-          )}
+          )} */}
           <Button
             variant="revo"
             className="position-absolute"

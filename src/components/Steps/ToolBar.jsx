@@ -67,18 +67,22 @@ function ToolBar({ setting }) {
     {
       label: 'AI號控調校',
       name: 'step4',
-      dropdowns: [
-        {
-          label: '模型上傳',
-          name: 'step4',
-          value: '模型上傳',
-        },
-        {
-          label: '模型驅動',
-          name: 'step4',
-          value: '模型驅動',
-        },
-      ],
+      click: {
+        name: 'step4',
+        value: 'selector',
+      },
+      // dropdowns: [
+      //   {
+      //     label: '模型上傳',
+      //     name: 'step4',
+      //     value: '模型上傳',
+      //   },
+      //   {
+      //     label: '模型驅動',
+      //     name: 'step4',
+      //     value: '模型驅動',
+      //   },
+      // ],
     },
     {
       label: '結果報表',

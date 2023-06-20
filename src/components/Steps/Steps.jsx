@@ -26,7 +26,6 @@ function Steps() {
     modals: [],
     roadLine: null,
     roadAdjust: null,
-    roads2: null,
     roads: null,
     videos: [],
     time: {},
@@ -37,7 +36,6 @@ function Steps() {
     modals,
     roadLine,
     roadAdjust,
-    roads2,
     roads,
     videos,
     time,
@@ -63,7 +61,6 @@ function Steps() {
         setting={{
           videos,
           roads,
-          roads2,
           roadLine,
           roadAdjust,
           time,

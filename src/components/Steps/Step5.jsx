@@ -17,7 +17,7 @@ import {
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-import { report1, report2, v04, v04Rl, vissimRlSummary } from '../../assets'
+import { delay, qlen, v04, v04Rl, report } from '../../assets'
 
 function CheckTable({ setting }) {
   const { options } = setting
@@ -85,13 +85,13 @@ function Step5({ setting }) {
     show: false,
   }
   const [exports, setexports] = useState(initExport)
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+  const delayFunc = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
   const exportExcel = () => {
     setexports({ loading: true, show: false })
   }
   useEffect(() => {
     const generate = async () => {
-      await delay(1000)
+      await delayFunc(1000)
       setexports({ loading: false, show: true })
     }
     if (exports.loading) generate()
@@ -102,25 +102,18 @@ function Step5({ setting }) {
   const reports = [
     {
       label: '路口延滯時間',
-      hover: <Image className="w-100 py-3" height="auto" src={report1} fluid />,
+      hover: <Image className="w-100 py-3" height="auto" src={delay} fluid />,
     },
     {
       label: '停等車隊長度',
-      hover: <Image className="w-100 py-3" height="auto" src={report2} fluid />,
+      hover: <Image className="w-100 py-3" height="auto" src={qlen} fluid />,
     },
     {
       label: '路段旅行速率',
     },
     {
       label: '成效比較報總表',
-      hover: (
-        <Image
-          className="w-100 py-3"
-          height="auto"
-          src={vissimRlSummary}
-          fluid
-        />
-      ),
+      hover: <Image className="w-100 py-3" height="auto" src={report} fluid />,
     },
     {
       label: '方法比較影片',
@@ -146,7 +139,7 @@ function Step5({ setting }) {
     <>
       <Container>
         <Row className="h-100 overflow-hidden px-3">
-          <Col xs={4} className="h-50">
+          {/* <Col xs={4} className="h-50">
             <FormLabel className="text-revo fw-bold modal-table">
               選擇模型
             </FormLabel>
@@ -165,8 +158,8 @@ function Step5({ setting }) {
                 ],
               }}
             />
-          </Col>
-          <Col xs={4} className="h-100">
+          </Col> */}
+          <Col xs={6} className="h-100">
             <FormLabel className="text-revo fw-bold">
               選擇欲匯出之報表
             </FormLabel>
@@ -220,7 +213,7 @@ function Step5({ setting }) {
                           <Image
                             className="w-100 py-3"
                             height="auto"
-                            src={vissimRlSummary}
+                            src={report}
                             fluid
                           />
                         )}
@@ -244,7 +237,7 @@ function Step5({ setting }) {
               </Row>
             ))}
           </Col>
-          <Col xs={4} className="h-100 d-flex flex-column">
+          <Col xs={6} className="h-100 d-flex flex-column">
             <FormLabel className="text-revo fw-bold">選擇存檔路徑</FormLabel>
             <Row>
               <Form.Control

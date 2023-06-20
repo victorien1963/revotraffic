@@ -22,6 +22,8 @@ import {
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { camera7preview, camera14preview, camera7projected } from '../../assets'
 
+const getPic = (s) => (s % 2 ? camera14preview : camera7preview)
+
 function PointTag({ setting }) {
   const { id, style, handleRemovePoint } = setting
   return (
@@ -40,7 +42,7 @@ function PointTag({ setting }) {
 }
 
 function LineModal({ setting }) {
-  const { show, data, handleClose } = setting
+  const { show, data, handleClose, preview } = setting
   const initPoints = []
   const [points, setpoints] = useState(data || initPoints)
   const handleRemovePoint = (id) => {
@@ -62,7 +64,7 @@ function LineModal({ setting }) {
             style={{ cursor: 'pointer' }}
             className="mx-auto w-100"
             height="auto"
-            src={camera7preview}
+            src={preview}
             fluid
             onClick={(e) => {
               if (points.length > 1) return
@@ -145,7 +147,7 @@ function LineModal({ setting }) {
 }
 
 function ProjectedModal({ setting }) {
-  const { show, data, handleClose } = setting
+  const { show, data, handleClose, preview } = setting
   const initPoints = []
   const [points, setpoints] = useState(data || initPoints)
   const handleRemovePoint = (id) => {
@@ -182,7 +184,7 @@ function ProjectedModal({ setting }) {
           <Image
             className="mx-auto w-100"
             height="auto"
-            src={camera7preview}
+            src={preview}
             fluid
             onClick={(e) => {
               if (points.length > 3) return
@@ -244,7 +246,7 @@ function ProjectedModal({ setting }) {
           <Button
             variant="revo2"
             className="mt-auto ms-2"
-            onClick={() => handleClose()}
+            onClick={() => handleClose(points)}
           >
             確認
           </Button>
@@ -455,16 +457,9 @@ function RoadModal({ setting }) {
               清除
             </Button>
             <Button
-              variant="revo"
-              className="mx-2 ms-2"
-              onClick={() => handleClose({ draggables, clicks })}
-            >
-              校正
-            </Button>
-            <Button
               variant="revo2"
               className="mt-auto ms-2"
-              onClick={() => handleClose()}
+              onClick={() => handleClose({ draggables, clicks })}
             >
               確認
             </Button>
@@ -476,9 +471,14 @@ function RoadModal({ setting }) {
 }
 
 function Road({ setting }) {
-  // const { videos, roads, handleDataChange, handleToolChange } = setting
-  const { roads, roads2, roadAdjust, roadLine, videos, handleDataChange } =
-    setting
+  const {
+    roads,
+    roadAdjust,
+    roadLine,
+    videos,
+    handleDataChange,
+    handleToolChange,
+  } = setting
   const [selected, setselected] = useState('')
   const [showDate, setshowDate] = useState(false)
   const [date, setdate] = useState({
@@ -493,55 +493,11 @@ function Road({ setting }) {
   const onDataChange = (e) =>
     setdata({ ...data, [e.target.name]: e.target.value })
 
-  const initForm = [
-    {
-      name: 'name',
-      label: '名稱',
-      placeholder: '',
-      type: 'text',
-    },
-    {
-      name: 'date',
-      label: '日期',
-      placeholder: '',
-      type: 'date',
-    },
-    {
-      name: 'type',
-      label: '類型',
-      placeholder: '',
-      type: 'tab',
-      content: [
-        { label: '路口', name: 'type', value: 'road' },
-        { label: '路段', name: 'type', value: 'project' },
-      ],
-    },
-    {
-      name: 'way',
-      label: '方向',
-      placeholder: '',
-      type: 'road',
-    },
-    {
-      name: 'entry',
-      label: '出入口',
-      placeholder: '',
-      type: 'road',
-    },
-    {
-      name: 'path',
-      label: '車道數',
-      placeholder: '',
-      type: 'road',
-    },
-    {
-      name: 'roadName',
-      label: '各方向路名',
-      placeholder: '',
-      type: 'road',
-    },
-  ]
-  const projectForm = [
+  const [show, setshow] = useState(false)
+  const [showProject, setshowProject] = useState(false)
+  const [showLine, setshowLine] = useState(false)
+
+  const form = [
     {
       name: 'name',
       label: '名稱',
@@ -569,25 +525,33 @@ function Road({ setting }) {
       label: '車行方向',
       placeholder: '',
       type: 'road',
+      check: roads,
+      click: () => setshow(true),
     },
     {
-      name: 'path',
-      label: '車道數',
+      name: 'transform',
+      label: '投影轉換',
       placeholder: '',
       type: 'road',
+      check: roadAdjust,
+      click: () => setshowProject(true),
+    },
+    {
+      name: 'distance',
+      label: '距離基準標記',
+      placeholder: '',
+      type: 'road',
+      check: roadLine,
+      click: () => setshowLine(true),
     },
   ]
-
-  const [show, setshow] = useState(false)
-  const [showProject, setshowProject] = useState(false)
-  const [showLine, setshowLine] = useState(false)
 
   return (
     <>
       {selected !== '' ? (
         <Row className="flex-grow-1 pt-3 pb-5 px-4">
           <Col>
-            {(type === 'road' ? initForm : projectForm).map((f, i) => {
+            {form.map((f, i) => {
               switch (f.type) {
                 case 'project':
                   return (
@@ -618,12 +582,14 @@ function Road({ setting }) {
                         </Col>
                         <Col>
                           <FontAwesomeIcon
-                            className="h5 mt-2"
+                            className={`h5 mt-2 ${
+                              f.check ? 'check-revo' : 'text-secondary'
+                            }`}
                             style={{
                               cursor: 'pointer',
                             }}
                             icon={faCheckCircle}
-                            onClick={() => setshow(true)}
+                            onClick={f.click}
                           />
                         </Col>
                       </Row>
@@ -644,7 +610,6 @@ function Road({ setting }) {
                             style={{ cursor: 'pointer' }}
                             key={c.value}
                             onClick={() => {
-                              if (c.value === 'project') setshowProject(true)
                               onDataChange({
                                 target: {
                                   ...c,
@@ -748,7 +713,7 @@ function Road({ setting }) {
             })}
           </Col>
           <Col className="d-flex flex-column">
-            <Image className="mx-auto w-75" src={camera7preview} fluid />
+            <Image className="mx-auto w-75" src={getPic(selected)} fluid />
             <div className="d-flex mt-auto">
               <Button
                 variant="warning"
@@ -763,14 +728,12 @@ function Road({ setting }) {
                 variant="revo2"
                 className="mx-2"
                 onClick={() =>
-                  type === 'road'
-                    ? onDataChange({
-                        target: {
-                          name: 'type',
-                          value: 'project',
-                        },
-                      })
-                    : setshowLine(true)
+                  handleToolChange({
+                    target: {
+                      name: 'step2',
+                      value: 'selector',
+                    },
+                  })
                 }
               >
                 確認
@@ -836,19 +799,19 @@ function Road({ setting }) {
       <RoadModal
         setting={{
           show,
-          data: type === 'road' ? roads : roads2,
+          data: roads,
           handleClose: (value) => {
             if (value)
               handleDataChange({
                 target: {
-                  name: type === 'road' ? 'roads' : 'roads2',
+                  name: 'roads',
                   value,
                 },
               })
             setshow(false)
           },
-          hasDraggable: type === 'road',
-          preview: type === 'road' ? camera14preview : camera7preview,
+          hasDraggable: true,
+          preview: getPic(selected),
         }}
       />
       <ProjectedModal
@@ -865,6 +828,7 @@ function Road({ setting }) {
               })
             setshowProject(false)
           },
+          preview: getPic(selected),
         }}
       />
       <LineModal
@@ -873,19 +837,16 @@ function Road({ setting }) {
           show: showLine,
           handleClose: (value) => {
             if (value) {
-              handleDataChange(
-                {
-                  target: {
-                    name: 'roadLine',
-                    value,
-                  },
+              handleDataChange({
+                target: {
+                  name: 'roadLine',
+                  value,
                 },
-                'step3'
-              )
-            } else {
-              setshowLine(false)
+              })
             }
+            setshowLine(false)
           },
+          preview: getPic(selected),
         }}
       />
     </>
@@ -1025,7 +986,6 @@ function Step2({ setting }) {
   const {
     videos,
     roads,
-    roads2,
     roadAdjust,
     roadLine,
     toolState,
@@ -1046,7 +1006,7 @@ function Step2({ setting }) {
             label: '路口、路段標記',
             name: 'step2',
             value: '路口、路段標記',
-            check: roads && roads2 && roadAdjust && roadLine,
+            check: roads && roadAdjust && roadLine,
           },
           {
             label: '車種標記',
@@ -1079,10 +1039,9 @@ function Step2({ setting }) {
                 <span className="m-auto">{s.label}</span>
               </Card>
               <FontAwesomeIcon
-                style={{
-                  color: s.check ? '#698b87' : 'grey',
-                }}
-                className="h5 mt-2"
+                className={`h5 mt-2 ${
+                  s.check ? 'check-revo' : 'text-secondary'
+                }`}
                 icon={faCheckCircle}
               />
             </div>
@@ -1104,10 +1063,10 @@ function Step2({ setting }) {
         setting={{
           videos,
           roads,
-          roads2,
           roadAdjust,
           roadLine,
           handleDataChange,
+          handleToolChange,
         }}
       />
     ),

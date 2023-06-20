@@ -21,6 +21,10 @@ import vissimRlSummary from './images/vissim_rl_summary.png'
 import report1 from './images/report1.png'
 import report2 from './images/report2.png'
 import camera from './images/camera.png'
+import qlen from './images/qlen.png'
+import report from './images/report.png'
+import delay from './images/delay.png'
+import turning from './images/turning.png'
 import camera14 from './images/camera_14.mp4'
 import camera7projection from './images/camera_7_projection.mp4'
 import v04 from './images/04.mp4'
@@ -51,6 +55,10 @@ export {
   report1,
   report2,
   camera,
+  qlen,
+  report,
+  delay,
+  turning,
   // video
   camera14,
   camera7projection,

@@ -1,5 +1,6 @@
+/* eslint-disable no-promise-executor-return */
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import {
   Container,
@@ -10,6 +11,7 @@ import {
   Form,
   FormLabel,
   Modal,
+  Spinner,
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -47,7 +49,7 @@ function CheckTable({ setting }) {
 }
 
 function Files({ setting }) {
-  const { handleUploadAll } = setting
+  const { handleDataChange, handleToolChange } = setting
   const [files, setfiles] = useState([
     { label: 'file1', file: '', date: '' },
     { label: 'file2', file: '', date: '' },
@@ -71,6 +73,26 @@ function Files({ setting }) {
       )
     )
   }
+
+  const [uploading, setuploading] = useState(0)
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+  const complete = async () => {
+    await delay(2500)
+    setuploading(2)
+  }
+  const back = async () => {
+    await delay(2500)
+    handleToolChange({
+      target: {
+        name: 'step4',
+        value: 'selector',
+      },
+    })
+  }
+  useEffect(() => {
+    if (uploading === 1) complete()
+    if (uploading === 2) back()
+  }, [uploading])
   return (
     <>
       {files.map((f) => (
@@ -118,16 +140,38 @@ function Files({ setting }) {
           height: '10%',
         }}
       >
-        <Button
-          variant="revo2"
-          className="my-auto ms-auto"
-          style={{
-            width: '5%',
-          }}
-          onClick={() => handleUploadAll(files)}
-        >
-          上傳
-        </Button>
+        {uploading === 0 && (
+          <Button
+            variant="revo2"
+            className="my-auto ms-auto"
+            style={{
+              width: '5%',
+            }}
+            onClick={() => {
+              handleDataChange({
+                target: { name: 'modals', value: files },
+              })
+              setuploading(1)
+            }}
+          >
+            上傳
+          </Button>
+        )}
+        {uploading === 1 && (
+          <div className="d-flex h5">
+            <Spinner className="ms-auto my-auto" size="sm" animation="border" />
+            <span className="my-auto ms-2">上傳中</span>
+          </div>
+        )}
+        {uploading === 2 && (
+          <div className="d-flex h5">
+            <FontAwesomeIcon
+              className="check-revo ms-auto my-auto me-2"
+              icon={faCheckCircle}
+            />
+            <span className="my-auto">上傳完成</span>
+          </div>
+        )}
       </Row>
     </>
   )
@@ -179,10 +223,9 @@ function Step4({ setting }) {
                 </span>
               </Card>
               <FontAwesomeIcon
-                style={{
-                  color: s.check ? '#698b87' : 'grey',
-                }}
-                className="h5 mt-2"
+                className={`h5 mt-2 ${
+                  s.check ? 'check-revo' : 'text-secondary'
+                }`}
                 icon={faCheckCircle}
               />
             </div>
@@ -193,14 +236,8 @@ function Step4({ setting }) {
     模型上傳: (
       <Files
         setting={{
-          handleUploadAll: (files) => {
-            handleDataChange({
-              target: { name: 'modals', value: files },
-            })
-            handleToolChange({
-              target: { name: 'step4', value: 'selector' },
-            })
-          },
+          handleDataChange,
+          handleToolChange,
         }}
       />
     ),
