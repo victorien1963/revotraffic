@@ -575,7 +575,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={2}>
+                        <Col xs={3}>
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
@@ -595,8 +595,10 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
-                          <Form.Label className="mb-0">{f.label}</Form.Label>
+                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
+                          <Form.Label className="mb-0 text-">
+                            {f.label}
+                          </Form.Label>
                         </Col>
                         <Col>
                           <FontAwesomeIcon
@@ -617,7 +619,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
+                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         {f.content.map((c) => (
@@ -645,7 +647,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="pt-3 pb-2">
-                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
+                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
@@ -701,9 +703,11 @@ function Road({ setting }) {
                         style={{ textAlign: 'start' }}
                       >
                         <div className="ps-5 ms-4">
-                          路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
-                          <br />
-                          路段名稱格式：路名＋路，Ex.中正路
+                          <div className="ps-5">
+                            路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
+                            <br />
+                            路段名稱格式：路名＋路，Ex.中正路
+                          </div>
                         </div>
                       </div>
                     </React.Fragment>
@@ -712,7 +716,7 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={2} className="text-end pt-1 text-revo fw-bold">
+                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
                           <Form.Label className="mb-0">{f.label}</Form.Label>
                         </Col>
                         <Col>
