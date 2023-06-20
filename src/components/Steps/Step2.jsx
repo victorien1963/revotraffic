@@ -57,7 +57,9 @@ function LineModal({ setting }) {
       onHide={() => handleClose(points)}
       className="p-2"
     >
-      <Modal.Header closeButton />
+      <Modal.Header className="h4 text-revo" closeButton>
+        標記距離基準
+      </Modal.Header>
       <Modal.Body className="d-flex">
         <div className="position-relative w-60 me-3">
           <Image
@@ -124,6 +126,7 @@ function LineModal({ setting }) {
           )}
         </div>
         <div className="ms-auto d-flex">
+          <h5>說明：點兩下拉出距離10公尺</h5>
           <Button
             variant="secondary"
             className="mt-auto"
@@ -178,7 +181,9 @@ function ProjectedModal({ setting }) {
       onHide={() => handleClose([points])}
       className="p-2"
     >
-      <Modal.Header closeButton />
+      <Modal.Header className="h4 text-revo" closeButton>
+        投影轉換
+      </Modal.Header>
       <Modal.Body className="d-flex">
         <div className="position-relative w-50 me-3">
           <Image
@@ -229,27 +234,38 @@ function ProjectedModal({ setting }) {
             </div>
           )}
         </div>
-        <div className="ms-auto d-flex">
-          <Button
-            variant="secondary"
-            className="mt-auto"
-            onClick={() => {
-              setpoints(initPoints)
-              setproject(initProject)
-            }}
-          >
-            清除
-          </Button>
-          <Button variant="revo" className="mt-auto ms-2" onClick={generatePic}>
-            校正
-          </Button>
-          <Button
-            variant="revo2"
-            className="mt-auto ms-2"
-            onClick={() => handleClose(points)}
-          >
-            確認
-          </Button>
+        <div className="ms-auto d-flex flex-column">
+          <h5>
+            說明：在影片截圖上按下路段四個
+            <br />
+            角， 並按下校正進行投影視角轉換。
+          </h5>
+          <div className="ms-auto mt-auto d-flex">
+            <Button
+              variant="secondary"
+              className="mt-auto"
+              onClick={() => {
+                setpoints(initPoints)
+                setproject(initProject)
+              }}
+            >
+              清除
+            </Button>
+            <Button
+              variant="revo"
+              className="mt-auto ms-2"
+              onClick={generatePic}
+            >
+              校正
+            </Button>
+            <Button
+              variant="revo2"
+              className="mt-auto ms-2"
+              onClick={() => handleClose(points)}
+            >
+              確認
+            </Button>
+          </div>
         </div>
       </Modal.Body>
     </Modal>
@@ -373,7 +389,9 @@ function RoadModal({ setting }) {
       onHide={() => handleClose()}
       className="p-2"
     >
-      <Modal.Header closeButton />
+      <Modal.Header className="h4 text-revo" closeButton>
+        方向與出入口標記
+      </Modal.Header>
       <Modal.Body className="d-flex">
         <div className="position-relative w-50">
           <Image
