@@ -9,7 +9,7 @@ services:
       - REACT_SERVER_URL=${REACT_SERVER_URL}
     restart: always
     ports:
-      - 3001:3001
+      - 3002:3002
     container_name: "revo-web"
     depends_on:
       - "revo-server"
