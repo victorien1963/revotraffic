@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, useEffect, useContext } from 'react'
 import { Row, Col, Image, Container, Form, Button } from 'react-bootstrap'
 import { RTLogo4 } from '../assets'
+import { AuthContext, ToastContext } from '../components/ContextProvider'
+import apiServices from '../services/apiServices'
 
-function Welcome({ setting }) {
-  const { handleLogin } = setting
+function Welcome() {
+  const { auth, setAuth } = useContext(AuthContext)
+  const { setToast } = useContext(ToastContext)
+  console.log(auth)
+
   const [data, setdata] = useState({
-    id: '',
+    email: '',
     password: '',
   })
   const onDataChange = (e) =>
@@ -14,7 +18,7 @@ function Welcome({ setting }) {
 
   const form = [
     {
-      name: 'id',
+      name: 'email',
       label: '',
       placeholder: '帳號',
       type: 'text',
@@ -29,6 +33,20 @@ function Welcome({ setting }) {
   useEffect(() => {
     setdata(form.reduce((prev, cur) => ({ ...prev, [cur.name]: '' }), {}))
   }, [])
+
+  const handleLogin = async () => {
+    const { token } = await apiServices.login(data)
+    if (!token) {
+      setToast({ show: true, text: '登 入 失 敗' })
+      return
+    }
+    document.cookie = `token=${token}; Domain=${window.location.hostname}; Path=/;`
+    const { user } = await apiServices.me()
+    setAuth({
+      authed: true,
+      ...user,
+    })
+  }
 
   return (
     <Container
@@ -49,7 +67,7 @@ function Welcome({ setting }) {
         <Row className="h6 fw-light mt-0 pt-0">
           <Col xs={9}>
             {form.map((f, i) => (
-              <React.Fragment className="d-flex" key={i}>
+              <React.Fragment key={i}>
                 <Form.Control
                   name={f.name}
                   type={f.type}
@@ -78,10 +96,6 @@ function Welcome({ setting }) {
       </div>
     </Container>
   )
-}
-
-Welcome.propTypes = {
-  setting: PropTypes.shape().isRequired,
 }
 
 export default Welcome

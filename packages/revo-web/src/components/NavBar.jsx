@@ -1,10 +1,16 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { useContext } from 'react'
 import { Container, Navbar, Image, Button } from 'react-bootstrap'
 import { RTLogo2 } from '../assets'
+import { AuthContext } from './ContextProvider'
 
-function NavBar({ setting }) {
-  const { handleLogout } = setting
+function NavBar() {
+  const { setAuth } = useContext(AuthContext)
+  const handleLogout = () => {
+    document.cookie = `token=; Domain=${window.location.hostname}; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+    setAuth({
+      authed: false,
+    })
+  }
 
   return (
     <Navbar className="bg-revo2 p-0">
@@ -30,10 +36,6 @@ function NavBar({ setting }) {
       </Container>
     </Navbar>
   )
-}
-
-NavBar.propTypes = {
-  setting: PropTypes.shape().isRequired,
 }
 
 export default NavBar

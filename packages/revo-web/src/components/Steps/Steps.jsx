@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useContext } from 'react'
 import { Container, Row } from 'react-bootstrap'
 import Step1 from './Step1'
 import Step2 from './Step2'
@@ -7,6 +7,7 @@ import Step4 from './Step4'
 import Step5 from './Step5'
 import Breadcrumb from './Breadcrumb'
 import ToolBar from './ToolBar'
+import { DraftContext } from '../ContextProvider'
 
 function Steps() {
   const [step, setstep] = useState('step1')
@@ -21,6 +22,8 @@ function Steps() {
     if (e.target.name.startsWith('step')) setstep(e.target.name)
     settoolState({ ...toolState, [e.target.name]: e.target.value })
   }
+  const { drafts } = useContext(DraftContext)
+  console.log(drafts)
 
   const [datas, setdatas] = useState({
     modals: [],

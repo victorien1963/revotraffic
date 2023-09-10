@@ -16,6 +16,6 @@ RUN yarn install && \
 
 RUN yarn global add serve
 
-EXPOSE 3000
-CMD serve -p 3000 -s build
+EXPOSE 3001
+CMD serve -p 3001 -s build
 # CMD yarn start
