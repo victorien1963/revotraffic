@@ -16,7 +16,7 @@ function App() {
       <Router>
         <ContextProvider>
           <AppWrapper>
-            <Row className="flex-grow-1 overflow-hidden">
+            <Row className="flex-grow-1 overflow-hidden px-0">
               <Routes className="px-0">
                 <Route path="/" element={<Welcome />} />
                 <Route path="/Home" element={<Home />} />
