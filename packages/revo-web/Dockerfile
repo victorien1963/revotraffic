@@ -14,8 +14,5 @@ RUN yarn install && \
     yarn build && \
     if [ -n "${APP_VERSION}" ]; then yarn install --production; fi
 
-RUN yarn global add serve
-
 EXPOSE 3001
-CMD serve -p 3001 -s build
-# CMD yarn start
+CMD yarn startp
