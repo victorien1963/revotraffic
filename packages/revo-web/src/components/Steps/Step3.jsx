@@ -179,13 +179,13 @@ function Step3({ setting }) {
         <tbody>
           <tr>
             {headers.map((header) => (
-              <td>{header}</td>
+              <td key={header}>{header}</td>
             ))}
           </tr>
-          {csvData.map((d) => (
-            <tr>
+          {csvData.map((d, i) => (
+            <tr key={i}>
               {headers.map((header) => (
-                <td>{d[header]}</td>
+                <td key={header}>{d[header]}</td>
               ))}
             </tr>
           ))}

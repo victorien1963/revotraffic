@@ -41,18 +41,19 @@ function ContextProvider(props) {
   const sendMessage = (type, message) => socket.emit(type, message)
   const socketValue = useMemo(() => ({ socket, sendMessage }), [socket])
 
-  const [drafts, setDrafts] = useState(false)
+  const [drafts, setDrafts] = useState([])
   const [draftId, setDraftId] = useState('')
-  const handleDraftAdd = async () => {
+  const handleDraftAdd = async (data) => {
     const res = await apiServices.data({
-      path: '/draft',
+      path: 'draft',
       method: 'post',
+      data,
     })
     setDrafts((prevState) => [...prevState, res])
   }
   const handleDraftDelete = async (draft_id) => {
     const res = await apiServices.data({
-      path: `/draft/${draft_id}`,
+      path: `draft/${draft_id}`,
       method: 'delete',
     })
     setDrafts((prevState) =>
@@ -66,6 +67,13 @@ function ContextProvider(props) {
         : {},
     [drafts, draftId]
   )
+  const initDrafts = async () => {
+    const res = await apiServices.data({
+      path: `draft`,
+      method: 'get',
+    })
+    setDrafts(res)
+  }
 
   const draftValue = useMemo(
     () => ({
@@ -81,9 +89,6 @@ function ContextProvider(props) {
   )
   useEffect(() => {
     if (!socket) return
-    socket.on('draft', (message) => {
-      setDrafts(message)
-    })
     socket.on('me', (message) => {
       setAuth({
         ...auth,
@@ -95,11 +100,8 @@ function ContextProvider(props) {
     })
   }, [socket])
   useEffect(() => {
-    if (!socket) return
-    if (!drafts) {
-      sendMessage('draft', { action: 'init' })
-    }
-  }, [socket])
+    if (authed) initDrafts()
+  }, [authed])
 
   const [toast, setToast] = useState({ show: false, text: '' })
   const toastValue = useMemo(() => ({ toast, setToast }), [toast])

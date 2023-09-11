@@ -22,43 +22,29 @@ function Steps() {
     if (e.target.name.startsWith('step')) setstep(e.target.name)
     settoolState({ ...toolState, [e.target.name]: e.target.value })
   }
-  const { drafts } = useContext(DraftContext)
-  console.log(drafts)
-
-  const [datas, setdatas] = useState({
-    modals: [],
-    roadLine: null,
-    roadAdjust: null,
-    roads: null,
-    videos: [],
-    time: {},
-    projects: [],
-    selectedProject: '',
-  })
+  const { draft, draftId, setDrafts } = useContext(DraftContext)
   const {
-    modals,
-    roadLine,
-    roadAdjust,
-    roads,
-    videos,
-    time,
-    projects,
-    selectedProject,
-  } = datas
-  const project = useMemo(
-    () =>
-      selectedProject ? projects.find(({ id }) => id === selectedProject) : {},
-    [selectedProject]
-  )
+    modals = [],
+    roadLine = null,
+    roadAdjust = null,
+    roads = null,
+    videos = [],
+    time = {},
+  } = draft
 
   const handleDataChange = (e, s) => {
-    if (e.target) setdatas({ ...datas, [e.target.name]: e.target.value })
+    if (e.target)
+      setDrafts((prevState) =>
+        prevState.map((ps) =>
+          ps.draft_id === draftId
+            ? { ...ps, [e.target.name]: e.target.value }
+            : ps
+        )
+      )
     if (s) setstep(s)
   }
   const steps = {
-    step1: (
-      <Step1 setting={{ project, projects, toolState, handleDataChange }} />
-    ),
+    step1: <Step1 setting={{ toolState, handleDataChange }} />,
     step2: (
       <Step2
         setting={{
@@ -83,15 +69,15 @@ function Steps() {
   }
 
   const paths = useMemo(() => {
-    if (!project.id) return []
+    if (!draftId) return []
     if (!time.name)
       return [
-        { label: `${project.id}-${project.name}` },
+        { label: `${draft.setting.id}-${draft.setting.name}` },
         { label: '請選擇交維階段' },
       ]
     if (step === 'step2')
       return [
-        { label: `${project.id} - ${project.name}` },
+        { label: `${draft.setting.id} - ${draft.setting.name}` },
         { label: `${time.date} - ${time.name}` },
         {
           label:
@@ -101,10 +87,10 @@ function Steps() {
         },
       ]
     return [
-      { label: `${project.id} - ${project.name}` },
+      { label: `${draft.setting.id} - ${draft.setting.name}` },
       { label: `${time.date} - ${time.name}` },
     ]
-  }, [project, step, toolState])
+  }, [draft, step, toolState])
 
   return (
     <Container

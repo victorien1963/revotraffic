@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { DateRange } from 'react-date-range'
@@ -15,6 +15,7 @@ import {
   Modal,
   InputGroup,
 } from 'react-bootstrap'
+import { DraftContext } from '../ContextProvider'
 // import { nenerabi } from '../../assets'
 
 function ProjectModal({ setting }) {
@@ -128,21 +129,16 @@ function ProjectModal({ setting }) {
 }
 
 function Projects({ setting }) {
-  const {
-    project,
-    projects,
-    handleAddProject,
-    handleRemoveProject,
-    handleSelectProject,
-    handleAddStep,
-  } = setting
+  const { handleAddStep } = setting
+  const { draft, drafts, setDraftId, handleDraftAdd, handleDraftDelete } =
+    useContext(DraftContext)
 
   const [show, setshow] = useState(false)
   const handleClose = (value) => {
     setshow(false)
     if (value) {
-      if (project.id) handleAddStep(value)
-      else handleAddProject(value)
+      if (draft.draft_id) handleAddStep(value)
+      else handleDraftAdd(value)
     }
   }
 
@@ -181,7 +177,7 @@ function Projects({ setting }) {
       <Row>
         <Col xs={2} className="d-flex px-5">
           <h5 className="my-auto text-revo-light fw-bold">
-            {project.id ? '請選擇交維階段' : '請選擇執行計劃'}
+            {draft.draft_id ? '請選擇交維階段' : '請選擇執行計劃'}
           </h5>
         </Col>
         <Col xs={1} className="d-flex ps-0">
@@ -194,7 +190,7 @@ function Projects({ setting }) {
           </Button>
         </Col>
       </Row>
-      {project.id ? (
+      {draft.draft_id ? (
         <Row className="flex-grow-1 pt-3 pb-5 px-5">
           <div className="d-flex ps-3 border">
             <h5 className="m-auto text-revo-light">目前尚無資料</h5>
@@ -202,25 +198,25 @@ function Projects({ setting }) {
         </Row>
       ) : (
         <Row className="flex-grow-1 pt-3 pb-5 px-5">
-          {projects.length ? (
+          {drafts.length ? (
             <ListGroup>
-              {projects.map(({ id, name }) => (
-                <ListGroupItem className="d-flex" key={id}>
+              {drafts.map((d) => (
+                <ListGroupItem className="d-flex" key={d.draft_id}>
                   <p className="my-auto">
-                    {id}-{name}
+                    {d.setting.id}-{d.setting.name}
                   </p>
                   <Button
                     className="ms-auto me-2"
                     style={{ boxShadow: 'none' }}
                     variant="revo"
-                    onClick={() => handleSelectProject(id)}
+                    onClick={() => setDraftId(d.draft_id)}
                   >
                     選 擇
                   </Button>
                   <Button
                     style={{ boxShadow: 'none' }}
                     variant="danger"
-                    onClick={() => handleRemoveProject(id)}
+                    onClick={() => handleDraftDelete(d.draft_id)}
                   >
                     刪 除
                   </Button>
@@ -237,7 +233,7 @@ function Projects({ setting }) {
       <ProjectModal
         setting={{
           show,
-          form: project.id ? stepForm : projectForm,
+          form: draft.draft_id ? stepForm : projectForm,
           handleClose,
         }}
       />
@@ -261,6 +257,7 @@ function FlowChart() {
 
 function Step1({ setting }) {
   const { project, projects, toolState, handleDataChange } = setting
+
   const components = {
     操作流程圖: <FlowChart />,
     計劃一覽表: (
@@ -268,24 +265,6 @@ function Step1({ setting }) {
         setting={{
           project,
           projects,
-          handleAddProject: (value) =>
-            handleDataChange({
-              target: { name: 'projects', value: [...projects, value] },
-            }),
-          handleRemoveProject: (id) =>
-            handleDataChange({
-              target: {
-                name: 'projects',
-                value: projects.filter((f) => f.id !== id),
-              },
-            }),
-          handleSelectProject: (id) =>
-            handleDataChange({
-              target: {
-                name: 'selectedProject',
-                value: id,
-              },
-            }),
           handleAddStep: (value) => {
             handleDataChange(
               {

@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-nested-ternary */
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import { DateRange } from 'react-date-range'
@@ -21,6 +21,8 @@ import {
 } from 'react-bootstrap'
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { camera7preview, camera14preview, camera7projected } from '../../assets'
+import apiServices from '../../services/apiServices'
+import { DraftContext } from '../ContextProvider'
 
 const getPic = (s) => (s % 2 ? camera14preview : camera7preview)
 
@@ -876,18 +878,46 @@ function Road({ setting }) {
 }
 
 function Video({ setting }) {
-  const { videos, handleDataChange, handleToolChange } = setting
+  const { handleDataChange, handleToolChange } = setting
+  const {
+    draftId,
+    draft = { setting: { videos: [] } },
+    setDrafts,
+  } = useContext(DraftContext)
+  const { videos } = draft.setting
+
+  const [tempFile, settempFile] = useState(null)
+
   const [file, setfile] = useState(null)
   const [uploading, setuploading] = useState(false)
-  const handleUpload = (e) => {
-    setuploading(true)
-    setfile(URL.createObjectURL(e.target.files[0]))
-    handleDataChange({
-      target: {
-        name: 'videos',
-        value: [...videos, e.target.files[0]],
+  const handleUpload = async () => {
+    const getArrayBuffer = (files) =>
+      new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.addEventListener('load', () => {
+          resolve(reader.result)
+        })
+        reader.readAsArrayBuffer(files)
+      })
+    const files = []
+    files.push(getArrayBuffer(tempFile))
+    const buffered = await Promise.all(files)
+    const arrayed = buffered.map((buffer) => ({
+      name: tempFile.name,
+      data: Array.from(new Uint8Array(buffer)),
+    }))
+    const res = await apiServices.data({
+      path: `draft/video/${draftId}`,
+      method: 'post',
+      data: {
+        files: JSON.stringify(arrayed),
       },
     })
+    setDrafts((prevState) =>
+      prevState.map((ps) => (ps.draft_id === draftId ? res : ps))
+    )
+    setuploading(false)
+    setfile(URL.createObjectURL(tempFile))
   }
   const handleRemoveVideo = (i) =>
     handleDataChange({
@@ -909,7 +939,10 @@ function Video({ setting }) {
             id="file"
             name="file"
             type="file"
-            onChange={handleUpload}
+            onChange={(e) => {
+              setuploading(true)
+              settempFile(e.target.files[0])
+            }}
             style={{
               visibility: 'hidden',
             }}
@@ -940,7 +973,7 @@ function Video({ setting }) {
               <Button
                 variant="revo2"
                 className="mt-auto ms-auto me-2"
-                onClick={() => setuploading(false)}
+                onClick={handleUpload}
               >
                 上傳
               </Button>

@@ -186,7 +186,7 @@ function Step5({ setting }) {
               </Col>
             </Row>
             {reports.map((option, i) => (
-              <Row className="py-4">
+              <Row key={i} className="py-4">
                 <Col xs={2} className="d-flex">
                   <FontAwesomeIcon
                     className="m-auto"
@@ -243,6 +243,7 @@ function Step5({ setting }) {
               <Form.Control
                 className="w-60"
                 value="C://users/User/downloads/export.xlsx"
+                onChange={() => {}}
               />
               <Button
                 className="my-auto ms-3 me-auto"
