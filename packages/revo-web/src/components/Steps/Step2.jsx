@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-nested-ternary */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useMemo } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import { DateRange } from 'react-date-range'
@@ -887,8 +887,11 @@ function Video({ setting }) {
   const { videos } = draft.setting
 
   const [tempFile, settempFile] = useState(null)
+  const tempurl = useMemo(
+    () => (tempFile ? URL.createObjectURL(tempFile) : ''),
+    [tempFile]
+  )
 
-  const [file, setfile] = useState(null)
   const [uploading, setuploading] = useState(false)
   const handleUpload = async () => {
     const getArrayBuffer = (files) =>
@@ -917,7 +920,6 @@ function Video({ setting }) {
       prevState.map((ps) => (ps.draft_id === draftId ? res : ps))
     )
     setuploading(false)
-    setfile(URL.createObjectURL(tempFile))
   }
   const handleRemoveVideo = (i) =>
     handleDataChange({
@@ -962,13 +964,14 @@ function Video({ setting }) {
       >
         {uploading ? (
           <>
-            <Col xs={4} />
             <Col xs={4}>
               <video width="auto" height="420px" controls>
                 <track kind="captions" />
-                <source src={file} />
+                <source src={tempurl} />
               </video>
             </Col>
+
+            <Col xs={4} />
             <Col className="d-flex pb-1">
               <Button
                 variant="revo2"
