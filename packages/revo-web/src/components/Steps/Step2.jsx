@@ -491,14 +491,10 @@ function RoadModal({ setting }) {
 }
 
 function Road({ setting }) {
-  const {
-    roads,
-    roadAdjust,
-    roadLine,
-    videos,
-    handleDataChange,
-    handleToolChange,
-  } = setting
+  const { roads, roadAdjust, roadLine, handleDataChange, handleToolChange } =
+    setting
+
+  const { draft } = useContext(DraftContext)
   const [selected, setselected] = useState('')
   const [showDate, setshowDate] = useState(false)
   const [date, setdate] = useState({
@@ -778,45 +774,65 @@ function Road({ setting }) {
             className="pt-2 pb-5 px-4 border rounded mx-5"
             style={{ minHeight: '82%' }}
           >
-            {videos.map(({ name }, i) => (
-              <Col
-                xs={3}
-                className="flex-column h5 text-revo"
-                key={name}
-                onClick={() => setselected(i)}
-              >
-                <p
+            {draft.setting.videos ? (
+              draft.setting.videos.map(({ name }, i) => (
+                <Col
+                  xs={3}
+                  className="flex-column h5 text-revo"
+                  key={name}
                   style={{
-                    height: '10%',
+                    cursor: 'pointer',
                   }}
-                >{`${i + 1}.${name}`}</p>
-                <div className="position-relative">
-                  <Image
-                    title="選擇影片"
-                    style={{ cursor: 'pointer' }}
-                    className="mx-auto w-100 "
-                    src={i % 2 === 0 ? camera7preview : camera14preview}
-                    fluid
-                  />
-                  <div
-                    className="position-absolute p-2"
+                  onClick={() => setselected(i)}
+                >
+                  <p
                     style={{
-                      top: '-10%',
-                      right: '-10%',
+                      height: '10%',
                     }}
-                  >
-                    <FontAwesomeIcon
-                      className="fs-1 text-revo"
+                  >{`${i + 1}.${
+                    name
+                      ? name
+                          .split('_')
+                          .slice(1, name.split('_').length)
+                          .join('')
+                      : '- -'
+                  }`}</p>
+                  <div className="position-relative">
+                    <div className="d-flex h-100">
+                      <video
+                        className="my-auto"
+                        width="100%"
+                        height="auto"
+                        controls
+                      >
+                        <track kind="captions" />
+                        <source src={`/api/draft/video/${name}`} />
+                      </video>
+                    </div>
+                    <div
+                      className="position-absolute p-2"
                       style={{
-                        cursor: 'pointer',
+                        top: '-10%',
+                        right: '-10%',
                       }}
-                      icon={faCheckCircle}
-                      onClick={() => {}}
-                    />
+                    >
+                      <FontAwesomeIcon
+                        className="fs-1 text-revo"
+                        style={{
+                          cursor: 'pointer',
+                        }}
+                        icon={faCheckCircle}
+                        onClick={() => {}}
+                      />
+                    </div>
                   </div>
-                </div>
-              </Col>
-            ))}
+                </Col>
+              ))
+            ) : (
+              <div className="d-flex ps-3">
+                <h5 className="m-auto text-revo-light">目前尚無資料</h5>
+              </div>
+            )}
           </Row>
         </>
       )}
@@ -997,7 +1013,11 @@ function Video({ setting }) {
                     height: '10%',
                     marginBottom: '0',
                   }}
-                >{`${`${i + 1} `}.${name ? name.split('_')[1] : '- -'}`}</p>
+                >{`${`${i + 1} `}.${
+                  name
+                    ? name.split('_').slice(1, name.split('_').length).join('')
+                    : '- -'
+                }`}</p>
                 <div className="d-flex h-100">
                   <video
                     className="my-auto"
