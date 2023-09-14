@@ -201,7 +201,7 @@ function Projects({ setting }) {
       </Row>
       {draft.draft_id ? (
         <Row className="flex-grow-1 pt-3 pb-5 px-5">
-          {draft.setting.steps.length ? (
+          {draft.setting.steps && draft.setting.steps.length ? (
             <ListGroup>
               {draft.setting.steps.map(({ date, name }, i) => (
                 <ListGroupItem className="d-flex" key={i}>
