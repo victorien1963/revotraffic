@@ -878,7 +878,7 @@ function Road({ setting }) {
 }
 
 function Video({ setting }) {
-  const { handleDataChange, handleToolChange } = setting
+  const { handleToolChange } = setting
   const {
     draftId,
     draft = { setting: { videos: [] } },
@@ -921,13 +921,15 @@ function Video({ setting }) {
     )
     setuploading(false)
   }
-  const handleRemoveVideo = (i) =>
-    handleDataChange({
-      target: {
-        name: 'videos',
-        value: videos.filter((video, index) => index !== i),
-      },
+  const handleRemoveVideo = async (i) => {
+    const res = await apiServices.data({
+      path: `draft/video/${draftId}/${i}`,
+      method: 'delete',
     })
+    setDrafts((prevState) =>
+      prevState.map((ps) => (ps.draft_id === draftId ? res : ps))
+    )
+  }
   return (
     <>
       <Row className="pt-3 pb-2 px-2" style={{ height: '10vh' }}>
@@ -996,12 +998,16 @@ function Video({ setting }) {
                     marginBottom: '0',
                   }}
                 >{`${`${i + 1} `}.${name}`}</p>
-                <div>
-                  <Image
-                    className="mx-auto"
-                    src={i % 2 === 0 ? camera7preview : camera14preview}
-                    fluid
-                  />
+                <div className="d-flex h-100">
+                  <video
+                    className="my-auto"
+                    width="100%"
+                    height="auto"
+                    controls
+                  >
+                    <track kind="captions" />
+                    <source src={`/api/draft/video/${name}`} />
+                  </video>
                 </div>
                 <Button
                   variant="danger"

@@ -60,6 +60,16 @@ function ContextProvider(props) {
       prevState.filter((p) => res.draft_id !== p.draft_id)
     )
   }
+  const handleDraftEdit = async (draft_id, data) => {
+    const res = await apiServices.data({
+      path: `draft/${draft_id}`,
+      method: 'put',
+      data,
+    })
+    setDrafts((prevState) =>
+      prevState.map((p) => (p.draft_id === draft_id ? res : p))
+    )
+  }
   const draft = useMemo(
     () =>
       drafts && draftId
@@ -83,6 +93,7 @@ function ContextProvider(props) {
       setDraftId,
       handleDraftAdd,
       handleDraftDelete,
+      handleDraftEdit,
       setDrafts,
     }),
     [drafts, draftId]

@@ -130,14 +130,23 @@ function ProjectModal({ setting }) {
 
 function Projects({ setting }) {
   const { handleAddStep } = setting
-  const { draft, drafts, setDraftId, handleDraftAdd, handleDraftDelete } =
-    useContext(DraftContext)
+  const {
+    draft,
+    drafts,
+    setDraftId,
+    handleDraftAdd,
+    handleDraftDelete,
+    handleDraftEdit,
+  } = useContext(DraftContext)
 
   const [show, setshow] = useState(false)
   const handleClose = (value) => {
     setshow(false)
     if (value) {
-      if (draft.draft_id) handleAddStep(value)
+      if (draft.draft_id)
+        handleDraftEdit(draft.draft_id, {
+          steps: [...(draft.setting.steps || []), value],
+        })
       else handleDraftAdd(value)
     }
   }
@@ -192,9 +201,40 @@ function Projects({ setting }) {
       </Row>
       {draft.draft_id ? (
         <Row className="flex-grow-1 pt-3 pb-5 px-5">
-          <div className="d-flex ps-3 border">
-            <h5 className="m-auto text-revo-light">目前尚無資料</h5>
-          </div>
+          {draft.setting.steps.length ? (
+            <ListGroup>
+              {draft.setting.steps.map(({ date, name }, i) => (
+                <ListGroupItem className="d-flex" key={i}>
+                  <p className="my-auto">
+                    {date}-{name}
+                  </p>
+                  <Button
+                    className="ms-auto me-2"
+                    style={{ boxShadow: 'none' }}
+                    variant="revo"
+                    onClick={() => handleAddStep({ date, name })}
+                  >
+                    選 擇
+                  </Button>
+                  <Button
+                    style={{ boxShadow: 'none' }}
+                    variant="danger"
+                    onClick={() =>
+                      handleDraftEdit(draft.draft_id, {
+                        steps: draft.setting.steps.filter((s, j) => j !== i),
+                      })
+                    }
+                  >
+                    刪 除
+                  </Button>
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          ) : (
+            <div className="d-flex ps-3 border">
+              <h5 className="m-auto text-revo-light">目前尚無資料</h5>
+            </div>
+          )}
         </Row>
       ) : (
         <Row className="flex-grow-1 pt-3 pb-5 px-5">
@@ -256,15 +296,13 @@ function FlowChart() {
 }
 
 function Step1({ setting }) {
-  const { project, projects, toolState, handleDataChange } = setting
+  const { toolState, handleDataChange } = setting
 
   const components = {
     操作流程圖: <FlowChart />,
     計劃一覽表: (
       <Projects
         setting={{
-          project,
-          projects,
           handleAddStep: (value) => {
             handleDataChange(
               {
