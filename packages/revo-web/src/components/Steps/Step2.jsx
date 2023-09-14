@@ -997,7 +997,7 @@ function Video({ setting }) {
                     height: '10%',
                     marginBottom: '0',
                   }}
-                >{`${`${i + 1} `}.${name}`}</p>
+                >{`${`${i + 1} `}.${name ? name.split('_')[1] : '- -'}`}</p>
                 <div className="d-flex h-100">
                   <video
                     className="my-auto"
