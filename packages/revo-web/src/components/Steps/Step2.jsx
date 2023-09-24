@@ -21,6 +21,7 @@ import {
 } from 'react-bootstrap'
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { camera7preview, camera14preview, camera7projected } from '../../assets'
+import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext } from '../ContextProvider'
 
@@ -991,13 +992,13 @@ function Video({ setting }) {
 
             <Col xs={4} />
             <Col className="d-flex pb-1">
-              <Button
+              <LoadingButton
                 variant="revo2"
                 className="mt-auto ms-auto me-2"
                 onClick={handleUpload}
               >
                 上傳
-              </Button>
+              </LoadingButton>
             </Col>
           </>
         ) : videos.length ? (
