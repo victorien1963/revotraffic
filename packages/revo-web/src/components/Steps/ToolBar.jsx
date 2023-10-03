@@ -1,12 +1,54 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react'
+import React, { useState, useContext } from 'react'
 import PropTypes from 'prop-types'
-import { Container, Row } from 'react-bootstrap'
-// import { DraftContext } from '../ContextProvider'
+import { Container, Row, Modal, Button } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { DraftContext } from '../ContextProvider'
+
+function WarnModal({ setting }) {
+  const { show, handleClose } = setting
+
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      show={show}
+      onHide={() => handleClose()}
+      className="py-2 px-4"
+    >
+      <Modal.Header closeButton>系統提示</Modal.Header>
+      <Modal.Body className="p-4 h-100">
+        <Row
+          style={{
+            height: '100px',
+          }}
+        >
+          <FontAwesomeIcon
+            className="h-75 px-0 my-auto"
+            icon={faCircleExclamation}
+          />
+        </Row>
+        <Row>
+          <h4 className="text-center">Oops! 請先完成前置步驟</h4>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-center">
+        <Button
+          className="mx-auto"
+          style={{ boxShadow: 'none' }}
+          variant="revo"
+          onClick={handleClose}
+        >
+          確 認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
 
 function ToolBar({ setting }) {
   const { step, handleToolChange } = setting
-  // const { setDraftId } = useContext(DraftContext)
+  const { timeId } = useContext(DraftContext)
 
   const tools = [
     {
@@ -97,6 +139,8 @@ function ToolBar({ setting }) {
     },
   ]
 
+  const [show, setShow] = useState(false)
+
   return (
     <Container fluid>
       <Row>
@@ -136,14 +180,18 @@ function ToolBar({ setting }) {
                     <li key={d.value}>
                       <a
                         className="dropdown-item"
-                        onClick={() =>
-                          handleToolChange({
-                            target: {
-                              name: d.name,
-                              value: d.value,
-                            },
-                          })
-                        }
+                        onClick={() => {
+                          if (!timeId && d.name !== 'step1') {
+                            setShow(true)
+                          } else {
+                            handleToolChange({
+                              target: {
+                                name: d.name,
+                                value: d.value,
+                              },
+                            })
+                          }
+                        }}
                         aria-hidden
                       >
                         {d.label}
@@ -163,11 +211,29 @@ function ToolBar({ setting }) {
           ))}
         </ul>
       </Row>
+      <WarnModal
+        setting={{
+          show,
+          handleClose: () => {
+            setShow(false)
+            handleToolChange({
+              target: {
+                name: 'step1',
+                value: '計畫一覽表',
+              },
+            })
+          },
+        }}
+      />
     </Container>
   )
 }
 
 ToolBar.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+WarnModal.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
