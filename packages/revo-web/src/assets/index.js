@@ -1,6 +1,7 @@
 import nenerabi from './images/nenerabi.jpeg'
 import nenerabi2 from './images/nenerabi2.jpeg'
 import meowmeow from './images/meow thumbs up.jpeg'
+import architecture from './images/architecture.png'
 import RTLogo from './images/RT_logo.png'
 import RTLogo2 from './images/RT_logo_2.png'
 import RTLogo3 from './images/RT_logo_3.png'
@@ -32,6 +33,7 @@ import v04Rl from './images/04_rl.mp4'
 
 export {
   // image
+  architecture,
   nenerabi,
   nenerabi2,
   meowmeow,

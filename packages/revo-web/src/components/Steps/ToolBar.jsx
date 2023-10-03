@@ -2,9 +2,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Container, Row } from 'react-bootstrap'
+// import { DraftContext } from '../ContextProvider'
 
 function ToolBar({ setting }) {
   const { step, handleToolChange } = setting
+  // const { setDraftId } = useContext(DraftContext)
+
   const tools = [
     {
       label: '首頁',
@@ -16,9 +19,9 @@ function ToolBar({ setting }) {
           value: '操作流程圖',
         },
         {
-          label: '計劃一覽表',
+          label: '計畫一覽表',
           name: 'step1',
-          value: '計劃一覽表',
+          value: '計畫一覽表',
         },
       ],
     },
@@ -112,7 +115,8 @@ function ToolBar({ setting }) {
                 data-bs-toggle={`${tool.dropdowns ? 'dropdown' : ''}`}
                 aria-expanded="false"
                 onClick={() => {
-                  if (tool.click)
+                  if (tool.onClick) tool.onClick()
+                  else if (tool.click)
                     handleToolChange({
                       target: {
                         ...tool.click,

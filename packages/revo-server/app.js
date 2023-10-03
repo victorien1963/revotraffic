@@ -15,6 +15,8 @@ const app = express()
 
 const authRouter = require('./routes/auth')
 const draftRouter = require('./routes/draft')
+const rangeRouter = require('./routes/range')
+const timeRouter = require('./routes/time')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -45,6 +47,8 @@ async function getUser(req, res, next) {
 
 app.use('/auth', authRouter)
 app.use('/draft', getUser, draftRouter)
+app.use('/range', getUser, rangeRouter)
+app.use('/time', getUser, timeRouter)
 app.get('/me', getUser, async (req, res) => {
   console.log('here')
   return res.send({

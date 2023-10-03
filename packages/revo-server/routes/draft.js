@@ -16,13 +16,6 @@ router.post('/', async (req, res) => {
     const { user_id } = req.user
     const draft = await pg.exec('one', 'INSERT INTO drafts(user_id, setting, created_on, updated_on) values($1, $2, current_timestamp, current_timestamp) RETURNING *', [user_id, {
         ...req.body,
-        steps: [],
-        modals: [],
-        roadLine: null,
-        roadAdjust: null,
-        roads: null,
-        videos: [],
-        time: {},
       }])
     return res.send(draft)
 })

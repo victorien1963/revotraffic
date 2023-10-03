@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { DateRange } from 'react-date-range'
@@ -10,13 +11,57 @@ import {
   Button,
   ListGroup,
   ListGroupItem,
-  // Image,
+  Image,
   Form,
   Modal,
   InputGroup,
 } from 'react-bootstrap'
 import { DraftContext } from '../ContextProvider'
+import { architecture } from '../../assets'
 // import { nenerabi } from '../../assets'
+
+function DeleteModal({ setting }) {
+  const { show, name, handleClose } = setting
+  const { draftId, rangeId } = useContext(DraftContext)
+  const step = useMemo(
+    () => (draftId ? (rangeId ? '交維階段' : '計畫範圍') : '執行計畫'),
+    [draftId, rangeId]
+  )
+
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      show={show}
+      onHide={() => handleClose()}
+      className="py-2 px-4"
+    >
+      <Modal.Header closeButton />
+      <Modal.Body className="p-4">
+        <h4 className="text-center">您即將刪除</h4>
+        <h4 className="text-center my-3">{`「${name}」${step}`}</h4>
+        <h4 className="text-center">請確認是否仍要刪除？</h4>
+      </Modal.Body>
+      <Modal.Footer className="justify-content-center">
+        <Button
+          className="ms-auto"
+          style={{ boxShadow: 'none' }}
+          variant="secondary"
+          onClick={() => handleClose()}
+        >
+          取 消
+        </Button>
+        <Button
+          className="me-auto"
+          style={{ boxShadow: 'none' }}
+          variant="revo"
+          onClick={() => handleClose(true)}
+        >
+          確 認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
 
 function ProjectModal({ setting }) {
   const { show, form, handleClose } = setting
@@ -128,45 +173,59 @@ function ProjectModal({ setting }) {
   )
 }
 
-function Projects({ setting }) {
-  const { handleAddStep } = setting
+function Projects() {
   const {
-    draft,
     drafts,
+    ranges,
+    times,
+    draftId,
+    rangeId,
+    // timeId,
     setDraftId,
+    setRangeId,
+    setTimeId,
     handleDraftAdd,
     handleDraftDelete,
-    handleDraftEdit,
+    // handleDraftEdit,
+    handleRangeAdd,
+    handleRangeDelete,
+    // handleRangeEdit,
+    handleTimeAdd,
+    handleTimeDelete,
+    // handleTimeEdit,
   } = useContext(DraftContext)
-
-  const [show, setshow] = useState(false)
-  const handleClose = (value) => {
-    setshow(false)
-    if (value) {
-      if (draft.draft_id)
-        handleDraftEdit(draft.draft_id, {
-          steps: [...(draft.setting.steps || []), value],
-        })
-      else handleDraftAdd(value)
-    }
-  }
 
   const projectForm = [
     {
       name: 'id',
-      label: '計劃編號',
+      label: '計畫編號',
       placeholder: '',
       type: 'text',
     },
     {
       name: 'name',
-      label: '計劃名稱',
+      label: '計畫名稱',
       placeholder: '',
       type: 'text',
     },
   ]
 
-  const stepForm = [
+  const rangeForm = [
+    {
+      name: 'id',
+      label: '名稱',
+      placeholder: '',
+      type: 'text',
+    },
+    {
+      name: 'name',
+      label: '範圍區域',
+      placeholder: '',
+      type: 'text',
+    },
+  ]
+
+  const timeForm = [
     {
       name: 'date',
       label: '階段日期',
@@ -181,13 +240,71 @@ function Projects({ setting }) {
     },
   ]
 
+  const title = useMemo(
+    () =>
+      draftId
+        ? rangeId
+          ? '請選擇交維階段'
+          : '請選擇計畫範圍'
+        : '請選擇執行計畫',
+    [draftId, rangeId]
+  )
+
+  const setId = useMemo(
+    () =>
+      draftId
+        ? rangeId
+          ? (time_id) => setTimeId(time_id)
+          : (range_id) => setRangeId(range_id)
+        : (draft_id) => setDraftId(draft_id),
+    [draftId, rangeId]
+  )
+
+  const form = useMemo(
+    () => (draftId ? (rangeId ? timeForm : rangeForm) : projectForm),
+    [draftId, rangeId]
+  )
+
+  const list = useMemo(
+    () => (draftId ? (rangeId ? times : ranges) : drafts),
+    [draftId, rangeId, drafts, ranges, times]
+  )
+
+  const handleAdd = useMemo(
+    () =>
+      draftId ? (rangeId ? handleTimeAdd : handleRangeAdd) : handleDraftAdd,
+    [draftId, rangeId]
+  )
+
+  const handleDelete = useMemo(
+    () =>
+      draftId
+        ? rangeId
+          ? handleTimeDelete
+          : handleRangeDelete
+        : handleDraftDelete,
+    [draftId, rangeId]
+  )
+
+  const [show, setshow] = useState(false)
+  const handleClose = (value) => {
+    setshow(false)
+    handleAdd(value)
+  }
+
+  const [selectedId, setselectedId] = useState('')
+  const [deleteShow, setdeleteShow] = useState(false)
+  const handleDeleteClose = (value) => {
+    setdeleteShow(false)
+    if (value) handleDelete(selectedId)
+    setselectedId('')
+  }
+
   return (
     <>
       <Row>
         <Col xs={2} className="d-flex px-5">
-          <h5 className="my-auto text-revo-light fw-bold">
-            {draft.draft_id ? '請選擇交維階段' : '請選擇執行計劃'}
-          </h5>
+          <h5 className="my-auto text-revo-light fw-bold">{title}</h5>
         </Col>
         <Col xs={1} className="d-flex ps-0">
           <Button
@@ -199,82 +316,65 @@ function Projects({ setting }) {
           </Button>
         </Col>
       </Row>
-      {draft.draft_id ? (
-        <Row className="flex-grow-1 pt-3 pb-5 px-5">
-          {draft.setting.steps && draft.setting.steps.length ? (
-            <ListGroup>
-              {draft.setting.steps.map(({ date, name }, i) => (
-                <ListGroupItem className="d-flex" key={i}>
-                  <p className="my-auto">
-                    {date}-{name}
-                  </p>
-                  <Button
-                    className="ms-auto me-2"
-                    style={{ boxShadow: 'none' }}
-                    variant="revo"
-                    onClick={() => handleAddStep({ date, name })}
-                  >
-                    選 擇
-                  </Button>
-                  <Button
-                    style={{ boxShadow: 'none' }}
-                    variant="danger"
-                    onClick={() =>
-                      handleDraftEdit(draft.draft_id, {
-                        steps: draft.setting.steps.filter((s, j) => j !== i),
-                      })
-                    }
-                  >
-                    刪 除
-                  </Button>
-                </ListGroupItem>
-              ))}
-            </ListGroup>
-          ) : (
-            <div className="d-flex ps-3 border">
-              <h5 className="m-auto text-revo-light">目前尚無資料</h5>
-            </div>
-          )}
-        </Row>
-      ) : (
-        <Row className="flex-grow-1 pt-3 pb-5 px-5">
-          {drafts.length ? (
-            <ListGroup>
-              {drafts.map((d) => (
-                <ListGroupItem className="d-flex" key={d.draft_id}>
-                  <p className="my-auto">
-                    {d.setting.id}-{d.setting.name}
-                  </p>
-                  <Button
-                    className="ms-auto me-2"
-                    style={{ boxShadow: 'none' }}
-                    variant="revo"
-                    onClick={() => setDraftId(d.draft_id)}
-                  >
-                    選 擇
-                  </Button>
-                  <Button
-                    style={{ boxShadow: 'none' }}
-                    variant="danger"
-                    onClick={() => handleDraftDelete(d.draft_id)}
-                  >
-                    刪 除
-                  </Button>
-                </ListGroupItem>
-              ))}
-            </ListGroup>
-          ) : (
-            <div className="d-flex ps-3 border">
-              <h5 className="m-auto text-revo-light">目前尚無資料</h5>
-            </div>
-          )}
-        </Row>
-      )}
+      <Row className="flex-grow-1 pt-3 pb-5 px-5">
+        {list && list.length ? (
+          <ListGroup>
+            {list.map(({ time_id, range_id, draft_id, setting }, i) => (
+              <ListGroupItem className="d-flex" key={i}>
+                <p className="my-auto">
+                  {setting.date || setting.id}-{setting.name}
+                </p>
+                <Button
+                  className="ms-auto me-2"
+                  style={{ boxShadow: 'none' }}
+                  variant="revo"
+                  onClick={() => {
+                    setselectedId(time_id || range_id || draft_id)
+                  }}
+                >
+                  編 輯
+                </Button>
+                <Button
+                  className="me-2"
+                  style={{ boxShadow: 'none' }}
+                  variant="revo"
+                  onClick={() => setId(time_id || range_id || draft_id)}
+                >
+                  選 擇
+                </Button>
+                <Button
+                  style={{ boxShadow: 'none' }}
+                  variant="danger"
+                  onClick={() => {
+                    setselectedId(time_id || range_id || draft_id)
+                    setdeleteShow(true)
+                  }}
+                >
+                  刪 除
+                </Button>
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        ) : (
+          <div className="d-flex ps-3 border">
+            <h5 className="m-auto text-revo-light">目前尚無資料</h5>
+          </div>
+        )}
+      </Row>
       <ProjectModal
         setting={{
           show,
-          form: draft.draft_id ? stepForm : projectForm,
+          form,
           handleClose,
+        }}
+      />
+      <DeleteModal
+        setting={{
+          show: deleteShow,
+          name: list.find(
+            (l) => (l.time_id || l.range_id || l.draft_id) === selectedId
+          )?.setting.name,
+          handleClose: handleDeleteClose,
         }}
       />
     </>
@@ -284,39 +384,23 @@ function Projects({ setting }) {
 function FlowChart() {
   return (
     <Row className="h-100 d-flex">
-      <p
+      {/* <p
         className="text-center align-self-center fw-bolder pb-5"
         style={{ color: '#9fdd80', fontSize: '4rem' }}
       >
         Hello user !
-      </p>
-      {/* <Image className="mx-auto w-50" src={nenerabi} fluid /> */}
+      </p> */}
+      <Image className="m-auto w-75" src={architecture} fluid />
     </Row>
   )
 }
 
 function Step1({ setting }) {
-  const { toolState, handleDataChange } = setting
+  const { toolState } = setting
 
   const components = {
     操作流程圖: <FlowChart />,
-    計劃一覽表: (
-      <Projects
-        setting={{
-          handleAddStep: (value) => {
-            handleDataChange(
-              {
-                target: {
-                  name: 'time',
-                  value,
-                },
-              },
-              'step2'
-            )
-          },
-        }}
-      />
-    ),
+    計畫一覽表: <Projects />,
   }
 
   return (
@@ -330,7 +414,7 @@ Step1.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
-Projects.propTypes = {
+DeleteModal.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 

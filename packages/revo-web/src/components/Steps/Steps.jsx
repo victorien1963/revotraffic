@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext } from 'react'
+import React, { useState, useMemo, useContext, useEffect } from 'react'
 import { Container, Row } from 'react-bootstrap'
 import Step1 from './Step1'
 import Step2 from './Step2'
@@ -22,63 +22,63 @@ function Steps() {
     if (e.target.name.startsWith('step')) setstep(e.target.name)
     settoolState({ ...toolState, [e.target.name]: e.target.value })
   }
-  const { draft, draftId, setDrafts } = useContext(DraftContext)
-  const {
-    modals = [],
-    roadLine = null,
-    roadAdjust = null,
-    roads = null,
-    videos = [],
-    time = {},
-  } = draft
+  const { draft, range, time, setDraftId, setRangeId, setTimeId } =
+    useContext(DraftContext)
 
-  const handleDataChange = (e, s) => {
-    if (e.target)
-      setDrafts((prevState) =>
-        prevState.map((ps) =>
-          ps.draft_id === draftId
-            ? { ...ps, [e.target.name]: e.target.value }
-            : ps
-        )
-      )
-    if (s) setstep(s)
-  }
   const steps = {
-    step1: <Step1 setting={{ toolState, handleDataChange }} />,
+    step1: <Step1 setting={{ toolState }} />,
     step2: (
       <Step2
         setting={{
-          videos,
-          roads,
-          roadLine,
-          roadAdjust,
-          time,
           toolState,
           handleToolChange,
-          handleDataChange,
         }}
       />
     ),
-    step3: <Step3 setting={{ toolState, handleDataChange }} />,
-    step4: (
-      <Step4
-        setting={{ modals, toolState, handleDataChange, handleToolChange }}
-      />
-    ),
-    step5: <Step5 setting={{ toolState, handleDataChange }} />,
+    step3: <Step3 setting={{ toolState }} />,
+    step4: <Step4 setting={{ toolState, handleToolChange }} />,
+    step5: <Step5 setting={{ toolState }} />,
   }
+  useEffect(() => {
+    setstep(time ? 'step2' : 'step1')
+  }, [time])
 
   const paths = useMemo(() => {
-    if (!draftId) return []
-    if (!time.name)
+    if (!draft) return []
+    if (!range)
       return [
-        { label: `${draft.setting.id}-${draft.setting.name}` },
+        {
+          label: `${draft.setting.id}-${draft.setting.name}`,
+          onClick: () => setDraftId(''),
+        },
+        { label: '請選擇計畫範圍' },
+      ]
+    if (!time)
+      return [
+        {
+          label: `${draft.setting.id}-${draft.setting.name}`,
+          onClick: () => setDraftId(''),
+        },
+        {
+          label: `${range.setting.id}-${range.setting.name}`,
+          onClick: () => setRangeId(''),
+        },
         { label: '請選擇交維階段' },
       ]
     if (step === 'step2')
       return [
-        { label: `${draft.setting.id} - ${draft.setting.name}` },
-        { label: `${time.date} - ${time.name}` },
+        {
+          label: `${draft.setting.id}-${draft.setting.name}`,
+          onClick: () => setDraftId(''),
+        },
+        {
+          label: `${range.setting.id}-${range.setting.name}`,
+          onClick: () => setRangeId(''),
+        },
+        {
+          label: `${time.setting.date} - ${time.setting.name}`,
+          onClick: () => setTimeId(''),
+        },
         {
           label:
             toolState.step2 === '路口、路段標記'
@@ -87,10 +87,11 @@ function Steps() {
         },
       ]
     return [
-      { label: `${draft.setting.id} - ${draft.setting.name}` },
-      { label: `${time.date} - ${time.name}` },
+      { label: `${draft.setting.id}-${draft.setting.name}` },
+      { label: `${range.setting.id}-${range.setting.name}` },
+      { label: `${time.setting.date} - ${time.setting.name}` },
     ]
-  }, [draft, step, toolState])
+  }, [draft, range, time, step, toolState])
 
   return (
     <Container

@@ -74,7 +74,7 @@ function ContextProvider(props) {
     () =>
       drafts && draftId
         ? drafts.find(({ draft_id }) => draft_id === draftId)
-        : {},
+        : false,
     [drafts, draftId]
   )
   const initDrafts = async () => {
@@ -85,18 +85,115 @@ function ContextProvider(props) {
     setDrafts(res)
   }
 
+  const [ranges, setRanges] = useState([])
+  const [rangeId, setRangeId] = useState('')
+  const handleRangeAdd = async (data) => {
+    const res = await apiServices.data({
+      path: `range/${draftId}`,
+      method: 'post',
+      data,
+    })
+    setRanges((prevState) => [...prevState, res])
+  }
+  const handleRangeDelete = async (range_id) => {
+    const res = await apiServices.data({
+      path: `range/${range_id}`,
+      method: 'delete',
+    })
+    setRanges((prevState) =>
+      prevState.filter((p) => res.range_id !== p.range_id)
+    )
+  }
+  const range = useMemo(
+    () =>
+      ranges && rangeId
+        ? ranges.find(({ range_id }) => range_id === rangeId)
+        : false,
+    [ranges, rangeId]
+  )
+  useEffect(() => {
+    if (!draftId) {
+      setRanges([])
+      setRangeId('')
+      return
+    }
+    const initRanges = async () => {
+      const res = await apiServices.data({
+        path: `range/${draftId}`,
+        method: 'get',
+      })
+      setRanges(res)
+    }
+    initRanges()
+  }, [draftId])
+
+  const [times, setTimes] = useState([])
+  const [timeId, setTimeId] = useState('')
+  const handleTimeAdd = async (data) => {
+    const res = await apiServices.data({
+      path: `time/${rangeId}`,
+      method: 'post',
+      data,
+    })
+    setTimes((prevState) => [...prevState, res])
+  }
+  const handleTimeDelete = async (time_id) => {
+    const res = await apiServices.data({
+      path: `time/${time_id}`,
+      method: 'delete',
+    })
+    setTimes((prevState) => prevState.filter((p) => res.time_id !== p.time_id))
+  }
+  const time = useMemo(
+    () =>
+      times && timeId ? times.find(({ time_id }) => time_id === timeId) : false,
+    [times, timeId]
+  )
+  useEffect(() => {
+    if (!rangeId) {
+      setTimes([])
+      setTimeId('')
+      return
+    }
+    const initTimes = async () => {
+      const res = await apiServices.data({
+        path: `time/${rangeId}`,
+        method: 'get',
+      })
+      setTimes(res)
+    }
+    initTimes()
+  }, [rangeId])
+
   const draftValue = useMemo(
     () => ({
+      // draft
       draft,
       drafts,
       draftId,
       setDraftId,
+      // range
+      range,
+      ranges,
+      rangeId,
+      setRangeId,
+      // time
+      time,
+      times,
+      timeId,
+      setTimeId,
       handleDraftAdd,
+      handleRangeAdd,
+      handleTimeAdd,
       handleDraftDelete,
       handleDraftEdit,
       setDrafts,
+      setRanges,
+      setTimes,
+      handleRangeDelete,
+      handleTimeDelete,
     }),
-    [drafts, draftId]
+    [drafts, draftId, ranges, rangeId, times, timeId]
   )
   useEffect(() => {
     if (!socket) return

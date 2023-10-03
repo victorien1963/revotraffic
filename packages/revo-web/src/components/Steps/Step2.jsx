@@ -494,7 +494,12 @@ function Road({ setting }) {
   const { roads, roadAdjust, roadLine, handleDataChange, handleToolChange } =
     setting
 
-  const { draft } = useContext(DraftContext)
+  const {
+    // timeId,
+    time = { setting: { videos: [] } },
+    // setTimes,
+  } = useContext(DraftContext)
+  const { videos } = time.setting || {}
   const [selected, setselected] = useState('')
   const [showDate, setshowDate] = useState(false)
   const [date, setdate] = useState({
@@ -733,7 +738,11 @@ function Road({ setting }) {
             })}
           </Col>
           <Col className="d-flex flex-column">
-            <Image className="mx-auto w-75" src={getPic(selected)} fluid />
+            {/* <Image className="mx-auto w-75" src={getPic(selected)} fluid /> */}
+            <video className="my-auto" width="100%" height="auto" controls>
+              <track kind="captions" />
+              <source src={`/api/time/video/${videos[selected].name}`} />
+            </video>
             <div className="d-flex mt-auto">
               <Button
                 variant="warning"
@@ -774,8 +783,8 @@ function Road({ setting }) {
             className="pt-2 pb-5 px-4 border rounded mx-5"
             style={{ minHeight: '82%' }}
           >
-            {draft.setting.videos ? (
-              draft.setting.videos.map(({ name }, i) => (
+            {videos ? (
+              videos.map(({ name }, i) => (
                 <Col
                   xs={3}
                   className="flex-column h5 text-revo"
@@ -817,9 +826,10 @@ function Road({ setting }) {
                       }}
                     >
                       <FontAwesomeIcon
-                        className="fs-1 text-revo"
+                        className="fs-1"
                         style={{
                           cursor: 'pointer',
+                          color: 'grey',
                         }}
                         icon={faCheckCircle}
                         onClick={() => {}}
@@ -896,11 +906,11 @@ function Road({ setting }) {
 function Video({ setting }) {
   const { handleToolChange } = setting
   const {
-    draftId,
-    draft = { setting: { videos: [] } },
-    setDrafts,
+    timeId,
+    time = { setting: { videos: [] } },
+    setTimes,
   } = useContext(DraftContext)
-  const { videos } = draft.setting
+  const { videos } = time.setting
 
   const [tempFile, settempFile] = useState(null)
   const tempurl = useMemo(
@@ -926,24 +936,24 @@ function Video({ setting }) {
       data: Array.from(new Uint8Array(buffer)),
     }))
     const res = await apiServices.data({
-      path: `draft/video/${draftId}`,
+      path: `time/video/${timeId}`,
       method: 'post',
       data: {
         files: JSON.stringify(arrayed),
       },
     })
-    setDrafts((prevState) =>
-      prevState.map((ps) => (ps.draft_id === draftId ? res : ps))
+    setTimes((prevState) =>
+      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
     )
     setuploading(false)
   }
   const handleRemoveVideo = async (i) => {
     const res = await apiServices.data({
-      path: `draft/video/${draftId}/${i}`,
+      path: `time/video/${timeId}/${i}`,
       method: 'delete',
     })
-    setDrafts((prevState) =>
-      prevState.map((ps) => (ps.draft_id === draftId ? res : ps))
+    setTimes((prevState) =>
+      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
     )
   }
   return (
@@ -1067,15 +1077,9 @@ function Video({ setting }) {
 }
 
 function Step2({ setting }) {
-  const {
-    videos,
-    roads,
-    roadAdjust,
-    roadLine,
-    toolState,
-    handleDataChange,
-    handleToolChange,
-  } = setting
+  const { toolState, handleDataChange, handleToolChange } = setting
+  const { time } = useContext(DraftContext)
+  const { videos = [], roads, roadLine, roadAdjust } = time.setting || {}
   const components = {
     selector: (
       <Row className="h-100 px-5">
