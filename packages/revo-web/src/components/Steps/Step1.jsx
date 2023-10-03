@@ -175,6 +175,7 @@ function ProjectModal({ setting }) {
 
 function Projects() {
   const {
+    draft,
     drafts,
     ranges,
     times,
@@ -319,41 +320,52 @@ function Projects() {
       <Row className="flex-grow-1 pt-3 pb-5 px-5">
         {list && list.length ? (
           <ListGroup>
-            {list.map(({ time_id, range_id, draft_id, setting }, i) => (
-              <ListGroupItem className="d-flex" key={i}>
-                <p className="my-auto">
-                  {setting.date || setting.id}-{setting.name}
-                </p>
-                <Button
-                  className="ms-auto me-2"
-                  style={{ boxShadow: 'none' }}
-                  variant="revo"
-                  onClick={() => {
-                    setselectedId(time_id || range_id || draft_id)
-                  }}
-                >
-                  編 輯
-                </Button>
-                <Button
-                  className="me-2"
-                  style={{ boxShadow: 'none' }}
-                  variant="revo"
-                  onClick={() => setId(time_id || range_id || draft_id)}
-                >
-                  選 擇
-                </Button>
-                <Button
-                  style={{ boxShadow: 'none' }}
-                  variant="danger"
-                  onClick={() => {
-                    setselectedId(time_id || range_id || draft_id)
-                    setdeleteShow(true)
-                  }}
-                >
-                  刪 除
-                </Button>
-              </ListGroupItem>
-            ))}
+            {list.map(
+              (
+                { time_id, range_id, draft_id, setting, created_on, user_name },
+                i
+              ) => (
+                <ListGroupItem className="d-flex" key={i}>
+                  <p className="w-15 my-auto">
+                    {setting.date || setting.id}-{setting.name}
+                  </p>
+                  <p className="w-25 my-auto">
+                    建立者：{user_name || draft.user_name}
+                  </p>
+                  <p className="w-25 my-auto">
+                    建立時間：{moment(created_on).format('yyyy-MM-DD')}
+                  </p>
+                  <Button
+                    className="ms-auto me-2"
+                    style={{ boxShadow: 'none' }}
+                    variant="revo"
+                    onClick={() => {
+                      setselectedId(time_id || range_id || draft_id)
+                    }}
+                  >
+                    編 輯
+                  </Button>
+                  <Button
+                    className="me-2"
+                    style={{ boxShadow: 'none' }}
+                    variant="revo"
+                    onClick={() => setId(time_id || range_id || draft_id)}
+                  >
+                    選 擇
+                  </Button>
+                  <Button
+                    style={{ boxShadow: 'none' }}
+                    variant="danger"
+                    onClick={() => {
+                      setselectedId(time_id || range_id || draft_id)
+                      setdeleteShow(true)
+                    }}
+                  >
+                    刪 除
+                  </Button>
+                </ListGroupItem>
+              )
+            )}
           </ListGroup>
         ) : (
           <div className="d-flex ps-3 border">

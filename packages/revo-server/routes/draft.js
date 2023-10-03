@@ -7,7 +7,7 @@ const pg = require('../services/pgService')
 router.get('/', async (req, res) => {
     if (!req.user) return res.send([])
     const { user_id } = req.user
-    const drafts = await pg.exec('any', 'SELECT * FROM drafts WHERE user_id = $1', [user_id])
+    const drafts = await pg.exec('any', 'SELECT *,(SELECT name as user_name FROM users u WHERE u.user_id = d.user_id) FROM drafts d WHERE user_id = $1', [user_id])
     return res.send(drafts)
 })
 
