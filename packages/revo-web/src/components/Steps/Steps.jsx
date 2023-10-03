@@ -51,7 +51,7 @@ function Steps() {
           label: `${draft.setting.id}-${draft.setting.name}`,
           onClick: () => setDraftId(''),
         },
-        { label: '請選擇計畫範圍' },
+        { label: '請選擇計劃範圍' },
       ]
     if (!time)
       return [

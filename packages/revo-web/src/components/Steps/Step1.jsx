@@ -3,6 +3,13 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faCirclePlus,
+  faPenToSquare,
+  faRightToBracket,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons'
 import { DateRange } from 'react-date-range'
 import {
   Container,
@@ -24,7 +31,7 @@ function DeleteModal({ setting }) {
   const { show, name, handleClose } = setting
   const { draftId, rangeId } = useContext(DraftContext)
   const step = useMemo(
-    () => (draftId ? (rangeId ? '交維階段' : '計畫範圍') : '執行計畫'),
+    () => (draftId ? (rangeId ? '交維階段' : '計劃範圍') : '執行計劃'),
     [draftId, rangeId]
   )
 
@@ -68,7 +75,7 @@ function ProjectModal({ setting }) {
   const [showDate, setshowDate] = useState(false)
   const { draftId, rangeId } = useContext(DraftContext)
   const step = useMemo(
-    () => (draftId ? (rangeId ? '交維階段' : '計畫範圍') : '執行計畫'),
+    () => (draftId ? (rangeId ? '交維階段' : '計劃範圍') : '執行計劃'),
     [draftId, rangeId]
   )
 
@@ -217,13 +224,13 @@ function Projects() {
   const projectForm = [
     {
       name: 'id',
-      label: '計畫編號',
+      label: '計劃編號',
       placeholder: '',
       type: 'text',
     },
     {
       name: 'name',
-      label: '計畫名稱',
+      label: '計劃名稱',
       placeholder: '',
       type: 'text',
     },
@@ -264,8 +271,8 @@ function Projects() {
       draftId
         ? rangeId
           ? '請選擇交維階段'
-          : '請選擇計畫範圍'
-        : '請選擇執行計畫',
+          : '請選擇計劃範圍'
+        : '請選擇執行計劃',
     [draftId, rangeId]
   )
 
@@ -333,16 +340,17 @@ function Projects() {
   return (
     <>
       <Row>
-        <Col xs={2} className="d-flex px-5">
+        <Col xs={10} className="d-flex px-5">
           <h5 className="my-auto text-revo-light fw-bold">{title}</h5>
         </Col>
-        <Col xs={1} className="d-flex ps-0">
+        <Col xs={2} className="d-flex ps-0">
           <Button
-            className="me-auto"
-            variant="revo"
+            className="mx-auto"
+            variant="outline-revo2"
             onClick={() => setshow(true)}
           >
-            新 增 ✚
+            新 建 計 劃&ensp;
+            <FontAwesomeIcon icon={faCirclePlus} />
           </Button>
         </Col>
       </Row>
@@ -355,43 +363,57 @@ function Projects() {
                 i
               ) => (
                 <ListGroupItem className="d-flex" key={i}>
-                  <p className="w-15 my-auto">
+                  <p className="w-25 my-auto text-start">
                     {setting.date || setting.id}-{setting.name}
                   </p>
-                  <p className="w-25 my-auto">
+                  <p className="w-25 my-auto text-start">
                     建立者：{user_name || draft.user_name}
                   </p>
-                  <p className="w-25 my-auto">
+                  <p className="w-25 my-auto text-start">
                     建立時間：{moment(created_on).format('yyyy-MM-DD')}
                   </p>
                   <Button
                     className="ms-auto me-2"
                     style={{ boxShadow: 'none' }}
-                    variant="revo"
+                    variant="outline-revo me-2"
                     onClick={() => {
                       setselectedId(time_id || range_id || draft_id)
                       setshow(true)
                     }}
+                    title="編 輯 編 號 ＆ 名 稱"
                   >
-                    編 輯
-                  </Button>
-                  <Button
-                    className="me-2"
-                    style={{ boxShadow: 'none' }}
-                    variant="revo"
-                    onClick={() => setId(time_id || range_id || draft_id)}
-                  >
-                    選 擇
+                    編輯&ensp;
+                    <FontAwesomeIcon icon={faPenToSquare} />
                   </Button>
                   <Button
                     style={{ boxShadow: 'none' }}
-                    variant="danger"
+                    variant="outline-red"
                     onClick={() => {
                       setselectedId(time_id || range_id || draft_id)
                       setdeleteShow(true)
                     }}
+                    title="刪 除 計 劃"
                   >
-                    刪 除
+                    刪除&ensp;
+                    <FontAwesomeIcon icon={faTrashCan} />
+                  </Button>
+
+                  <h2
+                    className="my-auto text-grey"
+                    style={{ userSelect: 'none' }}
+                  >
+                    ｜
+                  </h2>
+
+                  <Button
+                    className="me-0"
+                    style={{ boxShadow: 'none' }}
+                    variant="revo"
+                    onClick={() => setId(time_id || range_id || draft_id)}
+                    title="選 擇 此 計 劃"
+                  >
+                    選擇&ensp;
+                    <FontAwesomeIcon icon={faRightToBracket} />
                   </Button>
                 </ListGroupItem>
               )
@@ -447,7 +469,7 @@ function Step1({ setting }) {
 
   const components = {
     操作流程圖: <FlowChart />,
-    計畫一覽表: <Projects />,
+    計劃一覽表: <Projects />,
   }
 
   return (
