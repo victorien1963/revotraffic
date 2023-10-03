@@ -7,7 +7,7 @@ function Breadcrumb({ setting }) {
 
   return (
     <Container fluid className="p-0">
-      <Row>
+      <Row className="flex-nowrap">
         {paths.map((path, i) => (
           <React.Fragment key={i}>
             {i ? '>' : ''}
