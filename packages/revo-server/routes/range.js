@@ -19,11 +19,12 @@ router.post('/:draft_id', async (req, res) => {
 
 router.put('/:range_id', async (req, res) => {
     if (!req.user) return res.send({ error: 'user not found' })
-    // const time = await pg.exec('one', 'INSERT INTO ranges(range_id, setting, created_on, updated_on) values($1, $2, current_timestamp, current_timestamp) RETURNING *', [req.params.range_id, {
-    //     ...req.body,
-    //     ranges: []
-    //   }])
-    // return res.send(time)
+    const old = await pg.exec('one', 'SELECT setting FROM ranges WHERE range_id = $1', [req.params.range_id])
+    const range = await pg.exec('one', 'UPDATE ranges SET setting = $2 WHERE range_id = $1 RETURNING *', [req.params.range_id, {
+        ...old.setting,
+        ...req.body,
+      }])
+    return res.send(range)
 })
 
 router.delete('/:range_id', async (req, res) => {

@@ -64,8 +64,13 @@ function DeleteModal({ setting }) {
 }
 
 function ProjectModal({ setting }) {
-  const { show, form, handleClose } = setting
+  const { show, form, defaultValue = {}, handleClose } = setting
   const [showDate, setshowDate] = useState(false)
+  const { draftId, rangeId } = useContext(DraftContext)
+  const step = useMemo(
+    () => (draftId ? (rangeId ? '交維階段' : '計畫範圍') : '執行計畫'),
+    [draftId, rangeId]
+  )
 
   const [data, setdata] = useState({})
   const onDataChange = (e) =>
@@ -74,9 +79,19 @@ function ProjectModal({ setting }) {
   useEffect(() => {
     if (show) {
       setshowDate(false)
-      setdata(form.reduce((prev, cur) => ({ ...prev, [cur.name]: '' }), {}))
+      setdata(
+        form.reduce(
+          (prev, cur) => ({
+            ...prev,
+            [cur.name]: defaultValue.setting
+              ? defaultValue.setting[cur.name]
+              : '',
+          }),
+          {}
+        )
+      )
     }
-  }, [show])
+  }, [show, defaultValue])
   const [date, setdate] = useState({
     startDate: new Date(),
     endDate: new Date(),
@@ -89,7 +104,9 @@ function ProjectModal({ setting }) {
       onHide={() => handleClose()}
       className="py-2 px-4"
     >
-      <Modal.Header closeButton />
+      <Modal.Header closeButton>
+        {defaultValue.setting ? `編輯${step}` : `新建${step}`}
+      </Modal.Header>
       <Modal.Body className="p-4">
         {form.map((f, i) => (
           <React.Fragment key={i}>
@@ -143,6 +160,7 @@ function ProjectModal({ setting }) {
               <Form.Control
                 name={f.name}
                 type={f.type}
+                value={data[f.name] || ''}
                 onChange={onDataChange}
                 placeholder={f.placeholder}
                 onFocus={() => setshowDate(false)}
@@ -187,13 +205,13 @@ function Projects() {
     setTimeId,
     handleDraftAdd,
     handleDraftDelete,
-    // handleDraftEdit,
+    handleDraftEdit,
     handleRangeAdd,
     handleRangeDelete,
-    // handleRangeEdit,
+    handleRangeEdit,
     handleTimeAdd,
     handleTimeDelete,
-    // handleTimeEdit,
+    handleTimeEdit,
   } = useContext(DraftContext)
 
   const projectForm = [
@@ -277,6 +295,12 @@ function Projects() {
     [draftId, rangeId]
   )
 
+  const handleEdit = useMemo(
+    () =>
+      draftId ? (rangeId ? handleTimeEdit : handleRangeEdit) : handleDraftEdit,
+    [draftId, rangeId]
+  )
+
   const handleDelete = useMemo(
     () =>
       draftId
@@ -287,13 +311,18 @@ function Projects() {
     [draftId, rangeId]
   )
 
+  const [selectedId, setselectedId] = useState('')
+
   const [show, setshow] = useState(false)
   const handleClose = (value) => {
     setshow(false)
-    handleAdd(value)
+    if (!value) return
+    if (selectedId) {
+      handleEdit(selectedId, value)
+      setselectedId('')
+    } else handleAdd(value)
   }
 
-  const [selectedId, setselectedId] = useState('')
   const [deleteShow, setdeleteShow] = useState(false)
   const handleDeleteClose = (value) => {
     setdeleteShow(false)
@@ -341,6 +370,7 @@ function Projects() {
                     variant="revo"
                     onClick={() => {
                       setselectedId(time_id || range_id || draft_id)
+                      setshow(true)
                     }}
                   >
                     編 輯
@@ -377,6 +407,11 @@ function Projects() {
         setting={{
           show,
           form,
+          defaultValue: selectedId
+            ? list.find(
+                (l) => (l.time_id || l.range_id || l.draft_id) === selectedId
+              )
+            : {},
           handleClose,
         }}
       />
@@ -395,14 +430,14 @@ function Projects() {
 
 function FlowChart() {
   return (
-    <Row className="h-100 d-flex">
+    <Row className="h-100 d-flex px-5 py-3">
       {/* <p
         className="text-center align-self-center fw-bolder pb-5"
         style={{ color: '#9fdd80', fontSize: '4rem' }}
       >
         Hello user !
       </p> */}
-      <Image className="m-auto w-75" src={architecture} fluid />
+      <Image className="m-auto w-100" src={architecture} fluid />
     </Row>
   )
 }

@@ -5,9 +5,8 @@ import { AuthContext, ToastContext } from '../components/ContextProvider'
 import apiServices from '../services/apiServices'
 
 function Welcome() {
-  const { auth, setAuth } = useContext(AuthContext)
+  const { setAuth } = useContext(AuthContext)
   const { setToast } = useContext(ToastContext)
-  console.log(auth)
 
   const [data, setdata] = useState({
     email: '',

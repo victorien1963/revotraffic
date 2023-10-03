@@ -13,11 +13,11 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     if (!req.user) return res.send({ error: 'user not found' })
-    const { user_id } = req.user
+    const { user_id, name } = req.user
     const draft = await pg.exec('one', 'INSERT INTO drafts(user_id, setting, created_on, updated_on) values($1, $2, current_timestamp, current_timestamp) RETURNING *', [user_id, {
         ...req.body,
       }])
-    return res.send(draft)
+    return res.send({ ...draft, user_name: name })
 })
 
 router.put('/:draft_id', async (req, res) => {

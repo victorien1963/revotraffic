@@ -911,7 +911,7 @@ function Video({ setting }) {
     time = { setting: { videos: [] } },
     setTimes,
   } = useContext(DraftContext)
-  const { videos } = time.setting
+  const { videos } = time.setting || {}
 
   const [tempFile, settempFile] = useState(null)
   const tempurl = useMemo(

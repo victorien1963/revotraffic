@@ -67,7 +67,7 @@ function ContextProvider(props) {
       data,
     })
     setDrafts((prevState) =>
-      prevState.map((p) => (p.draft_id === draft_id ? res : p))
+      prevState.map((p) => (p.draft_id === draft_id ? { ...p, ...res } : p))
     )
   }
   const draft = useMemo(
@@ -102,6 +102,16 @@ function ContextProvider(props) {
     })
     setRanges((prevState) =>
       prevState.filter((p) => res.range_id !== p.range_id)
+    )
+  }
+  const handleRangeEdit = async (range_id, data) => {
+    const res = await apiServices.data({
+      path: `range/${range_id}`,
+      method: 'put',
+      data,
+    })
+    setRanges((prevState) =>
+      prevState.map((p) => (p.range_id === range_id ? res : p))
     )
   }
   const range = useMemo(
@@ -144,6 +154,16 @@ function ContextProvider(props) {
     })
     setTimes((prevState) => prevState.filter((p) => res.time_id !== p.time_id))
   }
+  const handleTimeEdit = async (time_id, data) => {
+    const res = await apiServices.data({
+      path: `time/${time_id}`,
+      method: 'put',
+      data,
+    })
+    setTimes((prevState) =>
+      prevState.map((p) => (p.time_id === time_id ? res : p))
+    )
+  }
   const time = useMemo(
     () =>
       times && timeId ? times.find(({ time_id }) => time_id === timeId) : false,
@@ -171,27 +191,29 @@ function ContextProvider(props) {
       draft,
       drafts,
       draftId,
+      setDrafts,
       setDraftId,
+      handleDraftAdd,
+      handleDraftDelete,
+      handleDraftEdit,
       // range
       range,
       ranges,
       rangeId,
+      setRanges,
       setRangeId,
+      handleRangeAdd,
+      handleRangeDelete,
+      handleRangeEdit,
       // time
       time,
       times,
       timeId,
-      setTimeId,
-      handleDraftAdd,
-      handleRangeAdd,
-      handleTimeAdd,
-      handleDraftDelete,
-      handleDraftEdit,
-      setDrafts,
-      setRanges,
       setTimes,
-      handleRangeDelete,
+      setTimeId,
+      handleTimeAdd,
       handleTimeDelete,
+      handleTimeEdit,
     }),
     [drafts, draftId, ranges, rangeId, times, timeId]
   )
