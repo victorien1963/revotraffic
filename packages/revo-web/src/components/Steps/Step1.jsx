@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCircleExclamation,
   faCirclePlus,
   faPenToSquare,
   faRightToBracket,
@@ -44,13 +45,27 @@ function DeleteModal({ setting }) {
     >
       <Modal.Header closeButton />
       <Modal.Body className="p-4">
-        <h4 className="text-center">您即將刪除</h4>
-        <h4 className="text-center my-3">{`「${name}」${step}`}</h4>
-        <h4 className="text-center">請確認是否仍要刪除？</h4>
+        <div className="d-flex">
+          <FontAwesomeIcon
+            className="px-0 m-auto text-revo text-center"
+            style={{
+              height: '100px',
+            }}
+            icon={faCircleExclamation}
+          />
+        </div>
+        <h5 className="text-center lh-lg text-revo">
+          <br />
+          刪除後無法復原，
+          <br />
+          仍要刪除
+          <span className="text-danger">{`「${name}」${step}`}</span>
+          嗎？
+        </h5>
       </Modal.Body>
       <Modal.Footer className="justify-content-center">
         <Button
-          className="ms-auto"
+          className="ms-auto me-2"
           style={{ boxShadow: 'none' }}
           variant="secondary"
           onClick={() => handleClose()}
@@ -381,6 +396,7 @@ function Projects() {
                       setshow(true)
                     }}
                     title="編 輯 編 號 ＆ 名 稱"
+                    size
                   >
                     編輯&ensp;
                     <FontAwesomeIcon icon={faPenToSquare} />

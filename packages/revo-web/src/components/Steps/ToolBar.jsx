@@ -24,19 +24,19 @@ function WarnModal({ setting }) {
           }}
         >
           <FontAwesomeIcon
-            className="h-75 px-0 my-auto"
+            className="h-75 px-0 my-auto text-revo"
             icon={faCircleExclamation}
           />
         </Row>
         <Row>
-          <h4 className="text-center">Oops! 請先完成前置步驟</h4>
+          <h4 className="text-center py-3 text-revo">Oops! 請先完成前置步驟</h4>
         </Row>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-center">
         <Button
           className="mx-auto"
           style={{ boxShadow: 'none' }}
-          variant="revo"
+          variant="outline-revo2"
           onClick={handleClose}
         >
           確 認
