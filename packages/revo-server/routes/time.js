@@ -15,9 +15,6 @@ router.post('/:range_id', async (req, res) => {
     const time = await pg.exec('one', 'INSERT INTO times(range_id, setting, created_on, updated_on) values($1, $2, current_timestamp, current_timestamp) RETURNING *', [req.params.range_id, {
         ...req.body,
         videos: [],
-        roads: null,
-        roadLine: null,
-        roadAdjust: null
       }])
     return res.send(time)
 })
@@ -42,7 +39,25 @@ router.post('/video/:time_id', async (req, res) => {
     if (!req.user) return res.send({ error: 'user not found' })
     const uploads = await Promise.all(JSON.parse(req.body.files).map((file) => upload({ Key: file.name, Body: Buffer.from(file.data) })))
     const old = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [req.params.time_id])
-    const time = await pg.exec('one', 'UPDATE times set setting = $2, updated_on = current_timestamp WHERE time_id = $1 RETURNING time_id,setting', [req.params.time_id, { ...old.setting, videos: [...old.setting.videos, ...uploads] }])
+    const time = await pg.exec(
+        'one',
+        'UPDATE times set setting = $2, updated_on = current_timestamp WHERE time_id = $1 RETURNING time_id,setting',
+        [
+            req.params.time_id, {
+                ...old.setting,
+                videos: [
+                    ...old.setting.videos,
+                    {
+                        ...uploads[0],
+                        thumbnail: uploads[1],
+                        label: '',
+                        date: '',
+                        type: '路口',
+                    }
+                ]
+            }
+        ]
+    )
     return res.send(time)
 })
 

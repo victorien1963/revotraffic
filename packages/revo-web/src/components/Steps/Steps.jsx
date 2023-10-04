@@ -22,7 +22,7 @@ function Steps() {
     if (e.target.name.startsWith('step')) setstep(e.target.name)
     settoolState({ ...toolState, [e.target.name]: e.target.value })
   }
-  const { draft, range, time, setDraftId, setRangeId, setTimeId } =
+  const { draft, range, time, timeId, setDraftId, setRangeId, setTimeId } =
     useContext(DraftContext)
 
   const steps = {
@@ -40,8 +40,9 @@ function Steps() {
     step5: <Step5 setting={{ toolState }} />,
   }
   useEffect(() => {
-    setstep(time ? 'step2' : 'step1')
-  }, [time])
+    setstep(timeId ? 'step2' : 'step1')
+    settoolState({ ...toolState, step2: 'selector' })
+  }, [timeId])
 
   const paths = useMemo(() => {
     if (!draft) return []

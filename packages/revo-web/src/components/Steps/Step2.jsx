@@ -20,12 +20,11 @@ import {
   InputGroup,
 } from 'react-bootstrap'
 import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
-import { camera7preview, camera14preview, camera7projected } from '../../assets'
+import VideoSnapshot from 'video-snapshot'
+import { camera7projected } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext } from '../ContextProvider'
-
-const getPic = (s) => (s % 2 ? camera14preview : camera7preview)
 
 function PointTag({ setting }) {
   const { id, style, handleRemovePoint } = setting
@@ -45,7 +44,7 @@ function PointTag({ setting }) {
 }
 
 function LineModal({ setting }) {
-  const { show, data, handleClose, preview } = setting
+  const { show, thumbnail, data, handleClose } = setting
   const initPoints = []
   const [points, setpoints] = useState(data || initPoints)
   const handleRemovePoint = (id) => {
@@ -69,7 +68,7 @@ function LineModal({ setting }) {
             style={{ cursor: 'pointer' }}
             className="mx-auto w-100"
             height="auto"
-            src={preview}
+            src={`/api/draft/video/${thumbnail.name}`}
             fluid
             onClick={(e) => {
               if (points.length > 1) return
@@ -153,9 +152,9 @@ function LineModal({ setting }) {
 }
 
 function ProjectedModal({ setting }) {
-  const { show, data, handleClose, preview } = setting
+  const { show, thumbnail, data = {}, handleClose } = setting
   const initPoints = []
-  const [points, setpoints] = useState(data || initPoints)
+  const [points, setpoints] = useState(data?.points || initPoints)
   const handleRemovePoint = (id) => {
     setpoints(points.filter((point) => id !== point.id))
   }
@@ -163,7 +162,7 @@ function ProjectedModal({ setting }) {
     loading: false,
     show: false,
   }
-  const [project, setproject] = useState(initProject)
+  const [project, setproject] = useState(data.projects || initProject)
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
   const generatePic = () => {
     setproject({ loading: true, show: false })
@@ -181,7 +180,7 @@ function ProjectedModal({ setting }) {
       style={{ zIndex: '1501' }}
       size="xl"
       show={show}
-      onHide={() => handleClose([points])}
+      onHide={() => handleClose()}
       className="p-2"
     >
       <Modal.Header className="h4 text-revo" closeButton>
@@ -192,7 +191,7 @@ function ProjectedModal({ setting }) {
           <Image
             className="mx-auto w-100"
             height="auto"
-            src={preview}
+            src={`/api/draft/video/${thumbnail.name}`}
             fluid
             onClick={(e) => {
               if (points.length > 3) return
@@ -264,7 +263,7 @@ function ProjectedModal({ setting }) {
             <Button
               variant="revo2"
               className="mt-auto ms-2"
-              onClick={() => handleClose(points)}
+              onClick={() => handleClose({ points, project })}
             >
               確認
             </Button>
@@ -276,15 +275,28 @@ function ProjectedModal({ setting }) {
 }
 
 function NumberTag({ setting }) {
-  const { id, style } = setting
+  const { id, style, handleDelete, draging, setdraging } = setting
   const numbers = {
-    1: '➊',
-    2: '➋',
-    3: '➌',
-    4: '➍',
+    5: '➊',
+    6: '➋',
+    7: '➌',
+    8: '➍',
+    10: '➊',
+    11: '➋',
+    12: '➌',
+    13: '➍',
   }
   return (
-    <div className="position-absolute d-flex h1" style={style}>
+    <div
+      className="position-absolute d-flex h1"
+      onDragStart={() => {
+        if (draging !== id) setdraging(id)
+      }}
+      onDrag={() => {}}
+      onDoubleClick={handleDelete}
+      draggable="true"
+      style={style}
+    >
       {numbers[id]}
     </div>
   )
@@ -309,61 +321,31 @@ function RoadTag({ setting }) {
 }
 
 function RoadModal({ setting }) {
-  const {
-    show,
-    handleClose,
-    preview = camera14preview,
-    hasDraggable = false,
-    data,
-  } = setting
+  const { show, handleClose, thumbnail, hasDraggable = false, data } = setting
   const initDraggables = [
     {
       id: 1,
       style: { width: '200px', top: '2%', left: '110%' },
-      content: (
-        <>
-          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
-            東
-          </FormLabel>
-          <Form.Control />
-        </>
-      ),
+      label: '東',
+      name: '',
     },
     {
       id: 2,
       style: { width: '200px', top: '16%', left: '110%' },
-      content: (
-        <>
-          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
-            西
-          </FormLabel>
-          <Form.Control />
-        </>
-      ),
+      label: '西',
+      name: '',
     },
     {
       id: 3,
       style: { width: '200px', top: '30%', left: '110%' },
-      content: (
-        <>
-          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
-            南
-          </FormLabel>
-          <Form.Control />
-        </>
-      ),
+      label: '南',
+      name: '',
     },
     {
       id: 4,
       style: { width: '200px', top: '44%', left: '110%' },
-      content: (
-        <>
-          <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
-            北
-          </FormLabel>
-          <Form.Control />
-        </>
-      ),
+      label: '北',
+      name: '',
     },
   ]
   const [draggables, setdraggables] = useState(
@@ -377,6 +359,14 @@ function RoadModal({ setting }) {
   }
   const [clicks, setclicks] = useState(data ? data.clicks : initClicks)
   const [clicking, setclicking] = useState('')
+  const getId = (t, l) => {
+    const start = t === 'entry' ? 5 : 10
+    const ids = l.map(({ id }) => id)
+    if (!ids.includes(start)) return start
+    if (!ids.includes(start + 1)) return start + 1
+    if (!ids.includes(start + 2)) return start + 2
+    return start + 3
+  }
 
   useEffect(() => {
     if (show) {
@@ -399,19 +389,20 @@ function RoadModal({ setting }) {
         <div className="position-relative w-50">
           <Image
             className="mx-auto w-100 h-100"
-            src={preview}
+            src={`/api/draft/video/${thumbnail.name}`}
             fluid
             onClick={(e) => {
               if (!clicking) return
+              if (clicks[clicking].length >= 4) return
               const target = e.target.getBoundingClientRect()
               const left = e.clientX - target.x
               const top = e.clientY - target.y
-              setclicks({
-                ...clicks,
+              setclicks((prevState) => ({
+                ...prevState,
                 [clicking]: [
-                  ...clicks[clicking],
+                  ...prevState[clicking],
                   {
-                    id: clicks[clicking].length + 1,
+                    id: getId(clicking, prevState[clicking]),
                     style: {
                       top,
                       left,
@@ -421,19 +412,53 @@ function RoadModal({ setting }) {
                     },
                   },
                 ],
-              })
+              }))
             }}
             onDrop={(e) => {
               const target = e.target.getBoundingClientRect()
               const left = e.clientX - target.x
               const top = e.clientY - target.y
-              setdraggables(
-                draggables.map((d) =>
-                  parseInt(d.id, 10) === parseInt(draging, 10)
-                    ? { ...d, style: { ...d.style, top, left } }
-                    : d
+              if (draging < 5) {
+                setdraggables(
+                  draggables.map((d) =>
+                    parseInt(d.id, 10) === parseInt(draging, 10)
+                      ? { ...d, style: { ...d.style, top, left } }
+                      : d
+                  )
                 )
-              )
+              } else if (draging < 10) {
+                setclicks((prevState) => ({
+                  ...prevState,
+                  entry: prevState.entry.map((ps) =>
+                    ps.id === draging
+                      ? {
+                          ...ps,
+                          style: {
+                            ...ps.style,
+                            top,
+                            left,
+                          },
+                        }
+                      : ps
+                  ),
+                }))
+              } else {
+                setclicks((prevState) => ({
+                  ...prevState,
+                  outry: prevState.outry.map((ps) =>
+                    ps.id === draging
+                      ? {
+                          ...ps,
+                          style: {
+                            ...ps.style,
+                            top,
+                            left,
+                          },
+                        }
+                      : ps
+                  ),
+                }))
+              }
             }}
             onDragOver={(e) => {
               e.stopPropagation()
@@ -442,13 +467,67 @@ function RoadModal({ setting }) {
           />
           {hasDraggable &&
             draggables.map((d) => (
-              <RoadTag key={d.id} setting={{ ...d, draging, setdraging }} />
+              <RoadTag
+                key={d.id}
+                setting={{
+                  ...d,
+                  content: (
+                    <>
+                      <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
+                        {d.label}
+                      </FormLabel>
+                      <Form.Control
+                        value={d.name}
+                        name={d.id}
+                        onChange={(e) =>
+                          setdraggables((prevState) =>
+                            prevState.map((ps) => ({
+                              ...ps,
+                              name:
+                                ps.id === parseInt(e.target.name, 10)
+                                  ? e.target.value
+                                  : ps.name,
+                            }))
+                          )
+                        }
+                      />
+                    </>
+                  ),
+                  draging,
+                  setdraging,
+                }}
+              />
             ))}
           {clicks.entry.map((e) => (
-            <NumberTag key={e.id} setting={{ ...e }} />
+            <NumberTag
+              key={e.id}
+              setting={{
+                ...e,
+                handleDelete: () =>
+                  setclicks((prevState) => ({
+                    ...prevState,
+                    entry: prevState.entry.filter((ps) => ps.id !== e.id),
+                  })),
+                draging,
+                setdraging,
+              }}
+            />
           ))}
           {clicks.outry.map((o) => (
-            <NumberTag key={o.id} setting={{ ...o }} />
+            <NumberTag
+              key={o.id}
+              setting={{
+                ...o,
+                handleDelete: () =>
+                  setclicks((prevState) => ({
+                    ...prevState,
+                    outry: prevState.outry.filter((ps) => ps.id !== o.id),
+                  })),
+                setclicks,
+                draging,
+                setdraging,
+              }}
+            />
           ))}
         </div>
         <div className="w-25 ms-auto d-flex flex-column">
@@ -492,16 +571,19 @@ function RoadModal({ setting }) {
 }
 
 function Road({ setting }) {
-  const { roads, roadAdjust, roadLine, handleDataChange, handleToolChange } =
-    setting
+  const { handleToolChange } = setting
 
-  const {
-    // timeId,
-    time = { setting: { videos: [] } },
-    // setTimes,
-  } = useContext(DraftContext)
-  const { videos } = time.setting || {}
+  const { timeId, time = {}, handleTimeEdit } = useContext(DraftContext)
+  const { videos = [] } = time.setting || {}
   const [selected, setselected] = useState('')
+  const { roads, roadAdjust, roadLine, thumbnail = {} } = videos[selected] || {}
+
+  const handleDataChange = (data) => {
+    handleTimeEdit(timeId, {
+      videos: videos.map((v, i) => (i === selected ? { ...v, ...data } : v)),
+    })
+  }
+
   const [showDate, setshowDate] = useState(false)
   const [date, setdate] = useState({
     startDate: new Date(),
@@ -509,11 +591,29 @@ function Road({ setting }) {
     key: 'selection',
   })
   const [data, setdata] = useState({
-    type: 'road',
+    label: '',
+    date: '',
+    type: '路口',
   })
-  const { type } = data
   const onDataChange = (e) =>
     setdata({ ...data, [e.target.name]: e.target.value })
+  useEffect(() => {
+    if (!videos[selected]) return
+    setdata({
+      label: videos[selected].label || '',
+      date: videos[selected].date || '',
+      type: videos[selected].type || '路口',
+    })
+    setdate({
+      startDate: videos[selected].date
+        ? moment(videos[selected].date.split('-')[0]).toDate()
+        : Date.now(),
+      endDate: videos[selected].date
+        ? moment(videos[selected].date.split('-')[1]).toDate()
+        : Date.now(),
+      key: 'selection',
+    })
+  }, [selected])
 
   const [show, setshow] = useState(false)
   const [showProject, setshowProject] = useState(false)
@@ -521,7 +621,7 @@ function Road({ setting }) {
 
   const form = [
     {
-      name: 'name',
+      name: 'label',
       label: '名稱',
       placeholder: '',
       type: 'text',
@@ -538,8 +638,8 @@ function Road({ setting }) {
       placeholder: '',
       type: 'tab',
       content: [
-        { label: '路口', name: 'type', value: 'road' },
-        { label: '路段', name: 'type', value: 'project' },
+        { label: '路口', name: 'type', value: '路口' },
+        { label: '路段', name: 'type', value: '路段' },
       ],
     },
     {
@@ -629,7 +729,7 @@ function Road({ setting }) {
                         {f.content.map((c) => (
                           <Col
                             className={`py-1 ${
-                              type === c.value ? 'bg-revo-mid rounded' : ''
+                              data.type === c.value ? 'bg-revo-mid rounded' : ''
                             }`}
                             style={{ cursor: 'pointer' }}
                             key={c.value}
@@ -727,6 +827,7 @@ function Road({ setting }) {
                           <Form.Control
                             name={f.name}
                             type={f.type}
+                            value={data[f.name]}
                             onChange={onDataChange}
                             placeholder={f.placeholder}
                             onFocus={() => setshowDate(false)}
@@ -739,17 +840,16 @@ function Road({ setting }) {
             })}
           </Col>
           <Col className="d-flex flex-column">
-            {/* <Image className="mx-auto w-75" src={getPic(selected)} fluid /> */}
             <video className="my-auto" width="100%" height="auto" controls>
               <track kind="captions" />
-              <source src={`/api/time/video/${videos[selected].name}`} />
+              <source src={`/api/time/video/${videos[selected]?.name}`} />
             </video>
             <div className="d-flex mt-auto">
               <Button
                 variant="warning"
                 className="ms-auto me-2"
                 onClick={() =>
-                  type === 'road' ? setshow(true) : setshowProject(true)
+                  data.type === '路口' ? setshow(true) : setshowProject(true)
                 }
               >
                 預覽
@@ -757,14 +857,15 @@ function Road({ setting }) {
               <Button
                 variant="revo2"
                 className="mx-2"
-                onClick={() =>
+                onClick={() => {
+                  handleDataChange(data)
                   handleToolChange({
                     target: {
                       name: 'step2',
                       value: 'selector',
                     },
                   })
-                }
+                }}
               >
                 確認
               </Button>
@@ -784,8 +885,8 @@ function Road({ setting }) {
             className="pt-2 pb-5 px-4 border rounded mx-5"
             style={{ minHeight: '82%' }}
           >
-            {videos ? (
-              videos.map(({ name }, i) => (
+            {videos && videos.length ? (
+              videos.map(({ name, ...v }, i) => (
                 <Col
                   xs={3}
                   className="flex-column h5 text-revo"
@@ -827,10 +928,13 @@ function Road({ setting }) {
                       }}
                     >
                       <FontAwesomeIcon
-                        className="fs-1"
+                        className={`fs-1 ${
+                          v.roads && v.roadAdjust && v.roadLine
+                            ? 'check-revo'
+                            : 'text-secondary'
+                        }`}
                         style={{
                           cursor: 'pointer',
-                          color: 'grey',
                         }}
                         icon={faCheckCircle}
                         onClick={() => {}}
@@ -851,53 +955,44 @@ function Road({ setting }) {
         setting={{
           show,
           data: roads,
+          thumbnail,
           handleClose: (value) => {
             if (value)
               handleDataChange({
-                target: {
-                  name: 'roads',
-                  value,
-                },
+                roads: value,
               })
             setshow(false)
           },
           hasDraggable: true,
-          preview: getPic(selected),
         }}
       />
       <ProjectedModal
         setting={{
           data: roadAdjust,
           show: showProject,
+          thumbnail,
           handleClose: (value) => {
             if (value)
               handleDataChange({
-                target: {
-                  name: 'roadAdjust',
-                  value,
-                },
+                roadAdjust: value,
               })
             setshowProject(false)
           },
-          preview: getPic(selected),
         }}
       />
       <LineModal
         setting={{
           data: roadLine,
           show: showLine,
+          thumbnail,
           handleClose: (value) => {
             if (value) {
               handleDataChange({
-                target: {
-                  name: 'roadLine',
-                  value,
-                },
+                roadLine: value,
               })
             }
             setshowLine(false)
           },
-          preview: getPic(selected),
         }}
       />
     </>
@@ -906,12 +1001,8 @@ function Road({ setting }) {
 
 function Video({ setting }) {
   const { handleToolChange } = setting
-  const {
-    timeId,
-    time = { setting: { videos: [] } },
-    setTimes,
-  } = useContext(DraftContext)
-  const { videos } = time.setting || {}
+  const { timeId, time = {}, setTimes } = useContext(DraftContext)
+  const { videos = [] } = time.setting || {}
 
   const [tempFile, settempFile] = useState(null)
   const tempurl = useMemo(
@@ -931,11 +1022,32 @@ function Video({ setting }) {
       })
     const files = []
     files.push(getArrayBuffer(tempFile))
+
+    const snapshoter = new VideoSnapshot(tempFile)
+    const previewSrc = await snapshoter.takeSnapshot()
+    const base64ToArrayBuffer = (base64) => {
+      const binaryString = atob(base64)
+      const bytes = new Uint8Array(binaryString.length)
+      for (let i = 0; i < binaryString.length; i += 1) {
+        bytes[i] = binaryString.charCodeAt(i)
+      }
+      return bytes.buffer
+    }
+
     const buffered = await Promise.all(files)
-    const arrayed = buffered.map((buffer) => ({
-      name: tempFile.name,
-      data: Array.from(new Uint8Array(buffer)),
-    }))
+    const arrayed = buffered
+      .map((buffer) => ({
+        name: tempFile.name,
+        data: Array.from(new Uint8Array(buffer)),
+      }))
+      .concat([
+        {
+          name: `${tempFile.name}_thumbnail`,
+          data: Array.from(
+            new Uint8Array(base64ToArrayBuffer(previewSrc.split(',')[1]))
+          ),
+        },
+      ])
     const res = await apiServices.data({
       path: `time/video/${timeId}`,
       method: 'post',
@@ -1079,7 +1191,7 @@ function Video({ setting }) {
 
 function Step2({ setting }) {
   const { toolState, handleDataChange, handleToolChange } = setting
-  const { time } = useContext(DraftContext)
+  const { time = {} } = useContext(DraftContext)
   const { videos = [], roads, roadLine, roadAdjust } = time.setting || {}
   const components = {
     selector: (
@@ -1095,7 +1207,10 @@ function Step2({ setting }) {
             label: '路口、路段標記',
             name: 'step2',
             value: '路口、路段標記',
-            check: roads && roadAdjust && roadLine,
+            check:
+              videos &&
+              videos.length &&
+              videos.every((v) => v.roads && v.roadAdjust && v.roadLine),
           },
           {
             label: '車種標記',
