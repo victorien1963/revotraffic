@@ -219,7 +219,7 @@ function ToolBar({ setting }) {
             handleToolChange({
               target: {
                 name: 'step1',
-                value: '計畫一覽表',
+                value: '計劃一覽表',
               },
             })
           },
