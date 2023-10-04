@@ -73,8 +73,8 @@ function LineModal({ setting }) {
             onClick={(e) => {
               if (points.length > 1) return
               const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x
-              const top = e.clientY - target.y
+              const left = e.clientX - target.x - 15
+              const top = e.clientY - target.y - 20
               setpoints([
                 ...points,
                 {
@@ -196,8 +196,8 @@ function ProjectedModal({ setting }) {
             onClick={(e) => {
               if (points.length > 3) return
               const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x
-              const top = e.clientY - target.y
+              const left = e.clientX - target.x - 15
+              const top = e.clientY - target.y - 20
               setpoints([
                 ...points,
                 {
@@ -395,8 +395,8 @@ function RoadModal({ setting }) {
               if (!clicking) return
               if (clicks[clicking].length >= 4) return
               const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x
-              const top = e.clientY - target.y
+              const left = e.clientX - target.x - 20
+              const top = e.clientY - target.y - 25
               setclicks((prevState) => ({
                 ...prevState,
                 [clicking]: [
