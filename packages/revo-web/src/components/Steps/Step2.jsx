@@ -951,50 +951,54 @@ function Road({ setting }) {
           </Row>
         </>
       )}
-      <RoadModal
-        setting={{
-          show,
-          data: roads,
-          thumbnail,
-          handleClose: (value) => {
-            if (value)
-              handleDataChange({
-                roads: value,
-              })
-            setshow(false)
-          },
-          hasDraggable: true,
-        }}
-      />
-      <ProjectedModal
-        setting={{
-          data: roadAdjust,
-          show: showProject,
-          thumbnail,
-          handleClose: (value) => {
-            if (value)
-              handleDataChange({
-                roadAdjust: value,
-              })
-            setshowProject(false)
-          },
-        }}
-      />
-      <LineModal
-        setting={{
-          data: roadLine,
-          show: showLine,
-          thumbnail,
-          handleClose: (value) => {
-            if (value) {
-              handleDataChange({
-                roadLine: value,
-              })
-            }
-            setshowLine(false)
-          },
-        }}
-      />
+      {videos[selected] && (
+        <>
+          <RoadModal
+            setting={{
+              show,
+              data: roads,
+              thumbnail,
+              handleClose: (value) => {
+                if (value)
+                  handleDataChange({
+                    roads: value,
+                  })
+                setshow(false)
+              },
+              hasDraggable: true,
+            }}
+          />
+          <ProjectedModal
+            setting={{
+              data: roadAdjust,
+              show: showProject,
+              thumbnail,
+              handleClose: (value) => {
+                if (value)
+                  handleDataChange({
+                    roadAdjust: value,
+                  })
+                setshowProject(false)
+              },
+            }}
+          />
+          <LineModal
+            setting={{
+              data: roadLine,
+              show: showLine,
+              thumbnail,
+              handleClose: (value) => {
+                if (value) {
+                  handleDataChange({
+                    roadLine: value,
+                  })
+                }
+                setshowLine(false)
+              },
+            }}
+          />
+        </>
+      )}
     </>
   )
 }
