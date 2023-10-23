@@ -534,6 +534,7 @@ function RoadModal({ setting }) {
           <Button
             className="my-2"
             variant="outline-dark"
+            active={clicking === 'entry'}
             onClick={() => setclicking('entry')}
           >
             入口車道
@@ -541,6 +542,7 @@ function RoadModal({ setting }) {
           <Button
             className="my-2"
             variant="outline-dark"
+            active={clicking === 'outry'}
             onClick={() => setclicking('outry')}
           >
             出口車道
@@ -649,22 +651,30 @@ function Road({ setting }) {
       type: 'road',
       check: roads,
       click: () => setshow(true),
+      show: true,
     },
     {
       name: 'transform',
       label: '投影轉換',
       placeholder: '',
       type: 'road',
-      check: roadAdjust,
+      check:
+        roadAdjust &&
+        roadAdjust.points &&
+        roadAdjust.points.length === 4 &&
+        roadAdjust.project &&
+        roadAdjust.project.show,
       click: () => setshowProject(true),
+      show: data.type === '路段',
     },
     {
       name: 'distance',
       label: '距離基準標記',
       placeholder: '',
       type: 'road',
-      check: roadLine,
+      check: roadLine && roadLine.length === 2,
       click: () => setshowLine(true),
+      show: data.type === '路段',
     },
   ]
 
@@ -698,25 +708,30 @@ function Road({ setting }) {
                 case 'road':
                   return (
                     <React.Fragment key={i}>
-                      <Row className="py-3">
-                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
-                          <Form.Label className="mb-0 text-">
-                            {f.label}
-                          </Form.Label>
-                        </Col>
-                        <Col>
-                          <FontAwesomeIcon
-                            className={`h5 mt-2 ${
-                              f.check ? 'check-revo' : 'text-secondary'
-                            }`}
-                            style={{
-                              cursor: 'pointer',
-                            }}
-                            icon={faCheckCircle}
-                            onClick={f.click}
-                          />
-                        </Col>
-                      </Row>
+                      {f.show && (
+                        <Row className="py-3">
+                          <Col
+                            xs={3}
+                            className="text-end pt-1 text-revo fw-bold"
+                          >
+                            <Form.Label className="mb-0 text-">
+                              {f.label}
+                            </Form.Label>
+                          </Col>
+                          <Col>
+                            <FontAwesomeIcon
+                              className={`h5 mt-2 ${
+                                f.check ? 'check-revo' : 'text-secondary'
+                              }`}
+                              style={{
+                                cursor: 'pointer',
+                              }}
+                              icon={faCheckCircle}
+                              onClick={f.click}
+                            />
+                          </Col>
+                        </Row>
+                      )}
                     </React.Fragment>
                   )
                 case 'tab':
@@ -1013,6 +1028,8 @@ function Video({ setting }) {
     () => (tempFile ? URL.createObjectURL(tempFile) : ''),
     [tempFile]
   )
+  const [fileName, setfileName] = useState('')
+  useEffect(() => setfileName(tempFile ? tempFile.name : ''), [tempFile])
 
   const [uploading, setuploading] = useState(false)
   const handleUpload = async () => {
@@ -1041,12 +1058,12 @@ function Video({ setting }) {
     const buffered = await Promise.all(files)
     const arrayed = buffered
       .map((buffer) => ({
-        name: tempFile.name,
+        name: fileName || tempFile.name,
         data: Array.from(new Uint8Array(buffer)),
       }))
       .concat([
         {
-          name: `${tempFile.name}_thumbnail`,
+          name: `${fileName || tempFile.name}_thumbnail`,
           data: Array.from(
             new Uint8Array(base64ToArrayBuffer(previewSrc.split(',')[1]))
           ),
@@ -1098,8 +1115,8 @@ function Video({ setting }) {
         <Col className="ps-0 pe-5">
           <Form.Control
             type="text"
-            value={videos.length ? videos[videos.length - 1].name : ''}
-            readOnly
+            value={fileName}
+            onChange={(e) => setfileName(e.target.value)}
           />
         </Col>
       </Row>

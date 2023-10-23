@@ -61,9 +61,9 @@ function ToolBar({ setting }) {
           value: '操作流程圖',
         },
         {
-          label: '計劃一覽表',
+          label: '計畫一覽表',
           name: 'step1',
-          value: '計劃一覽表',
+          value: '計畫一覽表',
         },
       ],
     },
@@ -219,7 +219,7 @@ function ToolBar({ setting }) {
             handleToolChange({
               target: {
                 name: 'step1',
-                value: '計劃一覽表',
+                value: '計畫一覽表',
               },
             })
           },

@@ -26,10 +26,6 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
   },
   async (email, password, done) => {
-    console.log(email)
-    console.log(passport)
-    const users = await pg.exec('any', 'SELECT user_id,name,password FROM users', [])
-    console.log(users)
     const user = await pg.exec('oneOrNone', 'SELECT user_id,name,password FROM users WHERE email = $1', [email])
     if (!user) return done(null, false)
     const verified = await verify(password, user.password)

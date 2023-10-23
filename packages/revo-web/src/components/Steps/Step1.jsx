@@ -32,7 +32,7 @@ function DeleteModal({ setting }) {
   const { show, name, handleClose } = setting
   const { draftId, rangeId } = useContext(DraftContext)
   const step = useMemo(
-    () => (draftId ? (rangeId ? '交維階段' : '計劃範圍') : '執行計劃'),
+    () => (draftId ? (rangeId ? '交維階段' : '計畫範圍') : '執行計畫'),
     [draftId, rangeId]
   )
 
@@ -90,7 +90,7 @@ function ProjectModal({ setting }) {
   const [showDate, setshowDate] = useState(false)
   const { draftId, rangeId } = useContext(DraftContext)
   const step = useMemo(
-    () => (draftId ? (rangeId ? '交維階段' : '計劃範圍') : '執行計劃'),
+    () => (draftId ? (rangeId ? '交維階段' : '計畫範圍') : '執行計畫'),
     [draftId, rangeId]
   )
 
@@ -239,13 +239,13 @@ function Projects() {
   const projectForm = [
     {
       name: 'id',
-      label: '計劃編號',
+      label: '計畫編號',
       placeholder: '',
       type: 'text',
     },
     {
       name: 'name',
-      label: '計劃名稱',
+      label: '計畫名稱',
       placeholder: '',
       type: 'text',
     },
@@ -286,8 +286,14 @@ function Projects() {
       draftId
         ? rangeId
           ? '請選擇交維階段'
-          : '請選擇計劃範圍'
-        : '請選擇執行計劃',
+          : '請選擇計畫範圍'
+        : '請選擇執行計畫',
+    [draftId, rangeId]
+  )
+
+  const btntext = useMemo(
+    () =>
+      draftId ? (rangeId ? '新 增 交 維 階 段' : '新 增 範 圍') : '新 增 計 畫',
     [draftId, rangeId]
   )
 
@@ -364,7 +370,7 @@ function Projects() {
             variant="outline-revo2"
             onClick={() => setshow(true)}
           >
-            新 建 計 劃&ensp;
+            {btntext}&ensp;
             <FontAwesomeIcon icon={faCirclePlus} />
           </Button>
         </Col>
@@ -485,7 +491,7 @@ function Step1({ setting }) {
 
   const components = {
     操作流程圖: <FlowChart />,
-    計劃一覽表: <Projects />,
+    計畫一覽表: <Projects />,
   }
 
   return (

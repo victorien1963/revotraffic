@@ -50,7 +50,6 @@ app.use('/draft', getUser, draftRouter)
 app.use('/range', getUser, rangeRouter)
 app.use('/time', getUser, timeRouter)
 app.get('/me', getUser, async (req, res) => {
-  console.log('here')
   return res.send({
     user: req.user,
   })

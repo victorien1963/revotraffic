@@ -10,6 +10,18 @@ import ToolBar from './ToolBar'
 import { DraftContext } from '../ContextProvider'
 
 function Steps() {
+  const {
+    draft,
+    draftId,
+    range,
+    rangeId,
+    time,
+    timeId,
+    setDraftId,
+    setRangeId,
+    setTimeId,
+  } = useContext(DraftContext)
+
   const [step, setstep] = useState('step1')
   const [toolState, settoolState] = useState({
     step1: '操作流程圖',
@@ -20,10 +32,13 @@ function Steps() {
   })
   const handleToolChange = (e) => {
     if (e.target.name.startsWith('step')) setstep(e.target.name)
+    if (e.target.name === 'step1') {
+      if (timeId) setTimeId('')
+      else if (rangeId) setRangeId('')
+      else if (draftId) setDraftId('')
+    }
     settoolState({ ...toolState, [e.target.name]: e.target.value })
   }
-  const { draft, range, time, timeId, setDraftId, setRangeId, setTimeId } =
-    useContext(DraftContext)
 
   const steps = {
     step1: <Step1 setting={{ toolState }} />,
@@ -52,7 +67,7 @@ function Steps() {
           label: `${draft.setting.id}-${draft.setting.name}`,
           onClick: () => setDraftId(''),
         },
-        { label: '請選擇計劃範圍' },
+        { label: '請選擇計畫範圍' },
       ]
     if (!time)
       return [
@@ -88,9 +103,18 @@ function Steps() {
         },
       ]
     return [
-      { label: `${draft.setting.id}-${draft.setting.name}` },
-      { label: `${range.setting.id}-${range.setting.name}` },
-      { label: `${time.setting.date} - ${time.setting.name}` },
+      {
+        label: `${draft.setting.id}-${draft.setting.name}`,
+        onClick: () => setDraftId(''),
+      },
+      {
+        label: `${range.setting.id}-${range.setting.name}`,
+        onClick: () => setRangeId(''),
+      },
+      {
+        label: `${time.setting.date} - ${time.setting.name}`,
+        onClick: () => setTimeId(''),
+      },
     ]
   }, [draft, range, time, step, toolState])
 
