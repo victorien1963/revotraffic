@@ -14,6 +14,7 @@ import {
   Form,
   FormLabel,
   Button,
+  ButtonGroup,
   Image,
   Modal,
   Spinner,
@@ -41,7 +42,7 @@ function PointTag({ setting }) {
           cursor: 'pointer',
         }}
         icon={faCircle}
-        onClick={() => handleRemovePoint(id)}
+        onDoubleClick={() => handleRemovePoint(id)}
       />
     </div>
   )
@@ -71,10 +72,10 @@ function LineModal({ setting }) {
           <FontAwesomeIcon icon={faCircleInfo} title="說明" />
           &ensp;雙擊於圖片中拉出兩個點，並使其相連（距離 10 公尺）。
         </h6>
-        <div className="d-flex position-relative w-100 me-3">
+        <div className="d-flex position-relative w-75 mx-auto">
           <Image
             style={{ cursor: 'pointer' }}
-            className="mx-auto w-75"
+            className="w-100"
             height="auto"
             src={`/api/draft/video/${thumbnail.name}`}
             fluid
@@ -365,7 +366,7 @@ function RoadModal({ setting }) {
     outry: [],
   }
   const [clicks, setclicks] = useState(data ? data.clicks : initClicks)
-  const [clicking, setclicking] = useState('')
+  const [clicking, setclicking] = useState('entry')
   const getId = (t, l) => {
     const start = t === 'entry' ? 5 : 10
     const ids = l.map(({ id }) => id)
@@ -541,22 +542,24 @@ function RoadModal({ setting }) {
           ))}
         </div>
         <div className="w-25 ms-auto d-flex flex-column">
-          <Button
-            className="my-2"
-            variant="outline-dark"
-            active={clicking === 'entry'}
-            onClick={() => setclicking('entry')}
-          >
-            入口車道
-          </Button>
-          <Button
-            className="my-2"
-            variant="outline-dark"
-            active={clicking === 'outry'}
-            onClick={() => setclicking('outry')}
-          >
-            出口車道
-          </Button>
+          <ButtonGroup>
+            <Button
+              className="my-2"
+              variant="outline-dark"
+              active={clicking === 'entry'}
+              onClick={() => setclicking('entry')}
+            >
+              入口車道
+            </Button>
+            <Button
+              className="my-2"
+              variant="outline-dark"
+              active={clicking === 'outry'}
+              onClick={() => setclicking('outry')}
+            >
+              出口車道
+            </Button>
+          </ButtonGroup>
           <h6 style={{ top: '0' }} className="text-secondary pt-2">
             <FontAwesomeIcon icon={faCircleInfo} title="說明" />
             &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。

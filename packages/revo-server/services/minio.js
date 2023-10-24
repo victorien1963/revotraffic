@@ -53,7 +53,7 @@ const upload = async ({ Key, Body }) => {
       // Content of the new object.
       Body
     }
-    await client.send(new PutObjectCommand(object_upload_params));
+    await client.send(new PutObjectCommand(object_upload_params))
     return { name: fileName }
   } catch (e) {
     console.log('encount error while upload file')

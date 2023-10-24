@@ -72,6 +72,10 @@ function Welcome() {
                   type={f.type}
                   value={data[f.name]}
                   onChange={onDataChange}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && !event.nativeEvent.isComposing)
+                      handleLogin()
+                  }}
                   placeholder={f.placeholder}
                   size="sm"
                   className="m-2"
