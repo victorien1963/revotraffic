@@ -19,7 +19,11 @@ import {
   Spinner,
   InputGroup,
 } from 'react-bootstrap'
-import { faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheckCircle,
+  faCircle,
+  faCircleInfo,
+} from '@fortawesome/free-solid-svg-icons'
 import VideoSnapshot from 'video-snapshot'
 import { camera7projected } from '../../assets'
 import LoadingButton from '../LoadingButton'
@@ -59,14 +63,18 @@ function LineModal({ setting }) {
       onHide={() => handleClose(points)}
       className="p-2"
     >
-      <Modal.Header className="h4 text-revo" closeButton>
+      <Modal.Header className="h5 text-revo" closeButton>
         標記距離基準
       </Modal.Header>
-      <Modal.Body className="d-flex">
-        <div className="position-relative w-60 me-3">
+      <Modal.Body>
+        <h6 className="text-center text-secondary">
+          <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+          &ensp;雙擊於圖片中拉出兩個點，並使其相連（距離 10 公尺）。
+        </h6>
+        <div className="d-flex position-relative w-100 me-3">
           <Image
             style={{ cursor: 'pointer' }}
-            className="mx-auto w-100"
+            className="mx-auto w-75"
             height="auto"
             src={`/api/draft/video/${thumbnail.name}`}
             fluid
@@ -127,26 +135,26 @@ function LineModal({ setting }) {
             />
           )}
         </div>
-        <div className="ms-auto d-flex">
-          <h5>說明：點兩下拉出距離10公尺</h5>
-          <Button
-            variant="secondary"
-            className="mt-auto"
-            onClick={() => {
-              setpoints(initPoints)
-            }}
-          >
-            清除
-          </Button>
-          <Button
-            variant="revo"
-            className="mt-auto ms-2"
-            onClick={() => handleClose(points)}
-          >
-            確認
-          </Button>
-        </div>
+        <div className="ms-auto d-flex" />
       </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant="secondary"
+          className="mt-auto"
+          onClick={() => {
+            setpoints(initPoints)
+          }}
+        >
+          清除
+        </Button>
+        <Button
+          variant="revo"
+          className="mt-auto ms-2"
+          onClick={() => handleClose(points)}
+        >
+          確認
+        </Button>
+      </Modal.Footer>
     </Modal>
   )
 }
@@ -183,93 +191,92 @@ function ProjectedModal({ setting }) {
       onHide={() => handleClose()}
       className="p-2"
     >
-      <Modal.Header className="h4 text-revo" closeButton>
+      <Modal.Header className="h5 text-revo" closeButton>
         投影轉換
       </Modal.Header>
-      <Modal.Body className="d-flex">
-        <div className="position-relative w-50 me-3">
-          <Image
-            className="mx-auto w-100"
-            height="auto"
-            src={`/api/draft/video/${thumbnail.name}`}
-            fluid
-            onClick={(e) => {
-              if (points.length > 3) return
-              const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x - 15
-              const top = e.clientY - target.y - 20
-              setpoints([
-                ...points,
-                {
-                  id: points.length + 1,
-                  style: {
-                    top,
-                    left,
-                    width: '10px',
-                    height: '10px',
-                    color: 'red',
-                  },
-                },
-              ])
-            }}
-          />
-          {points.map((point) => (
-            <PointTag
-              key={point.id}
-              setting={{ ...point, handleRemovePoint }}
-            />
-          ))}
-        </div>
-        <div className="position-relative w-25 d-flex">
-          {project.loading && <Spinner className="m-auto" animation="border" />}
-          {project.show && (
+      <Modal.Body>
+        <h6 className="position-relative py-3 text-center text-secondary">
+          <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+          &ensp;在影片截圖上按下路段 4 個角， 並按下校正進行投影視角轉換。
+        </h6>
+        <div className="d-flex">
+          <div className="position-relative w-75 mx-3 ps-4">
             <Image
-              className="mx-auto w-50"
+              className="mx-auto w-100"
               height="auto"
-              src={camera7projected}
+              src={`/api/draft/video/${thumbnail.name}`}
               fluid
-            />
-          )}
-          {!project.loading && !project.show && (
-            <div className="d-flex px-5 border">
-              <h5 className="m-auto text-revo-light text-center">校正後路段</h5>
-            </div>
-          )}
-        </div>
-        <div className="ms-auto d-flex flex-column">
-          <h5>
-            說明：在影片截圖上按下路段四個
-            <br />
-            角， 並按下校正進行投影視角轉換。
-          </h5>
-          <div className="ms-auto mt-auto d-flex">
-            <Button
-              variant="secondary"
-              className="mt-auto"
-              onClick={() => {
-                setpoints(initPoints)
-                setproject(initProject)
+              onClick={(e) => {
+                if (points.length > 3) return
+                const target = e.target.getBoundingClientRect()
+                const left = e.clientX - target.x - 15
+                const top = e.clientY - target.y - 20
+                setpoints([
+                  ...points,
+                  {
+                    id: points.length + 1,
+                    style: {
+                      top,
+                      left,
+                      width: '10px',
+                      height: '10px',
+                      color: 'red',
+                    },
+                  },
+                ])
               }}
-            >
-              清除
-            </Button>
-            <Button
-              variant="revo"
-              className="mt-auto ms-2"
-              onClick={generatePic}
-            >
-              校正
-            </Button>
-            <Button
-              variant="revo2"
-              className="mt-auto ms-2"
-              onClick={() => handleClose({ points, project })}
-            >
-              確認
-            </Button>
+            />
+            {points.map((point) => (
+              <PointTag
+                key={point.id}
+                setting={{ ...point, handleRemovePoint }}
+              />
+            ))}
+          </div>
+          <div className="position-relative w-25 d-flex justify-content-center rounded-lg">
+            {project.loading && (
+              <Spinner className="m-auto" animation="border" />
+            )}
+            {project.show && (
+              <Image
+                className="mx-auto w-50"
+                height="auto"
+                src={camera7projected}
+                fluid
+              />
+            )}
+            {!project.loading && !project.show && (
+              <div className="d-flex px-5 border">
+                <h5 className="m-auto text-revo-light text-center">
+                  校正後路段
+                </h5>
+              </div>
+            )}
           </div>
         </div>
       </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-end">
+        <Button
+          variant="secondary"
+          className="mt-auto"
+          onClick={() => {
+            setpoints(initPoints)
+            setproject(initProject)
+          }}
+        >
+          清除
+        </Button>
+        <Button variant="revo" className="mt-auto ms-2" onClick={generatePic}>
+          校正
+        </Button>
+        <Button
+          variant="revo2"
+          className="mt-auto ms-2"
+          onClick={() => handleClose({ points, project })}
+        >
+          確認
+        </Button>
+      </Modal.Footer>
     </Modal>
   )
 }
@@ -313,7 +320,7 @@ function RoadTag({ setting }) {
       onDrag={() => {}}
       className="position-absolute d-flex"
       draggable="true"
-      style={style}
+      style={{ ...style, cursor: 'grab' }}
     >
       {content}
     </div>
@@ -382,7 +389,7 @@ function RoadModal({ setting }) {
       onHide={() => handleClose()}
       className="p-2"
     >
-      <Modal.Header className="h4 text-revo" closeButton>
+      <Modal.Header className="h5 text-revo" closeButton>
         方向與出入口標記
       </Modal.Header>
       <Modal.Body className="d-flex">
@@ -473,7 +480,10 @@ function RoadModal({ setting }) {
                   ...d,
                   content: (
                     <>
-                      <FormLabel className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded">
+                      <FormLabel
+                        className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
+                        style={{ pointerEvents: 'none' }}
+                      >
                         {d.label}
                       </FormLabel>
                       <Form.Control
@@ -547,27 +557,31 @@ function RoadModal({ setting }) {
           >
             出口車道
           </Button>
-          <div className="d-flex mt-auto ms-auto">
-            <Button
-              variant="secondary"
-              className="mx-2"
-              onClick={() => {
-                setdraggables(initDraggables)
-                setclicks(initClicks)
-              }}
-            >
-              清除
-            </Button>
-            <Button
-              variant="revo2"
-              className="mt-auto ms-2"
-              onClick={() => handleClose({ draggables, clicks })}
-            >
-              確認
-            </Button>
-          </div>
+          <h6 style={{ top: '0' }} className="text-secondary pt-2">
+            <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+            &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。
+          </h6>
         </div>
       </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-end">
+        <Button
+          variant="secondary"
+          className="mx-2"
+          onClick={() => {
+            setdraggables(initDraggables)
+            setclicks(initClicks)
+          }}
+        >
+          清除
+        </Button>
+        <Button
+          variant="revo2"
+          className="mt-auto ms-2"
+          onClick={() => handleClose({ draggables, clicks })}
+        >
+          確認
+        </Button>
+      </Modal.Footer>
     </Modal>
   )
 }

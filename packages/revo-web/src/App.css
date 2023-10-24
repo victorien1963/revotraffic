@@ -15,9 +15,13 @@
 
 .textShadow {
   box-shadow: none;
-  text-shadow: black 0.1em 0.1em 0.2em;
+  text-shadow: rgb(87, 179, 255) 0.1em 0.1em 0.2em;
   border-radius: 50%;
   cursor: grab;
+}
+
+.boxShadow {
+  box-shadow: rgb(178, 178, 178) 0.1em 0.1em 0.2em;
 }
 
 .dropdown-item:active {
