@@ -287,8 +287,8 @@ function NumberTag({ setting }) {
     13: '➍',
   }
   return (
-    <div
-      className="position-absolute d-flex h1"
+    <h1
+      className="position-absolute d-flex h1 textShadow"
       onDragStart={() => {
         if (draging !== id) setdraging(id)
       }}
@@ -298,7 +298,7 @@ function NumberTag({ setting }) {
       style={style}
     >
       {numbers[id]}
-    </div>
+    </h1>
   )
 }
 

@@ -13,6 +13,13 @@
   min-height: 8vh;
 }
 
+.textShadow {
+  box-shadow: none;
+  text-shadow: black 0.1em 0.1em 0.2em;
+  border-radius: 50%;
+  cursor: grab;
+}
+
 .dropdown-item:active {
   background-color: #d2e4d5 !important;
 }
