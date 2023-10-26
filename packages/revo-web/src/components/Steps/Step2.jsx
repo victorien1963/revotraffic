@@ -176,12 +176,31 @@ function ProjectedModal({ setting }) {
   const generatePic = () => {
     setproject({ loading: true, show: false })
   }
+
+  const [fixed, setfixed] = useState(null)
   useEffect(() => {
     const generate = async () => {
       await delay(1000)
+
+      const res = await apiServices.data({
+        path: `warp_image`,
+        method: 'post',
+        params: {
+          lu: `${points[0].style.top},${points[0].style.left}`,
+          ld: `${points[1].style.top},${points[1].style.left}`,
+          ru: `${points[2].style.top},${points[2].style.left}`,
+          rd: `${points[3].style.top},${points[3].style.left}`,
+          Key: thumbnail.name,
+        },
+      })
+      setfixed(res.data.name)
+
+      // lu=126,226&ld=115,296&ru=264,252&rd=252,334
+      // 選填參數 height=輸出圖片高度， width=輸出圖片寬度 (這兩個沒填，則預設用輸入圖片的長寬)
+
       setproject({ loading: false, show: true })
     }
-    if (project.loading) generate()
+    if (project.loading && points.length === 4) generate()
   }, [project.loading])
 
   return (
@@ -242,7 +261,7 @@ function ProjectedModal({ setting }) {
               <Image
                 className="mx-auto w-50"
                 height="auto"
-                src={camera7projected}
+                src={fixed ? `/api/draft/video/${fixed}` : camera7projected}
                 fluid
               />
             )}

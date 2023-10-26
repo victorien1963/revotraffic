@@ -3,6 +3,12 @@ require('dotenv').config()
 const createError = require('http-errors')
 const express = require('express')
 const path = require('path')
+
+const fs = require('fs/promises')
+const { createWriteStream } = require('fs')
+const { upload, download } = require('./services/minio')
+const apiServices = require('./services/apiService')
+
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const cors = require('cors')
@@ -12,6 +18,30 @@ const socket = require('./services/socket')
 const pg = require('./services/pgService')
 
 const app = express()
+
+// warp image api
+app.post('/warp_image', async (req, res) => {
+  const { lu, ld, ru, rd, Key } = req.query
+  const file = await download({ Key })
+  const destination = createWriteStream("./public/save.png")
+  file.pipe(destination)
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+  await delay(5000)
+
+  const saved = await fs.readFile('./public/save.png')
+  const img = await apiServices.send({
+    url: `${process.env.IMAGE_WARP_API}/api/warp_image`,
+    method: 'post',
+    data: saved,
+    params: req.query,
+    responseType: 'arraybuffer'
+  })
+  console.log(img)
+  const uploaded = await upload({ Key: `haha`, Body: Buffer.from(img) })
+  return res.send({
+    data: uploaded
+  })
+})
 
 const authRouter = require('./routes/auth')
 const draftRouter = require('./routes/draft')
@@ -25,7 +55,7 @@ app.set('view engine', 'ejs')
 app.use(cors())
 app.use(logger('dev'))
 
-app.use(express.json({ limit: '100000kb' }))
+app.use(express.json({ limit: '1000000kb' }))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
