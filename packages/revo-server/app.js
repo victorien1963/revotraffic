@@ -21,7 +21,7 @@ const app = express()
 
 // warp image api
 app.post('/warp_image', async (req, res) => {
-  const { lu, ld, ru, rd, Key } = req.query
+  const { Key } = req.query
   const file = await download({ Key })
   const destination = createWriteStream("./public/save.png")
   file.pipe(destination)
@@ -36,7 +36,6 @@ app.post('/warp_image', async (req, res) => {
     params: req.query,
     responseType: 'arraybuffer'
   })
-  console.log(img)
   const uploaded = await upload({ Key: `haha`, Body: Buffer.from(img) })
   return res.send({
     data: uploaded
