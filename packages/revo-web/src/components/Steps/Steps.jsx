@@ -50,7 +50,7 @@ function Steps() {
         }}
       />
     ),
-    step3: <Step3 setting={{ toolState }} />,
+    step3: <Step3 setting={{ toolState, handleToolChange }} />,
     step4: <Step4 setting={{ toolState, handleToolChange }} />,
     step5: <Step5 setting={{ toolState }} />,
   }

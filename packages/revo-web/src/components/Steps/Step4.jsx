@@ -178,7 +178,7 @@ function Files({ setting }) {
 }
 
 function Step4({ setting }) {
-  const { modals, toolState, handleToolChange, handleDataChange } = setting
+  const { modals = [], toolState, handleToolChange, handleDataChange } = setting
   // const [selected, setselected] = useState('')
   const [checked, setchecked] = useState(false)
   const [show, setshow] = useState(false)
