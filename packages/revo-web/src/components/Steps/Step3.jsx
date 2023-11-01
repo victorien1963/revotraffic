@@ -904,7 +904,7 @@ function Step3({ setting }) {
               {Object.keys(trueValue[0]).map((key) => (
                 <Col>
                   {Object.keys(trueValue[0][key]).map((way) => (
-                    <Row>
+                    <Row className="px-3">
                       <Form.Control
                         value={trueValue[0][key][way]}
                         onChange={(e) =>
@@ -951,7 +951,7 @@ function Step3({ setting }) {
               {Object.keys(trueValue[1]).map((key) => (
                 <Col>
                   {Object.keys(trueValue[1][key]).map((way) => (
-                    <Row>
+                    <Row className="px-3">
                       <Form.Control
                         value={trueValue[1][key][way]}
                         onChange={(e) =>
@@ -998,7 +998,7 @@ function Step3({ setting }) {
               {Object.keys(trueValue[2]).map((key) => (
                 <Col>
                   {Object.keys(trueValue[2][key]).map((way) => (
-                    <Row>
+                    <Row className="px-3">
                       <Form.Control
                         value={trueValue[2][key][way]}
                         onChange={(e) =>
@@ -1045,7 +1045,7 @@ function Step3({ setting }) {
               {Object.keys(trueValue[3]).map((key) => (
                 <Col>
                   {Object.keys(trueValue[3][key]).map((way) => (
-                    <Row>
+                    <Row className="px-3">
                       <Form.Control
                         value={trueValue[3][key][way]}
                         onChange={(e) =>
