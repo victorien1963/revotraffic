@@ -208,7 +208,7 @@ function ProjectedModal({ setting }) {
     setproject({ loading: true, show: false })
   }
 
-  const [fixed, setfixed] = useState(null)
+  const [fixed, setfixed] = useState(data?.fixed)
   useEffect(() => {
     const generate = async () => {
       await delay(1000)
@@ -290,7 +290,7 @@ function ProjectedModal({ setting }) {
             {project.loading && (
               <Spinner className="m-auto" animation="border" />
             )}
-            {project.show && (
+            {!project.loading && (project.show || fixed) && (
               <Image
                 className="mx-auto w-50"
                 height="auto"
@@ -298,7 +298,7 @@ function ProjectedModal({ setting }) {
                 fluid
               />
             )}
-            {!project.loading && !project.show && (
+            {!project.loading && !project.show && !fixed && (
               <div className="d-flex px-5 border">
                 <h5 className="m-auto text-revo-light text-center">
                   校正後路段
@@ -325,7 +325,7 @@ function ProjectedModal({ setting }) {
         <Button
           variant="revo2"
           className="mt-auto ms-2"
-          onClick={() => handleClose({ points, project })}
+          onClick={() => handleClose({ points, project, fixed })}
         >
           確認
         </Button>

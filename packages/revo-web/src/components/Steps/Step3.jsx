@@ -893,6 +893,10 @@ function Step3({ setting }) {
     [selectedVideo]
   )
 
+  useEffect(() => {
+    setprogress(0)
+  }, [selectedVideo])
+
   const components = {
     影像辨識: (
       <Row className="h-100 overflow-hidden">
@@ -949,7 +953,7 @@ function Step3({ setting }) {
             aria-label="Default select example"
             onChange={(e) => setselected(e.target.value)}
             value={selected}
-            disabled={!selectedVideo}
+            disabled={!selectedVideo || progress !== 100}
           >
             <option value="" className="d-none">
               下拉檢視辨識結果
