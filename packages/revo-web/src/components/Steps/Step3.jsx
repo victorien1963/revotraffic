@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import {
   Container,
@@ -11,9 +11,11 @@ import {
   Form,
   Image,
   Table,
+  Modal,
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import { DraftContext } from '../ContextProvider'
 import {
   camera14,
   camera7projection,
@@ -26,6 +28,673 @@ import {
   gallery7,
   turning,
 } from '../../assets'
+
+function SpeedTable() {
+  const result = [
+    ['1.25461803281359', '0.301129160269795', '8.6948798106613'],
+    ['1.82005253118489', '0.300347873944984', '9.9389992337925'],
+    ['3.42607483534419', '0.301118844606688', '9.47823468375696'],
+    ['4.32605083532848', '0.309979938830038', '10.2952546918134'],
+    ['5.05740903868158', '0.303420175730289', '10.8777690744131'],
+    ['1.22491390814632', '0.31440543552304', '8.46606946927862'],
+    ['0.820256322986837', '0.34167361421527', '3.31530632154377'],
+    [],
+    [],
+  ]
+
+  return (
+    <div className="w-100 h-100 d-flex">
+      <div className="border-table w-100 h-100 d-flex flex-column">
+        <Row>
+          <Col xs={2}>X</Col>
+          <Col xs={3}>Y</Col>
+          <Col xs={3}>Ymin</Col>
+          <Col xs={3}>Ymax</Col>
+        </Row>
+        {result.map((r, i) => (
+          <Row>
+            <Col xs={2}>{i * 10}</Col>
+            <Col xs={3}>{r[0]}</Col>
+            <Col xs={3}>{r[1]}</Col>
+            <Col xs={3}>{r[2]}</Col>
+          </Row>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function AccuracyTable() {
+  // const [trueValue, settrueValue] = useState()
+  const [show, setshow] = useState(false)
+  const result = {
+    0: {
+      機車: {
+        左轉: '22',
+        直行: '583',
+        右轉: '93',
+      },
+      小客車: {
+        左轉: '51',
+        直行: '173',
+        右轉: '45',
+      },
+      大客車: {
+        左轉: '1',
+        直行: '3',
+        右轉: '1',
+      },
+    },
+    1: {
+      機車: {
+        左轉: '104',
+        直行: '961',
+        右轉: '78',
+      },
+      小客車: {
+        左轉: '93',
+        直行: '650',
+        右轉: '110',
+      },
+      大客車: {
+        左轉: '3',
+        直行: '38',
+        右轉: '2',
+      },
+    },
+    2: {
+      機車: {
+        左轉: '106',
+        直行: '761',
+        右轉: '87',
+      },
+      小客車: {
+        左轉: '63',
+        直行: '220',
+        右轉: '67',
+      },
+      大客車: {
+        左轉: '9',
+        直行: '3',
+        右轉: '1',
+      },
+    },
+    3: {
+      機車: {
+        左轉: '72',
+        直行: '513',
+        右轉: '125',
+      },
+      小客車: {
+        左轉: '40',
+        直行: '529',
+        右轉: '70',
+      },
+      大客車: {
+        左轉: '1',
+        直行: '24',
+        右轉: '13',
+      },
+    },
+  }
+  const [trueValue, settrueValue] = useState({
+    0: {
+      機車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      小客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      大客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+    },
+    1: {
+      機車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      小客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      大客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+    },
+    2: {
+      機車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      小客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      大客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+    },
+    3: {
+      機車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      小客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+      大客車: {
+        左轉: '',
+        直行: '',
+        右轉: '',
+      },
+    },
+  })
+  return (
+    <div className="w-100 h-100 d-flex">
+      <div className="border-table w-100 h-100 d-flex flex-column">
+        <Row>
+          <Col xs={3}>17:01:00-18:01:00</Col>
+          <Col xs={2} />
+          <Col xs={3}>辨識結果</Col>
+          {/* <Col>真值結果</Col> */}
+          <Col>誤差</Col>
+        </Row>
+        <Row>
+          <Col xs={3}>交叉路口</Col>
+          <Col xs={1}>路口編號</Col>
+          <Col xs={1}>方向</Col>
+          <Col xs={1}>機車</Col>
+          <Col xs={1}>小客車</Col>
+          <Col xs={1}>大客車</Col>
+          {/* <Col>機車</Col>
+          <Col>小客車</Col>
+          <Col>大客車</Col> */}
+          <Col>機車</Col>
+          <Col>小客車</Col>
+          <Col>大客車</Col>
+        </Row>
+        <Row className="flex-fill">
+          <Col xs={1}>
+            <Row />
+            <Row />
+            <Row />
+          </Col>
+          <Col xs={1}>
+            <Row />
+            <Row>路口直向</Row>
+            <Row>4</Row>
+          </Col>
+          <Col xs={1}>
+            <Row />
+            <Row>N↓</Row>
+            <Row />
+          </Col>
+          <Col xs={1}>{`1(西)
+(南平路)`}</Col>
+          <Col xs={1}>
+            <Row>左轉</Row>
+            <Row>直行</Row>
+            <Row>右轉</Row>
+          </Col>
+          {Object.keys(result[0]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(result[0][key]).map((way) => (
+                <Row>{result[0][key][way]}</Row>
+              ))}
+            </Col>
+          ))}
+          {/* {Object.keys(trueValue[0]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(trueValue[0][key]).map((way) => (
+                <Row>{trueValue[0][key][way]}</Row>
+              ))}
+            </Col>
+          ))} */}
+          {Object.keys(trueValue[0]).map((key) => (
+            <Col xs={1} className="flex-grow-1">
+              {Object.keys(trueValue[0][key]).map((way) =>
+                trueValue[0][key][way] ? (
+                  <Row className="w-100 flex-nowrap">
+                    <Col xs={6}>
+                      {result[0][key][way] - trueValue[0][key][way]}
+                    </Col>
+                    <Col xs={6}>
+                      {(
+                        ((result[0][key][way] - trueValue[0][key][way]) /
+                          result[0][key][way]) *
+                        100
+                      ).toFixed(2)}
+                      %
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row />
+                )
+              )}
+            </Col>
+          ))}
+        </Row>
+        <Row className="flex-fill">
+          <Col xs={1}>
+            <Row>路口橫向</Row>
+            <Row>3</Row>
+            <Row />
+          </Col>
+          <Col xs={1}>
+            <Row />
+            <Row />
+            <Row />
+          </Col>
+          <Col xs={1}>
+            <Row />
+            <Row>1</Row>
+            <Row />
+          </Col>
+          <Col xs={1}>{`2(北)
+(中正路)`}</Col>
+          <Col xs={1}>
+            <Row>左轉</Row>
+            <Row>直行</Row>
+            <Row>右轉</Row>
+          </Col>
+          {Object.keys(result[0]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(result[0][key]).map((way) => (
+                <Row>{result[0][key][way]}</Row>
+              ))}
+            </Col>
+          ))}
+          {/* {Object.keys(trueValue[1]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(trueValue[1][key]).map((way) => (
+                <Row>{trueValue[1][key][way]}</Row>
+              ))}
+            </Col>
+          ))} */}
+          {Object.keys(trueValue[1]).map((key) => (
+            <Col xs={1} className="flex-grow-1">
+              {Object.keys(trueValue[1][key]).map((way) =>
+                trueValue[1][key][way] ? (
+                  <Row className="w-100 flex-nowrap">
+                    <Col xs={6}>
+                      {result[1][key][way] - trueValue[1][key][way]}
+                    </Col>
+                    <Col xs={6}>
+                      {(
+                        ((result[1][key][way] - trueValue[1][key][way]) /
+                          result[1][key][way]) *
+                        100
+                      ).toFixed(2)}
+                      %
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row />
+                )
+              )}
+            </Col>
+          ))}
+        </Row>
+        <Row className="flex-fill">
+          <Col xs={1}>
+            <Row />
+            <Row />
+            <Row />
+          </Col>
+          <Col xs={1}>
+            <Row>2</Row>
+            <Row />
+            <Row />
+          </Col>
+          <Col xs={1}>
+            <Row />
+            <Row />
+            <Row />
+          </Col>
+          <Col xs={1}>{`3(東)
+(南平路)`}</Col>
+          <Col xs={1}>
+            <Row>左轉</Row>
+            <Row>直行</Row>
+            <Row>右轉</Row>
+          </Col>
+          {Object.keys(result[0]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(result[0][key]).map((way) => (
+                <Row>{result[0][key][way]}</Row>
+              ))}
+            </Col>
+          ))}
+          {/* {Object.keys(trueValue[2]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(trueValue[2][key]).map((way) => (
+                <Row>{trueValue[2][key][way]}</Row>
+              ))}
+            </Col>
+          ))} */}
+          {Object.keys(trueValue[2]).map((key) => (
+            <Col xs={1} className="flex-grow-1">
+              {Object.keys(trueValue[2][key]).map((way) =>
+                trueValue[2][key][way] ? (
+                  <Row className="w-100 flex-nowrap">
+                    <Col xs={6}>
+                      {result[2][key][way] - trueValue[2][key][way]}
+                    </Col>
+                    <Col xs={6}>
+                      {(
+                        ((result[2][key][way] - trueValue[2][key][way]) /
+                          result[2][key][way]) *
+                        100
+                      ).toFixed(2)}
+                      %
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row />
+                )
+              )}
+            </Col>
+          ))}
+        </Row>
+        <Row className="flex-fill">
+          <Col xs={1}>
+            <Row />
+            <Row />
+            <Row />
+          </Col>
+          <Col xs={1}>
+            <Row>G10-3</Row>
+            <Row>攝影機</Row>
+            <Row />
+          </Col>
+          <Col xs={1}>
+            <Row />
+            <Row />
+            <Row />
+          </Col>
+          <Col xs={1}>{`4(南)
+(中正路)`}</Col>
+          <Col xs={1}>
+            <Row>左轉</Row>
+            <Row>直行</Row>
+            <Row>右轉</Row>
+          </Col>
+          {Object.keys(result[0]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(result[0][key]).map((way) => (
+                <Row>{result[0][key][way]}</Row>
+              ))}
+            </Col>
+          ))}
+          {/* {Object.keys(trueValue[3]).map((key) => (
+            <Col xs={1}>
+              {Object.keys(trueValue[3][key]).map((way) => (
+                <Row>{trueValue[3][key][way]}</Row>
+              ))}
+            </Col>
+          ))} */}
+          {Object.keys(trueValue[3]).map((key) => (
+            <Col xs={1} className="flex-grow-1">
+              {Object.keys(trueValue[3][key]).map((way) =>
+                trueValue[3][key][way] ? (
+                  <Row className="w-100 flex-nowrap">
+                    <Col xs={6}>
+                      {result[3][key][way] - trueValue[3][key][way]}
+                    </Col>
+                    <Col xs={6}>
+                      {(
+                        ((result[3][key][way] - trueValue[3][key][way]) /
+                          result[3][key][way]) *
+                        100
+                      ).toFixed(2)}
+                      %
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row />
+                )
+              )}
+            </Col>
+          ))}
+        </Row>
+      </div>
+      <div>
+        <Button
+          variant="revo"
+          className="my-auto mx-3 w-35"
+          onClick={() => setshow(true)}
+        >
+          輸入真值
+        </Button>
+      </div>
+      <Modal size="xl" show={show} onHide={() => setshow(false)}>
+        <Modal.Body>
+          <div className="border-table h-100 d-flex flex-column">
+            <Row>
+              <Col xs={3}>17:01:00-18:01:00</Col>
+              <Col xs={2} />
+              <Col>真值結果</Col>
+            </Row>
+            <Row>
+              <Col xs={3}>交叉路口</Col>
+              <Col xs={1}>路口編號</Col>
+              <Col xs={1}>方向</Col>
+              <Col>機車</Col>
+              <Col>小客車</Col>
+              <Col>大客車</Col>
+            </Row>
+            <Row className="flex-fill">
+              <Col xs={1}>
+                <Row />
+                <Row />
+                <Row />
+              </Col>
+              <Col xs={1}>
+                <Row />
+                <Row>路口直向</Row>
+                <Row>4</Row>
+              </Col>
+              <Col xs={1}>
+                <Row />
+                <Row>N↓</Row>
+                <Row />
+              </Col>
+              <Col xs={1}>{`1(西)
+(南平路)`}</Col>
+              <Col xs={1}>
+                <Row>左轉</Row>
+                <Row>直行</Row>
+                <Row>右轉</Row>
+              </Col>
+              {Object.keys(trueValue[0]).map((key) => (
+                <Col>
+                  {Object.keys(trueValue[0][key]).map((way) => (
+                    <Row>
+                      <Form.Control
+                        value={trueValue[0][key][way]}
+                        onChange={(e) =>
+                          settrueValue((prevState) => ({
+                            ...prevState,
+                            0: {
+                              ...prevState[0],
+                              [key]: {
+                                ...prevState[0][key],
+                                [way]: e.target.value,
+                              },
+                            },
+                          }))
+                        }
+                      />
+                    </Row>
+                  ))}
+                </Col>
+              ))}
+            </Row>
+            <Row className="flex-fill">
+              <Col xs={1}>
+                <Row>路口橫向</Row>
+                <Row>3</Row>
+                <Row />
+              </Col>
+              <Col xs={1}>
+                <Row />
+                <Row />
+                <Row />
+              </Col>
+              <Col xs={1}>
+                <Row />
+                <Row>1</Row>
+                <Row />
+              </Col>
+              <Col xs={1}>{`2(北)
+(中正路)`}</Col>
+              <Col xs={1}>
+                <Row>左轉</Row>
+                <Row>直行</Row>
+                <Row>右轉</Row>
+              </Col>
+              {Object.keys(trueValue[1]).map((key) => (
+                <Col>
+                  {Object.keys(trueValue[1][key]).map((way) => (
+                    <Row>
+                      <Form.Control
+                        value={trueValue[1][key][way]}
+                        onChange={(e) =>
+                          settrueValue((prevState) => ({
+                            ...prevState,
+                            1: {
+                              ...prevState[1],
+                              [key]: {
+                                ...prevState[1][key],
+                                [way]: e.target.value,
+                              },
+                            },
+                          }))
+                        }
+                      />
+                    </Row>
+                  ))}
+                </Col>
+              ))}
+            </Row>
+            <Row className="flex-fill">
+              <Col xs={1}>
+                <Row />
+                <Row />
+                <Row />
+              </Col>
+              <Col xs={1}>
+                <Row>2</Row>
+                <Row />
+                <Row />
+              </Col>
+              <Col xs={1}>
+                <Row />
+                <Row />
+                <Row />
+              </Col>
+              <Col xs={1}>{`3(東)
+(南平路)`}</Col>
+              <Col xs={1}>
+                <Row>左轉</Row>
+                <Row>直行</Row>
+                <Row>右轉</Row>
+              </Col>
+              {Object.keys(trueValue[2]).map((key) => (
+                <Col>
+                  {Object.keys(trueValue[2][key]).map((way) => (
+                    <Row>
+                      <Form.Control
+                        value={trueValue[2][key][way]}
+                        onChange={(e) =>
+                          settrueValue((prevState) => ({
+                            ...prevState,
+                            2: {
+                              ...prevState[2],
+                              [key]: {
+                                ...prevState[2][key],
+                                [way]: e.target.value,
+                              },
+                            },
+                          }))
+                        }
+                      />
+                    </Row>
+                  ))}
+                </Col>
+              ))}
+            </Row>
+            <Row className="flex-fill">
+              <Col xs={1}>
+                <Row />
+                <Row />
+                <Row />
+              </Col>
+              <Col xs={1}>
+                <Row>G10-3</Row>
+                <Row>攝影機</Row>
+                <Row />
+              </Col>
+              <Col xs={1}>
+                <Row />
+                <Row />
+                <Row />
+              </Col>
+              <Col xs={1}>{`4(南)
+(中正路)`}</Col>
+              <Col xs={1}>
+                <Row>左轉</Row>
+                <Row>直行</Row>
+                <Row>右轉</Row>
+              </Col>
+              {Object.keys(trueValue[3]).map((key) => (
+                <Col>
+                  {Object.keys(trueValue[3][key]).map((way) => (
+                    <Row>
+                      <Form.Control
+                        value={trueValue[3][key][way]}
+                        onChange={(e) =>
+                          settrueValue((prevState) => ({
+                            ...prevState,
+                            3: {
+                              ...prevState[3],
+                              [key]: {
+                                ...prevState[3][key],
+                                [way]: e.target.value,
+                              },
+                            },
+                          }))
+                        }
+                      />
+                    </Row>
+                  ))}
+                </Col>
+              ))}
+            </Row>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </div>
+  )
+}
 
 function CheckTable({ setting }) {
   const { options } = setting
@@ -77,8 +746,17 @@ function CheckTable({ setting }) {
               />
             )}
           </Col>
-          <Col className="border d-flex">
-            <p className="m-auto">{option.label}</p>
+          <Col xs={10} className="border d-flex">
+            <p
+              className="m-auto w-100 overflow-hidden"
+              style={{
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                cursor: 'pointer',
+              }}
+            >
+              {option.label}
+            </p>
           </Col>
         </Row>
       ))}
@@ -88,6 +766,9 @@ function CheckTable({ setting }) {
 
 function Step3({ setting }) {
   const { toolState, handleDataChange } = setting
+  const { time = {} } = useContext(DraftContext)
+  const { videos = [] } = time.setting || {}
+
   const [selected, setselected] = useState('')
   const [progress, setprogress] = useState(0)
   const startProgress = async () => {
@@ -154,7 +835,7 @@ function Step3({ setting }) {
   ]
 
   const optionComponent = {
-    每15分鐘各方向交通量: <div />,
+    每15分鐘各方向交通量: <AccuracyTable />,
     每小時各方向交通量: (
       <Row className="h-100 overflow-scroll justify-content-start">
         <Image className="w-100 py-3" height="auto" src={turning} fluid />
@@ -173,7 +854,7 @@ function Step3({ setting }) {
         ))}
       </Row>
     ),
-    期望加減速率: <div />,
+    期望加減速率: <SpeedTable />,
     '車間距（計算量）': (
       <Table bordered responsive>
         <tbody>
@@ -206,33 +887,33 @@ function Step3({ setting }) {
     ),
   }
 
+  const [selectedVideo, setselectedVideo] = useState(null)
+  const videoData = useMemo(
+    () => videos.find(({ name }) => name === selectedVideo) || {},
+    [selectedVideo]
+  )
+
   const components = {
     影像辨識: (
       <Row className="h-100 overflow-hidden">
         <Col xs={3} className="h-100 py-3 pe-0">
-          <div className="w-100 h-35">
-            <FormLabel className="text-revo fw-bold">分析影片 - 路口</FormLabel>
-            <CheckTable
-              setting={{
-                options: [
-                  {
-                    label: '111/03/22-中正南平路口',
-                  },
-                ],
-              }}
-            />
-          </div>
-          <div className="w-100 h-35">
-            <FormLabel>分析影片 - 路段</FormLabel>
-            <CheckTable
-              setting={{
-                options: [
-                  {
-                    label: '111/03/22-中正路',
-                  },
-                ],
-              }}
-            />
+          <div className="w-100 h-70">
+            <FormLabel className="text-revo fw-bold">分析影片</FormLabel>
+            <Form.Select
+              className="w-75 mx-auto mb-3 mt-3"
+              aria-label="Default select example"
+              onChange={(e) => setselectedVideo(e.target.value)}
+              value={selectedVideo}
+            >
+              <option value="" className="d-none">
+                選擇影片
+              </option>
+              {videos.map(({ name }) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </Form.Select>
           </div>
           <div className="d-flex p-3 mt-auto">
             <Button
@@ -268,6 +949,7 @@ function Step3({ setting }) {
             aria-label="Default select example"
             onChange={(e) => setselected(e.target.value)}
             value={selected}
+            disabled={!selectedVideo}
           >
             <option value="" className="d-none">
               下拉檢視辨識結果
@@ -280,22 +962,42 @@ function Step3({ setting }) {
                 label: '每小時各方向交通量',
               },
               {
-                label: '軌跡分群與轉向量（視覺化）',
+                label:
+                  videoData.type === '路口'
+                    ? '軌跡分群與轉向量（視覺化）'
+                    : '軌跡分群與轉向量（視覺化）（路段影像不適用）',
+                disabled: videoData.type === '路段',
               },
               {
-                label: '期望加減速率',
+                label:
+                  videoData.type === '路口'
+                    ? '期望加減速率（路口影像不適用）'
+                    : '期望加減速率',
+                disabled: videoData.type === '路口',
               },
               {
-                label: '車間距（視覺化）',
+                label:
+                  videoData.type === '路口'
+                    ? '車間距（視覺化）（路口影像不適用）'
+                    : '車間距（視覺化）',
+                disabled: videoData.type === '路口',
               },
               {
-                label: '車間距（計算量）',
+                label:
+                  videoData.type === '路口'
+                    ? '車間距（計算量）（路口影像不適用）'
+                    : '車間距（計算量）',
+                disabled: videoData.type === '路口',
               },
               {
-                label: '車輛辨識與追蹤（視覺化）',
+                label:
+                  videoData.type === '路口'
+                    ? '車輛辨識與追蹤（視覺化）'
+                    : '車輛辨識與追蹤（視覺化）(路段影像不適用)',
+                disabled: videoData.type === '路段',
               },
             ].map((c, i) => (
-              <option key={i} value={c.label}>
+              <option key={i} value={c.label} disabled={c.disabled}>
                 {c.label}
               </option>
             ))}
@@ -308,52 +1010,6 @@ function Step3({ setting }) {
           <Button variant="revo2" className="ms-auto me-5" onClick={() => {}}>
             匯出Excel
           </Button>
-          {/* {selected === '每小時各方向交通量' && (
-            <div className="h-70 overflow-scroll pe-5">
-              <FormLabel className="small pt-2 mb-0">
-                人工辨識（15分鐘交通量）
-              </FormLabel>
-              <Table bordered responsive>
-                <tbody>
-                  <tr className="py-0">
-                    <td className="p-0" colSpan={3}>
-                      每小時通過路口的數量
-                    </td>
-                  </tr>
-                  <tr className="py-0">
-                    <td className="p-0">機車</td>
-                    <td className="p-0">小客車</td>
-                    <td className="p-0">大客車</td>
-                  </tr>
-                  {Array.from({ length: 16 }).map(() => (
-                    <tr className="py-0">
-                      <td className="p-0">
-                        <Form.Control
-                          style={{
-                            borderColor: 'transparent',
-                          }}
-                        />
-                      </td>
-                      <td className="p-0">
-                        <Form.Control
-                          style={{
-                            borderColor: 'transparent',
-                          }}
-                        />
-                      </td>
-                      <td className="p-0">
-                        <Form.Control
-                          style={{
-                            borderColor: 'transparent',
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          )} */}
           <Button
             variant="revo"
             className="position-absolute"

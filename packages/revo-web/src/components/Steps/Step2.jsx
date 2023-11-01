@@ -31,6 +31,37 @@ import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext } from '../ContextProvider'
 
+function LabelTag({ setting }) {
+  const { id, label = '', style, handleRemovePoint } = setting
+  return (
+    <div className="position-absolute d-flex" style={style}>
+      <FontAwesomeIcon
+        id={id}
+        className="h5 mt-2"
+        style={{
+          cursor: 'pointer',
+          width: '30px',
+          height: '30px',
+        }}
+        icon={faCircle}
+        onDoubleClick={() => handleRemovePoint(id)}
+      />
+      <div
+        className="position-absolute d-flex text-white fw-bold"
+        style={{
+          left: '0px',
+          top: '6px',
+          width: '30px',
+          height: '30px',
+          pointerEvents: 'none',
+        }}
+      >
+        <span className="m-auto">{label}</span>
+      </div>
+    </div>
+  )
+}
+
 function PointTag({ setting }) {
   const { id, style, handleRemovePoint } = setting
   return (
@@ -203,6 +234,8 @@ function ProjectedModal({ setting }) {
     if (project.loading && points.length === 4) generate()
   }, [project.loading])
 
+  const labels = ['LU', 'LD', 'RU', 'RD']
+
   return (
     <Modal
       style={{ zIndex: '1501' }}
@@ -246,10 +279,10 @@ function ProjectedModal({ setting }) {
                 ])
               }}
             />
-            {points.map((point) => (
-              <PointTag
+            {points.map((point, i) => (
+              <LabelTag
                 key={point.id}
-                setting={{ ...point, handleRemovePoint }}
+                setting={{ ...point, label: labels[i], handleRemovePoint }}
               />
             ))}
           </div>
@@ -1373,6 +1406,10 @@ NumberTag.propTypes = {
 }
 
 PointTag.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+LabelTag.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 

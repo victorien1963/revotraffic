@@ -317,3 +317,15 @@ img {
   min-width: 40rem !important;
   width: 40rem !important;
 }
+
+.border-table > .row {
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  flex-wrap: nowrap;
+  font-size: xx-small;
+}
+
+.border-table > .row > * {
+  border-left: 1px solid;
+  border-right: 1px solid;
+}
