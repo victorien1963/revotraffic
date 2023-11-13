@@ -2,7 +2,6 @@ const express = require('express')
 
 const app = express()
 const path = require('path')
-const proxy = require('express-http-proxy')
 const { createProxyMiddleware } = require('http-proxy-middleware')
 
 const socketProxy = createProxyMiddleware('/socket.io', {
@@ -12,11 +11,19 @@ const socketProxy = createProxyMiddleware('/socket.io', {
   logLevel: 'debug',
 })
 
-app.use(express.json({ limit: '100000kb' }))
-app.use(express.urlencoded({ extended: false }))
+const proxy = createProxyMiddleware('/api', {
+  target: process.env.REACT_SERVER_URL,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api/': '/',
+  },
+})
 
 app.use(socketProxy)
-app.use('/api', proxy(process.env.REACT_SERVER_URL, { limit: '120mb' }))
+app.use(proxy)
+
+app.use(express.json({ limit: '100000kb' }))
+app.use(express.urlencoded({ extended: false }))
 app.use('/static', express.static(path.join(__dirname, '..', 'public')))
 app.use(express.static(path.join(__dirname, '..', 'build')))
 app.use((req, res) => {
