@@ -1102,16 +1102,14 @@ function Video({ setting }) {
 
   const [uploading, setuploading] = useState(false)
   const handleUpload = async () => {
-    const getArrayBuffer = (files) =>
-      new Promise((resolve) => {
-        const reader = new FileReader()
-        reader.addEventListener('load', () => {
-          resolve(reader.result)
-        })
-        reader.readAsArrayBuffer(files)
-      })
-    const files = []
-    files.push(getArrayBuffer(tempFile))
+    const formData = new FormData()
+    formData.append('file', tempFile)
+    const uploadedVideo = await apiServices.data({
+      path: `time/file/${timeId}`,
+      method: 'post',
+      data: formData,
+      contentType: 'multipart/form-data',
+    })
 
     const snapshoter = new VideoSnapshot(tempFile)
     const previewSrc = await snapshoter.takeSnapshot()
@@ -1124,24 +1122,20 @@ function Video({ setting }) {
       return bytes.buffer
     }
 
-    const buffered = await Promise.all(files)
-    const arrayed = buffered
-      .map((buffer) => ({
-        name: fileName || tempFile.name,
-        data: Array.from(new Uint8Array(buffer)),
-      }))
-      .concat([
-        {
-          name: `${fileName || tempFile.name}_thumbnail`,
-          data: Array.from(
-            new Uint8Array(base64ToArrayBuffer(previewSrc.split(',')[1]))
-          ),
-        },
-      ])
+    // const buffered = await Promise.all(files)
+    const arrayed = [
+      {
+        name: `${fileName || tempFile.name}_thumbnail`,
+        data: Array.from(
+          new Uint8Array(base64ToArrayBuffer(previewSrc.split(',')[1]))
+        ),
+      },
+    ]
     const res = await apiServices.data({
       path: `time/video/${timeId}`,
       method: 'post',
       data: {
+        video: uploadedVideo,
         files: JSON.stringify(arrayed),
       },
     })
