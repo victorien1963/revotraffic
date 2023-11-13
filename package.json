@@ -1,0 +1,32 @@
+{
+  "name": "revotraffic",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "ghost",
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently \"yarn run start:revo-server\" \"yarn run start:revo-web\"",
+    "start:revo-web": "yarn --cwd ./packages/revo-web/ start",
+    "start:revo-server": "yarn --cwd ./packages/revo-server/ start",
+    "install": "yarn run install:revo-server && yarn run install:revo-web",
+    "install:revo-web": "yarn --cwd ./packages/revo-web/ install",
+    "install:revo-server": "yarn --cwd ./packages/revo-server/ install"
+  },
+  "dependencies": {
+    "@visx/axis": "^3.3.0",
+    "@visx/curve": "^3.3.0",
+    "@visx/drag": "^3.3.0",
+    "@visx/gradient": "^3.3.0",
+    "@visx/grid": "^3.3.0",
+    "@visx/group": "^3.3.0",
+    "@visx/scale": "^3.3.0",
+    "concurrently": "^6.5.1"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb": "^19.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.0"
+  }
+}

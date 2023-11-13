@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+  revo-web:
+    build:
+      context: ./packages/revo-web
+    environment:
+      - REACT_APP_URL=${REACT_APP_URL}
+      - REACT_SERVER_URL=${REACT_SERVER_URL}
+    restart: always
+    ports:
+      - 3001:3001
+    container_name: "revo-web"
+    depends_on:
+      - "revo-server"
+
+  revo-server:
+    build:
+      context: ./packages/revo-server
+    restart: always
+    ports:
+      - 7002:7002
+    environment: 
+      - PG_HOST=${PG_HOST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - IMAGE_WARP_API=${IMAGE_WARP_API}
+    depends_on:
+      - "revo-postgres"
+      - "minio"
+    container_name: "revo-server"
+
+  revo-postgres:
+    image: postgres:14.3
+    restart: always
+    environment: 
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${DEFAULT_DATABASE}
+    volumes:
+       - ./pgdata:/var/lib/postgresql/data/
+    ports:
+       - "5433:5432"
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./minio_storage:/data
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
+    command: server --console-address ":9001" /data
+    container_name: "minio"
