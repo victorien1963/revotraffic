@@ -18,12 +18,23 @@ const getCookie = (cname) => {
   return false
 }
 
-const getConfig = (url, method, data, responseType, token, params = {}) => {
+const getConfig = (
+  url,
+  method,
+  data,
+  responseType,
+  token,
+  params = {},
+  contentType = ''
+) => {
   const config = {
     headers:
       token || getCookie('token')
-        ? { Authorization: `Bearer ${token || getCookie('token')}` }
-        : {},
+        ? {
+            Authorization: `Bearer ${token || getCookie('token')}`,
+            contentType,
+          }
+        : { contentType },
     timeout: 600000,
     url: process.env.REACT_APP_AUTH_URL
       ? `${process.env.REACT_APP_AUTH_URL}/${url.replace('api/', '')}`
@@ -54,7 +65,8 @@ export default {
         value.data || {},
         value.responseType,
         value.token,
-        value.params
+        value.params,
+        value.contentType
       )
     )
       .then((res) => res.data)
