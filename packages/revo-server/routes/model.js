@@ -25,7 +25,6 @@ router.post('/file/:draft_id/:range_id/:time_id', Multer({ storage: Multer.memor
 })
 
 router.get('/file/:draft_id/:range_id/:time_id/:name', async (req, res) => {
-    if (!req.user) return res.send([])
     const { draft_id, range_id, time_id, name } = req.params
     const list = await download({ Key: `${draft_id}/${range_id}/${time_id}/results/${name}` })
     if (!list.error) list.pipe(res)
