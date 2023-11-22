@@ -27,10 +27,15 @@ function Step5() {
   const [list, setlist] = useState({})
   const getList = async () => {
     const res = await apiServices.data({
-      path: `model/file/${draftId}/${rangeId}/${timeId}.list.csv`,
+      path: `model/file/${draftId}/${rangeId}/${timeId}/list.csv`,
       method: 'get',
     })
     const temp = {}
+    if (res.error) {
+      console.log('result list not ready')
+      setlist({})
+      return
+    }
     const files = res.split('\r\n')
     files.slice(1, files.length).forEach((f) => {
       if (temp[f.split(',')[0]]) {
