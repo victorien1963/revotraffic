@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
 import React, { useContext, useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
 import {
   Container,
   Row,
@@ -11,74 +10,11 @@ import {
   Button,
   Image,
 } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { delay, qlen, v04, v04Rl, report } from '../../assets'
 import apiServices from '../../services/apiServices'
 import { DraftContext } from '../ContextProvider'
 
-function CheckTable({ setting }) {
-  const { options } = setting
-  const [checked, setchecked] = useState([])
-  useEffect(() => {
-    setchecked(options.map(() => true))
-  }, [])
-  const handleCheck = (i) =>
-    setchecked(checked.map((c, j) => (i === j ? !c : c)))
-  const handleCheckAll = () =>
-    setchecked(
-      checked.every((c) => c)
-        ? checked.map(() => false)
-        : checked.map(() => true)
-    )
-  return (
-    <Container className="h-75 d-flex flex-column px-5 py-3">
-      <Row className="flex-grow-1" onClick={handleCheckAll}>
-        <Col xs={2} className="border d-flex">
-          {checked.every((c) => c) && (
-            <FontAwesomeIcon
-              className="m-auto"
-              style={{
-                cursor: 'pointer',
-              }}
-              icon={faCheckCircle}
-            />
-          )}
-        </Col>
-        <Col className="border d-flex">
-          <p className="m-auto">全選</p>
-        </Col>
-      </Row>
-      {options.map((option, i) => (
-        <Row
-          key={option.label}
-          className="flex-grow-1"
-          onClick={() => handleCheck(i)}
-        >
-          <Col xs={2} className="border d-flex">
-            {checked[i] && (
-              <FontAwesomeIcon
-                className="m-auto"
-                style={{
-                  cursor: 'pointer',
-                  color: option.label ? 'black' : 'transparent',
-                }}
-                icon={faCheckCircle}
-              />
-            )}
-          </Col>
-          <Col className="border d-flex">
-            <p className="m-auto">{option.label}</p>
-          </Col>
-        </Row>
-      ))}
-    </Container>
-  )
-}
-
-function Step5({ setting }) {
-  const { handleDataChange } = setting
-  console.log(handleDataChange)
+function Step5() {
   const initExport = {
     loading: false,
     show: false,
@@ -87,11 +23,11 @@ function Step5({ setting }) {
   const delayFunc = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
   // this is list of results and files
-  const { timeId } = useContext(DraftContext)
+  const { draftId, rangeId, timeId } = useContext(DraftContext)
   const [list, setlist] = useState({})
   const getList = async () => {
     const res = await apiServices.data({
-      path: `model/list/${timeId}`,
+      path: `model/file/${draftId}/${rangeId}/${timeId}.list.csv`,
       method: 'get',
     })
     const temp = {}
@@ -232,14 +168,6 @@ function Step5({ setting }) {
       </Row>
     </Container>
   )
-}
-
-Step5.propTypes = {
-  setting: PropTypes.shape().isRequired,
-}
-
-CheckTable.propTypes = {
-  setting: PropTypes.shape().isRequired,
 }
 
 export default Step5
