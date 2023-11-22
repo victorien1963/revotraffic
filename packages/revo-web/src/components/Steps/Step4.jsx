@@ -115,7 +115,13 @@ function Files({ setting }) {
   const { handleToolChange } = setting
   const [uploading, setuploading] = useState(0)
   const { auth } = useContext(AuthContext)
-  const { timeId, time = {}, setTimes } = useContext(DraftContext)
+  const {
+    timeId,
+    rangeId,
+    draftId,
+    time = {},
+    setTimes,
+  } = useContext(DraftContext)
   const { models = [] } = time.setting || {}
 
   const [newFiles, setnewFiles] = useState([])
@@ -123,7 +129,7 @@ function Files({ setting }) {
     const formData = new FormData()
     newFiles.forEach((file) => formData.append('file', file))
     const uploadedModels = await apiServices.data({
-      path: `model/file/${timeId}`,
+      path: `model/file/${draftId}/${rangeId}/${timeId}`,
       method: 'post',
       data: formData,
       contentType: 'multipart/form-data',
@@ -137,6 +143,7 @@ function Files({ setting }) {
           ...models,
           ...uploadedModels.map(({ name }) => ({
             name,
+            originName: name,
             user: auth.name,
             created_on: moment().format('yyyy-MM-DD hh:mm'),
           })),
@@ -146,6 +153,7 @@ function Files({ setting }) {
     setTimes((prevState) =>
       prevState.map((ps) => (ps.time_id === timeId ? res : ps))
     )
+    setnewFiles([])
     setuploading(0)
   }
 
@@ -217,11 +225,23 @@ function Files({ setting }) {
                 {editing === i ? (
                   <Form.Control
                     className="w-30 my-auto text-start"
-                    value={modelName}
-                    onChange={(e) => setmodelName(e.target.value)}
+                    value={
+                      modelName.split('_')[modelName.split('_').length - 1]
+                    }
+                    onChange={(e) =>
+                      setmodelName(
+                        modelName
+                          .split('_')
+                          .slice(0, modelName.split('_').length - 1)
+                          .concat(e.target.value)
+                          .join('_')
+                      )
+                    }
                   />
                 ) : (
-                  <p className="w-30 my-auto text-start">{name}</p>
+                  <p className="w-30 my-auto text-start">
+                    {name.split('_')[name.split('_').length - 1]}
+                  </p>
                 )}
                 <p className="w-25 my-auto text-start">建立者：{user}</p>
                 <p className="w-25 my-auto text-start">
@@ -230,7 +250,7 @@ function Files({ setting }) {
                 {editing === i ? (
                   <>
                     <Button
-                      className="ms-auto me-2"
+                      className="ms-auto me-2 d-flex flex-nowrap"
                       style={{ boxShadow: 'none' }}
                       variant="outline-revo"
                       onClick={() => {
@@ -244,24 +264,30 @@ function Files({ setting }) {
                       title="確定"
                       size
                     >
-                      確定&ensp;
-                      <FontAwesomeIcon icon={faCheckSquare} />
+                      <p className="text-nowrap">確定&ensp;</p>
+                      <FontAwesomeIcon
+                        className="my-auto"
+                        icon={faCheckSquare}
+                      />
                     </Button>
                     <Button
-                      className="me-2"
+                      className="me-2 d-flex flex-nowrap"
                       style={{ boxShadow: 'none' }}
                       variant="outline-revo"
                       onClick={() => setediting(-1)}
                       title="取消"
                       size
                     >
-                      取消&ensp;
-                      <FontAwesomeIcon icon={faTimesSquare} />
+                      <p className="text-nowrap">取消&ensp;</p>
+                      <FontAwesomeIcon
+                        className="my-auto"
+                        icon={faTimesSquare}
+                      />
                     </Button>
                   </>
                 ) : (
                   <Button
-                    className="ms-auto me-2"
+                    className="ms-auto me-2 d-flex flex-nowrap"
                     style={{ boxShadow: 'none' }}
                     variant="outline-revo me-2"
                     onClick={() => {
@@ -271,17 +297,18 @@ function Files({ setting }) {
                     title="編 輯 ＆ 名 稱"
                     size
                   >
-                    編輯&ensp;
-                    <FontAwesomeIcon icon={faPenToSquare} />
+                    <p className="text-nowrap">編輯&ensp;</p>
+                    <FontAwesomeIcon className="my-auto" icon={faPenToSquare} />
                   </Button>
                 )}
                 <Button
+                  className="d-flex flex-nowrap"
                   style={{ boxShadow: 'none' }}
                   variant="outline-red"
                   onClick={() => {
                     setdeleting({
                       show: true,
-                      name,
+                      name: name.split('_')[name.split('_').length - 1],
                       handleClose: (value) => {
                         if (value) handleEdit(models.filter((m, j) => i !== j))
                         setdeleting({ ...deleting, show: false })
@@ -292,8 +319,8 @@ function Files({ setting }) {
                   }}
                   title="刪 除 計 劃"
                 >
-                  刪除&ensp;
-                  <FontAwesomeIcon icon={faTrashCan} />
+                  <p className="text-nowrap">刪除&ensp;</p>
+                  <FontAwesomeIcon className="my-auto" icon={faTrashCan} />
                 </Button>
 
                 <h2
