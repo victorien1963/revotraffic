@@ -1,18 +1,235 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
-import React, { useContext, useEffect, useState } from 'react'
-import {
-  Container,
-  Row,
-  Col,
-  FormLabel,
-  Form,
-  Button,
-  Image,
-} from 'react-bootstrap'
-import { delay, qlen, v04, v04Rl, report } from '../../assets'
-import apiServices from '../../services/apiServices'
+import React, { useContext, useEffect, useState, useRef } from 'react'
+import PropTypes from 'prop-types'
+import { Container, Row, Col, FormLabel, Form, Button } from 'react-bootstrap'
+import { Group } from '@visx/group'
+import { BarGroup } from '@visx/shape'
+import { AxisBottom, AxisLeft } from '@visx/axis'
+import { scaleBand, scaleLinear, scaleOrdinal } from '@visx/scale'
 import { DraftContext } from '../ContextProvider'
+import apiServices from '../../services/apiServices'
+// import { report } from '../../assets'
+
+function SpeedTable({ setting }) {
+  const { width = 1000, height = 1000, result = '', title = '' } = setting
+  const refinedData = result
+    .split('\r\n')
+    .slice(1)
+    .filter((r) => r.split(',')[0])
+    .reduce((prev, cur) => {
+      const [time, way, fix, vistro, rl] = cur.split(',')
+      const time1 = time.substring(0, 4).trim()
+      const time2 = time.substring(4).trim()
+      return {
+        ...prev,
+        [time1]: {
+          ...(prev[time1] || {}),
+          [time2]: [
+            ...(prev[time1] ? prev[time1][time2] || [] : []),
+            [way, fix, vistro, rl],
+          ],
+        },
+      }
+    }, {})
+
+  return (
+    <Row
+      className="border-table ps-5 pb-5"
+      style={{
+        width: `${width - 80}px`,
+        height: `${height - 80}px`,
+      }}
+    >
+      <Col className="h-100 w-20 border">
+        <Row className="h-40 border">{title}</Row>
+        <Row className="h-20 border" />
+        <Row className="h-20 border">固定</Row>
+        <Row className="h-20 border">Vistro</Row>
+        <Row className="h-20 border">RL</Row>
+      </Col>
+      {Object.keys(refinedData).map((time1) =>
+        Object.keys(refinedData[time1]).map((time2) => (
+          <Col className="h-100 w-20">
+            <Row className="h-20 border">{time1}</Row>
+            <Row className="h-20 border">{time2}</Row>
+            <Row className="h-80">
+              {refinedData[time1][time2].map(([way, fix, vistro, rl]) => (
+                <Col className="h-100 w-50">
+                  <Row className="h-25 border">{way}</Row>
+                  <Row className="h-25 border">{fix}</Row>
+                  <Row className="h-25 border">{vistro}</Row>
+                  <Row className="h-25 border">{rl}</Row>
+                </Col>
+              ))}
+            </Row>
+          </Col>
+        ))
+      )}
+    </Row>
+  )
+}
+
+function BarGroups({ setting }) {
+  const {
+    width = 1000,
+    height = 1000,
+    events = false,
+    result = '',
+    subTitle,
+  } = setting
+
+  const blue = '#04a1ff'
+  const green = '#60d937'
+  const background = '#ffffff'
+
+  const margin = { top: 40, right: 40, bottom: 120, left: 40 }
+
+  if (!result) return <div />
+
+  // bounds
+  const xMax = width - margin.left - margin.right
+  const yMax = height - margin.top - margin.bottom
+
+  // update scale output dimensions
+  const refinedData = result
+    .split('\r\n')
+    .slice(1)
+    .filter((r) => r.split(',')[0])
+    .map((r) => ({
+      turn: parseFloat(r.split(',')[0]),
+      fix: r.split(',')[1],
+      rf: r.split(',')[2],
+    }))
+  const keys = Object.keys(refinedData[0]).filter((d) => d !== 'turn')
+  const getTurn = (d) => d.turn
+  const turnScale = scaleBand({
+    domain: refinedData.map(getTurn),
+    padding: 0.2,
+  })
+  const xScale = scaleBand({
+    domain: keys,
+    padding: 0.1,
+  })
+  const colorScale = scaleOrdinal({
+    domain: keys,
+    range: [blue, green],
+  })
+  const yScale = scaleLinear({
+    domain: [
+      0,
+      Math.max(
+        ...refinedData.map((d) =>
+          Math.max(...keys.map((key) => Number(d[key])))
+        )
+      ),
+    ],
+  })
+  turnScale.rangeRound([0, xMax])
+  xScale.rangeRound([0, turnScale.bandwidth()])
+  yScale.range([yMax, 0])
+
+  return width < 10 ? null : (
+    <svg width={width} height={height}>
+      <rect
+        x={0}
+        y={0}
+        width={width}
+        height={height}
+        fill={background}
+        rx={14}
+      />
+      <Group top={margin.top} left={margin.left}>
+        <rect
+          fill={blue}
+          width="15px"
+          height="15px"
+          x={xMax - margin.right - 80}
+          y={margin.top - 36}
+        />
+        <text stroke={blue} x={xMax - margin.right - 60} y={margin.top - 24}>
+          固定
+        </text>
+        <rect
+          fill={green}
+          width="15px"
+          height="15px"
+          x={xMax - margin.right - 20}
+          y={margin.top - 36}
+        />
+        <text stroke={green} x={xMax - margin.right} y={margin.top - 24}>
+          RL
+        </text>
+        <BarGroup
+          data={refinedData}
+          keys={keys}
+          height={yMax}
+          x0={getTurn}
+          x0Scale={turnScale}
+          x1Scale={xScale}
+          yScale={yScale}
+          color={colorScale}
+        >
+          {(barGroups) =>
+            barGroups.map((barGroup) => (
+              <Group
+                key={`bar-group-${barGroup.index}-${barGroup.x0}`}
+                left={barGroup.x0}
+              >
+                {barGroup.bars.map((bar) => (
+                  <rect
+                    key={`bar-group-bar-${barGroup.index}-${bar.index}-${bar.value}-${bar.key}`}
+                    x={bar.x + 30}
+                    y={bar.y}
+                    width={bar.width}
+                    height={bar.height}
+                    fill={bar.color}
+                    rx={4}
+                    onClick={() => {
+                      if (!events) return
+                      const { key, value } = bar
+                      alert(JSON.stringify({ key, value }))
+                    }}
+                  />
+                ))}
+              </Group>
+            ))
+          }
+        </BarGroup>
+      </Group>
+      <AxisBottom
+        label="模擬回合"
+        top={yMax + margin.top}
+        left={margin.left + 30}
+        // tickFormat={formatDate}
+        scale={turnScale}
+        stroke={green}
+        tickStroke={green}
+        // hideAxisLine
+        tickLabelProps={{
+          fill: green,
+          fontSize: 11,
+          textAnchor: 'middle',
+        }}
+      />
+      <AxisLeft
+        label={subTitle}
+        top={margin.top}
+        left={margin.left + 30}
+        // tickFormat={formatDate}
+        scale={yScale}
+        stroke={green}
+        tickStroke={green}
+        // hideAxisLine
+        tickLabelProps={{
+          fill: green,
+          fontSize: 11,
+          textAnchor: 'end',
+        }}
+      />
+    </svg>
+  )
+}
 
 function Step5() {
   const initExport = {
@@ -32,22 +249,21 @@ function Step5() {
     })
     const temp = {}
     if (res.error) {
-      console.log('result list not ready')
       setlist({})
       return
     }
     const files = res.split('\r\n')
     files.slice(1, files.length).forEach((f) => {
-      if (temp[f.split(',')[0]]) {
+      if (temp[f.split(',')[0].trim()]) {
         temp[f.split(',')[0]].push({
-          path: f.split(',')[1],
-          note: f.split(',')[2],
+          path: f.split(',')[1].trim(),
+          note: f.split(',')[2].trim(),
         })
       } else {
-        temp[f.split(',')[0]] = [
+        temp[f.split(',')[0].trim()] = [
           {
-            path: f.split(',')[1],
-            note: f.split(',')[2],
+            path: f.split(',')[1].trim(),
+            note: f.split(',')[2].trim(),
           },
         ]
       }
@@ -57,7 +273,6 @@ function Step5() {
   useEffect(() => {
     getList()
   }, [])
-  console.log(list)
 
   useEffect(() => {
     const generate = async () => {
@@ -67,21 +282,105 @@ function Step5() {
     if (exports.loading) generate()
   }, [exports.loading])
 
+  // svg size
+  const ref = useRef(null)
+  const [svgSize, setsvgSize] = useState({
+    width: 0,
+    height: 500,
+  })
+  const getSize = () => {
+    if (ref.current) {
+      const style = getComputedStyle(ref.current)
+      const height =
+        ref.current.clientHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom)
+      const width = ref.current.clientWidth
+      return { width, height }
+    }
+    return false
+  }
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      const size = getSize()
+      if (size.width !== svgSize.width || size.height !== svgSize.height)
+        setsvgSize(size)
+    })
+    observer.observe(ref.current)
+    return () => ref.current && observer.unobserve(ref.current)
+  }, [])
+
+  const labels = [
+    '路口延滯時間',
+    '停等車隊長度',
+    '路段旅行速率',
+    '成效比較總表',
+    '方法比較影片',
+  ]
+
+  const [selected, setselected] = useState('')
+  const [result, setresult] = useState('')
+  useEffect(() => {
+    const getData = async (name) => {
+      if (!name.includes('csv')) return
+      const res = await apiServices.data({
+        path: `model/file/${draftId}/${rangeId}/${timeId}/${name}`,
+        method: 'get',
+      })
+      setresult(res)
+    }
+    if (list[labels[selected]]) getData(list[labels[selected]][0].path)
+  }, [selected])
+
   const reports = [
     {
       label: '路口延滯時間',
-      hover: <Image className="w-100 py-3" height="auto" src={delay} fluid />,
+      // hover: <Image className="w-100 py-3" height="auto" src={delay} fluid />,
+      hover: (
+        <BarGroups
+          setting={{
+            ...svgSize,
+            subTitle: '路口延滯時間',
+            result,
+          }}
+        />
+      ),
     },
     {
       label: '停等車隊長度',
-      hover: <Image className="w-100 py-3" height="auto" src={qlen} fluid />,
+      hover: (
+        <BarGroups
+          setting={{
+            ...svgSize,
+            subTitle: '停等車隊長度',
+            result,
+          }}
+        />
+      ),
     },
     {
       label: '路段旅行速率',
+      hover: (
+        <SpeedTable
+          setting={{
+            ...svgSize,
+            title: '停等時間',
+            result,
+          }}
+        />
+      ),
     },
     {
       label: '成效比較報總表',
-      hover: <Image className="w-100 py-3" height="auto" src={report} fluid />,
+      hover: (
+        <SpeedTable
+          setting={{
+            ...svgSize,
+            title: '旅行時間',
+            result,
+          }}
+        />
+      ),
     },
     {
       label: '方法比較影片',
@@ -91,22 +390,32 @@ function Step5() {
             <FormLabel>固定</FormLabel>
             <video width="auto" height="300px" controls>
               <track kind="captions" />
-              <source src={v04} />
+              <source
+                src={
+                  list['方法比較影片']
+                    ? `/api/model/file/${draftId}/${rangeId}/${timeId}/${list['方法比較影片'][0].path}`
+                    : ''
+                }
+              />
             </video>
           </div>
           <div className="w-50 p-3 d-flex flex-column">
             <FormLabel>RL</FormLabel>
             <video width="auto" height="300px" controls>
               <track kind="captions" />
-              <source src={v04Rl} />
+              <source
+                src={
+                  list['方法比較影片']
+                    ? `/api/model/file/${draftId}/${rangeId}/${timeId}/${list['方法比較影片'][1].path}`
+                    : ''
+                }
+              />
             </video>
           </div>
         </>
       ),
     },
   ]
-
-  const [selected, setselected] = useState('')
 
   return (
     <Container>
@@ -141,15 +450,22 @@ function Step5() {
               <FormLabel className="text-revo fw-bold text-start">
                 （2） 檢視結果
               </FormLabel>
-              <div className="d-flex w-100">
-                {reports[selected]?.hover || (
-                  <Image
-                    className="w-100 py-3"
-                    height="auto"
-                    src={report}
-                    fluid
-                  />
-                )}
+              {list[labels[selected]] && list[labels[selected]][0] && (
+                <Row className="px-4 py-0 my-0">
+                  {list[labels[selected]].map((l) => (
+                    <Col className="d-flex">
+                      <FormLabel className="text-revo fw-bold text-start text-nowrap w-50">
+                        檔案名稱：{l.path}
+                      </FormLabel>
+                      <FormLabel className="text-revo fw-bold text-end pe-3 w-50">
+                        註解：{l.note}
+                      </FormLabel>
+                    </Col>
+                  ))}
+                </Row>
+              )}
+              <div className="d-flex w-100 flex-fill" ref={ref}>
+                {reports[selected]?.hover || <div />}
               </div>
             </div>
           </Col>
@@ -176,3 +492,11 @@ function Step5() {
 }
 
 export default Step5
+
+BarGroups.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+SpeedTable.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
