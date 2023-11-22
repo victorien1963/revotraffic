@@ -828,7 +828,7 @@ function Step3({ setting }) {
                 className="text-nowrap"
                 onClick={() => {}}
               >
-                匯出Excel
+                匯出
               </Button>
               <Button
                 variant="revo"

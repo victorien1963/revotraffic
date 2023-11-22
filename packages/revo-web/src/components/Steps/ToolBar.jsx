@@ -159,8 +159,9 @@ function ToolBar({ setting }) {
                 data-bs-toggle={`${tool.dropdowns ? 'dropdown' : ''}`}
                 aria-expanded="false"
                 onClick={() => {
-                  if (tool.onClick) tool.onClick()
-                  else if (tool.click)
+                  if (!timeId && tool.click && tool.name !== 'step1') {
+                    setShow(true)
+                  } else if (tool.click)
                     handleToolChange({
                       target: {
                         ...tool.click,
