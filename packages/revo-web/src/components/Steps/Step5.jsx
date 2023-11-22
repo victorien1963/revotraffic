@@ -71,7 +71,13 @@ function SpeedTable({ setting }) {
 }
 
 function BarGroups({ setting }) {
-  const { width = 1000, height = 1000, events = false, result = '' } = setting
+  const {
+    width = 1000,
+    height = 1000,
+    events = false,
+    result = '',
+    subTitle,
+  } = setting
 
   const blue = '#04a1ff'
   const green = '#60d937'
@@ -173,7 +179,7 @@ function BarGroups({ setting }) {
                 {barGroup.bars.map((bar) => (
                   <rect
                     key={`bar-group-bar-${barGroup.index}-${bar.index}-${bar.value}-${bar.key}`}
-                    x={bar.x}
+                    x={bar.x + 30}
                     y={bar.y}
                     width={bar.width}
                     height={bar.height}
@@ -192,8 +198,9 @@ function BarGroups({ setting }) {
         </BarGroup>
       </Group>
       <AxisBottom
+        label="模擬回合"
         top={yMax + margin.top}
-        left={margin.left}
+        left={margin.left + 30}
         // tickFormat={formatDate}
         scale={turnScale}
         stroke={green}
@@ -206,8 +213,9 @@ function BarGroups({ setting }) {
         }}
       />
       <AxisLeft
+        label={subTitle}
         top={margin.top}
-        left={margin.left}
+        left={margin.left + 30}
         // tickFormat={formatDate}
         scale={yScale}
         stroke={green}
@@ -332,6 +340,7 @@ function Step5() {
         <BarGroups
           setting={{
             ...svgSize,
+            subTitle: '路口延滯時間',
             result,
           }}
         />
@@ -343,6 +352,7 @@ function Step5() {
         <BarGroups
           setting={{
             ...svgSize,
+            subTitle: '停等車隊長度',
             result,
           }}
         />
@@ -440,6 +450,20 @@ function Step5() {
               <FormLabel className="text-revo fw-bold text-start">
                 （2） 檢視結果
               </FormLabel>
+              {list[labels[selected]] && list[labels[selected]][0] && (
+                <Row className="px-4 py-0 my-0">
+                  {list[labels[selected]].map((l) => (
+                    <Col className="d-flex">
+                      <FormLabel className="text-revo fw-bold text-start text-nowrap w-50">
+                        檔案名稱：{l.path}
+                      </FormLabel>
+                      <FormLabel className="text-revo fw-bold text-end pe-3 w-50">
+                        註解：{l.note}
+                      </FormLabel>
+                    </Col>
+                  ))}
+                </Row>
+              )}
               <div className="d-flex w-100 flex-fill" ref={ref}>
                 {reports[selected]?.hover || <div />}
               </div>
