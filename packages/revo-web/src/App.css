@@ -346,3 +346,24 @@ img {
   border-right: 1px solid;
   padding: 0;
 }
+
+.scrollbarShow::-webkit-scrollbar {
+  width: .6em !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-button {
+  background: transparent !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-track-piece {
+  background: transparent !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-track {
+  box-shadow: inset 0px transparent !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-thumb {
+  background-color: #5d5275 !important;
+  border-radius: 50rem !important;
+}
