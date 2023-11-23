@@ -300,12 +300,8 @@ img {
   height: 82% !important;
 }
 
-.w-60 {
-  width: 60% !important;
-}
-
-.w-80 {
-  width: 80% !important;
+.w-8 {
+  width: 8% !important;
 }
 
 .w-15 {
@@ -318,6 +314,14 @@ img {
 
 .w-30 {
   width: 30% !important;
+}
+
+.w-60 {
+  width: 60% !important;
+}
+
+.w-80 {
+  width: 80% !important;
 }
 
 .modal-table > .container > .row > div:nth-child(2) > p {
