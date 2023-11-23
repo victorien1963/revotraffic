@@ -461,9 +461,9 @@ function Step5() {
                       <FormLabel className="text-revo fw-bold text-start text-nowrap w-50">
                         檔案名稱：{l.name}
                       </FormLabel>
-                      <FormLabel className="text-revo fw-bold text-end pe-3 w-50">
+                      {/* <FormLabel className="text-revo fw-bold text-end pe-3 w-50">
                         註解：{l.note}
-                      </FormLabel>
+                      </FormLabel> */}
                     </Col>
                   ))}
                 </Row>
