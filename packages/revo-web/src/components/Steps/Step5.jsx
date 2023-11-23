@@ -262,6 +262,7 @@ function Step5() {
             .map((r) => ({
               path: r.originName.split('/')[r.originName.split('/').length - 1],
               name: r.name.split('/')[r.name.split('/').length - 1],
+              note: r.note,
             })),
         }),
         {}
@@ -461,9 +462,11 @@ function Step5() {
                       <FormLabel className="text-revo fw-bold text-start text-nowrap w-50">
                         檔案名稱：{l.name}
                       </FormLabel>
-                      {/* <FormLabel className="text-revo fw-bold text-end pe-3 w-50">
-                        註解：{l.note}
-                      </FormLabel> */}
+                      {l.note && (
+                        <FormLabel className="text-revo fw-bold text-end pe-3 w-50">
+                          註解：{l.note}
+                        </FormLabel>
+                      )}
                     </Col>
                   ))}
                 </Row>

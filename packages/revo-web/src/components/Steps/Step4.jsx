@@ -204,6 +204,7 @@ function Results({ setting }) {
   }
 
   const [modelName, setmodelName] = useState('')
+  const [modelNote, setmodelNote] = useState('')
   const [editing, setediting] = useState(-1)
   const [deleting, setdeleting] = useState({
     show: false,
@@ -276,7 +277,7 @@ function Results({ setting }) {
       >
         {results && results.length ? (
           <ListGroup className="h-100 overflow-scroll scrollbarShow border">
-            {results.map(({ name, user, type, created_on }, i) => (
+            {results.map(({ name, user, type, note, created_on }, i) => (
               <ListGroupItem
                 style={{
                   height: '33%',
@@ -288,7 +289,7 @@ function Results({ setting }) {
               >
                 {editing === i ? (
                   <Form.Control
-                    className="w-20 my-auto text-start"
+                    className="w-8 my-auto text-start"
                     value={
                       modelName.split('_')[modelName.split('_').length - 1]
                     }
@@ -303,17 +304,30 @@ function Results({ setting }) {
                     }
                   />
                 ) : (
-                  <p className="w-20 my-auto text-start">
+                  <p className="w-8 my-auto text-start">
                     {name.split('_')[name.split('_').length - 1]}
                   </p>
                 )}
-                <p className="w-20 my-auto text-start">建立者：{user}</p>
+                <p className="w-15 my-auto text-start">建立者：{user}</p>
                 <p className="w-20 my-auto text-start">
                   建立時間：{created_on}
                 </p>
                 {type && (
-                  <p className="w-20 my-auto text-start">檔案類型：{type}</p>
+                  <p className="w-15 my-auto text-start">檔案類型：{type}</p>
                 )}
+
+                <div className="w-15 my-auto d-flex">
+                  <p className="text-nowrap my-auto">備註：</p>
+                  {editing === i ? (
+                    <Form.Control
+                      className="my-auto text-start"
+                      value={modelNote}
+                      onChange={(e) => setmodelNote(e.target.value)}
+                    />
+                  ) : (
+                    note
+                  )}
+                </div>
                 {editing === i ? (
                   <>
                     <Button
@@ -323,7 +337,9 @@ function Results({ setting }) {
                       onClick={() => {
                         handleEdit(
                           results.map((m, j) =>
-                            i !== j ? m : { ...m, name: modelName }
+                            i !== j
+                              ? m
+                              : { ...m, name: modelName, note: modelNote }
                           )
                         )
                         setediting(-1)
@@ -358,6 +374,7 @@ function Results({ setting }) {
                     style={{ boxShadow: 'none' }}
                     variant="outline-revo me-2"
                     onClick={() => {
+                      setmodelNote(note)
                       setmodelName(name)
                       setediting(i)
                     }}
