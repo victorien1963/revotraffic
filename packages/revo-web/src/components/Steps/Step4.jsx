@@ -10,7 +10,6 @@ import {
   Card,
   Button,
   Form,
-  FormLabel,
   Modal,
   ListGroup,
   ListGroupItem,
@@ -22,14 +21,41 @@ import {
   faCircleCheck,
   faCircleExclamation,
   faCirclePlus,
-  faCircleXmark,
-  faEnvelope,
   faPenToSquare,
   faTimesSquare,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons'
 import { AuthContext, DraftContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
+
+function WarnModal({ setting }) {
+  const { show, text, handleClose } = setting
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      show={show}
+      onHide={handleClose}
+      className="py-2 px-4"
+    >
+      <Modal.Header closeButton>
+        <h4>通知</h4>
+      </Modal.Header>
+      <Modal.Body className="p-4">
+        <h5>{text}</h5>
+      </Modal.Body>
+      <Modal.Footer className="justify-content-center">
+        <Button
+          className="m-auto"
+          style={{ boxShadow: 'none' }}
+          variant="revo"
+          onClick={handleClose}
+        >
+          確 認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
 
 function DeleteModal({ setting }) {
   const { show, name, handleClose } = setting
@@ -108,6 +134,464 @@ function CheckTable({ setting }) {
         </Row>
       ))}
     </Container>
+  )
+}
+
+function Results({ setting }) {
+  const { handleToolChange } = setting
+  const [uploading, setuploading] = useState(0)
+  const { auth } = useContext(AuthContext)
+  const {
+    timeId,
+    rangeId,
+    draftId,
+    time = {},
+    setTimes,
+  } = useContext(DraftContext)
+  const { results = [] } = time.setting || {}
+  const [selected, setselected] = useState('')
+  const [warning, setwarning] = useState({
+    show: false,
+    text: '',
+    handleClose: () => {},
+  })
+
+  const [newFiles, setnewFiles] = useState([])
+  const handleUpload = async () => {
+    const formData = new FormData()
+    newFiles.forEach((file) => formData.append('file', file))
+    const uploadedModels = await apiServices.data({
+      path: `model/results/${draftId}/${rangeId}/${timeId}`,
+      method: 'post',
+      data: formData,
+      contentType: 'multipart/form-data',
+    })
+
+    const res = await apiServices.data({
+      path: `time/${timeId}`,
+      method: 'put',
+      data: {
+        results: [
+          ...results,
+          ...uploadedModels.map(({ name }) => ({
+            name,
+            originName: name,
+            user: auth.name,
+            type: selected,
+            created_on: moment().format('yyyy-MM-DD hh:mm'),
+          })),
+        ],
+      },
+    })
+    setTimes((prevState) =>
+      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
+    )
+    setnewFiles([])
+    setuploading(0)
+  }
+
+  const handleEdit = async (newModels) => {
+    const res = await apiServices.data({
+      path: `time/${timeId}`,
+      method: 'put',
+      data: {
+        results: newModels,
+      },
+    })
+    setTimes((prevState) =>
+      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
+    )
+  }
+
+  const [modelName, setmodelName] = useState('')
+  const [editing, setediting] = useState(-1)
+  const [deleting, setdeleting] = useState({
+    show: false,
+    name: '',
+    handleClose: () => {},
+  })
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+  // const complete = async () => {
+  //   await delay(2500)
+  //   setuploading(2)
+  // }
+  const back = async () => {
+    await delay(2500)
+    handleToolChange({
+      target: {
+        name: 'step4',
+        value: 'selector',
+      },
+    })
+  }
+  useEffect(() => {
+    if (uploading === 1) handleUpload()
+    if (uploading === 2) back()
+  }, [uploading])
+
+  const limit = {
+    路口延滯時間: 1,
+    停等車隊長度: 1,
+    路段旅行速率: 1,
+    成效比較總表: 1,
+    方法比較影片: 3,
+  }
+
+  const handleDownload = async () => {
+    const urls = {
+      路口延滯時間: ['model/file/1/1/1/a.csv'],
+      停等車隊長度: ['model/file/1/1/1/b.csv'],
+      路段旅行速率: ['model/file/1/1/1/c.csv'],
+      成效比較總表: ['model/file/1/1/1/d.csv'],
+      方法比較影片: ['model/file/1/1/1/04.mp4', 'model/file/1/1/1/04_rl.mp4'],
+    }
+    urls[selected].map(async (url) => {
+      const res = await apiServices.data({
+        path: url,
+        method: 'get',
+      })
+      const blob = new Blob([res])
+      const link = document.createElement('a')
+      link.setAttribute('href', URL.createObjectURL(blob))
+      link.setAttribute('download', url.split('/')[url.split('/').length - 1])
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    })
+  }
+  return (
+    <>
+      <Row>
+        <Col xs={12} className="d-flex px-5">
+          <h5 className="my-auto text-revo-light fw-bold">已上傳列表</h5>
+        </Col>
+      </Row>
+      <Row
+        className="px-5 pb-0"
+        style={{
+          minHeight: '35%',
+          maxHeight: '35%',
+        }}
+      >
+        {results && results.length ? (
+          <ListGroup className="h-100 overflow-scroll scrollbarShow border">
+            {results.map(({ name, user, type, created_on }, i) => (
+              <ListGroupItem
+                style={{
+                  height: '33%',
+                  minHeight: '33%',
+                  maxHeight: '33%',
+                }}
+                className="d-flex border-end-0 rounded-0"
+                key={i}
+              >
+                {editing === i ? (
+                  <Form.Control
+                    className="w-20 my-auto text-start"
+                    value={
+                      modelName.split('_')[modelName.split('_').length - 1]
+                    }
+                    onChange={(e) =>
+                      setmodelName(
+                        modelName
+                          .split('_')
+                          .slice(0, modelName.split('_').length - 1)
+                          .concat(e.target.value)
+                          .join('_')
+                      )
+                    }
+                  />
+                ) : (
+                  <p className="w-20 my-auto text-start">
+                    {name.split('_')[name.split('_').length - 1]}
+                  </p>
+                )}
+                <p className="w-20 my-auto text-start">建立者：{user}</p>
+                <p className="w-20 my-auto text-start">
+                  建立時間：{created_on}
+                </p>
+                {type && (
+                  <p className="w-20 my-auto text-start">檔案類型：{type}</p>
+                )}
+                {editing === i ? (
+                  <>
+                    <Button
+                      className="ms-auto me-2 d-flex flex-nowrap"
+                      style={{ boxShadow: 'none' }}
+                      variant="outline-revo"
+                      onClick={() => {
+                        handleEdit(
+                          results.map((m, j) =>
+                            i !== j ? m : { ...m, name: modelName }
+                          )
+                        )
+                        setediting(-1)
+                      }}
+                      title="確定"
+                      size
+                    >
+                      <p className="text-nowrap">確定&ensp;</p>
+                      <FontAwesomeIcon
+                        className="my-auto"
+                        icon={faCheckSquare}
+                      />
+                    </Button>
+                    <Button
+                      className="me-2 d-flex flex-nowrap"
+                      style={{ boxShadow: 'none' }}
+                      variant="outline-revo"
+                      onClick={() => setediting(-1)}
+                      title="取消"
+                      size
+                    >
+                      <p className="text-nowrap">取消&ensp;</p>
+                      <FontAwesomeIcon
+                        className="my-auto"
+                        icon={faTimesSquare}
+                      />
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    className="ms-auto me-2 d-flex flex-nowrap"
+                    style={{ boxShadow: 'none' }}
+                    variant="outline-revo me-2"
+                    onClick={() => {
+                      setmodelName(name)
+                      setediting(i)
+                    }}
+                    title="編 輯 ＆ 名 稱"
+                    size
+                  >
+                    <p className="text-nowrap">編輯&ensp;</p>
+                    <FontAwesomeIcon className="my-auto" icon={faPenToSquare} />
+                  </Button>
+                )}
+                <Button
+                  className="d-flex flex-nowrap"
+                  style={{ boxShadow: 'none' }}
+                  variant="outline-red"
+                  onClick={() => {
+                    setdeleting({
+                      show: true,
+                      name: name.split('_')[name.split('_').length - 1],
+                      handleClose: (value) => {
+                        if (value) handleEdit(results.filter((m, j) => i !== j))
+                        setdeleting({ ...deleting, show: false })
+                      },
+                    })
+                    // setselectedId(time_id || range_id || draft_id)
+                    // setdeleteShow(true)
+                  }}
+                  title="刪 除 計 劃"
+                >
+                  <p className="text-nowrap">刪除&ensp;</p>
+                  <FontAwesomeIcon className="my-auto" icon={faTrashCan} />
+                </Button>
+
+                <h2
+                  className="my-auto text-grey"
+                  style={{ userSelect: 'none' }}
+                >
+                  ｜
+                </h2>
+              </ListGroupItem>
+            ))}
+          </ListGroup>
+        ) : (
+          <div className="d-flex ps-3 border">
+            <h5 className="m-auto text-revo-light">目前尚無資料</h5>
+          </div>
+        )}
+      </Row>
+      <Row className="pt-1">
+        <Col xs={7} className="d-flex px-5">
+          <h5 className="my-auto text-revo-light fw-bold">待上傳</h5>
+        </Col>
+        <Col xs={5} className="d-flex pe-5 py-0">
+          <Form.Select
+            className="w-100 h-100"
+            aria-label="Default select example"
+            onChange={(e) => setselected(e.target.value)}
+            value={selected}
+          >
+            <option value="" className="d-none">
+              下拉選擇檔案類型
+            </option>
+            {[
+              '路口延滯時間',
+              '停等車隊長度',
+              '路段旅行速率',
+              '成效比較總表',
+              '方法比較影片',
+            ].map((label, i) => (
+              <option key={i} value={label}>
+                {label}
+              </option>
+            ))}
+          </Form.Select>
+          <Button
+            variant="revo"
+            size="sm h-100 w-20 mx-2 my-auto"
+            onClick={handleDownload}
+            disabled={!selected}
+          >
+            下載範本
+          </Button>
+        </Col>
+      </Row>
+      <Row className="py-0 px-5">
+        <Button
+          title="新增"
+          className="text-revo fs-7 p-2 mx-0 my-1"
+          style={{
+            background: 'rgba(35, 61, 99, 0.1)',
+            border: '1px solid rgba(35, 61, 99, 0.1)',
+            borderRadius: '0.375rem',
+          }}
+        >
+          <Form.Label
+            className="d-flex w-100 h-100 justify-content-center"
+            style={{
+              cursor: 'pointer',
+            }}
+            onClick={(e) => {
+              if (!selected) {
+                setwarning({
+                  ...warning,
+                  show: true,
+                  text: '請先選擇檔案類型',
+                  handleClose: () =>
+                    setwarning({
+                      ...warning,
+                      show: false,
+                    }),
+                })
+                e.stopPropagation()
+              }
+            }}
+            htmlFor={selected ? 'upload' : ''}
+          >
+            <p className="my-auto">上傳新檔（可複選）</p>
+            <FontAwesomeIcon
+              icon={faCirclePlus}
+              className="ms-1 my-auto fs-5 text-dai-lighter fs-8"
+            />
+          </Form.Label>
+        </Button>
+        <Form.Control
+          id="upload"
+          name="file"
+          type="file"
+          multiple
+          onChange={(e) => {
+            const length =
+              Array.from(e.target.files).length +
+              results.filter((r) => r.type === selected).length
+            if (length > limit[selected]) {
+              setwarning({
+                ...warning,
+                show: true,
+                text: '同類型檔案超過數量上限，請先刪除檔案或減少上傳檔案數量',
+                handleClose: () =>
+                  setwarning({
+                    ...warning,
+                    show: false,
+                  }),
+              })
+              return
+            }
+            setnewFiles(Array.from(e.target.files))
+            e.stopPropagation()
+          }}
+          className="p-0 m-0 border-0"
+          style={{
+            visibility: 'hidden',
+            width: '0px',
+            height: '0px',
+          }}
+        />
+      </Row>
+      <Row
+        className="px-5 pb-0"
+        style={{
+          minHeight: '35%',
+          maxHeight: '35%',
+        }}
+      >
+        <ListGroup className="h-100 overflow-scroll scrollbarShow border">
+          {newFiles.map(({ name }, i) => (
+            <ListGroupItem className="d-flex border-end-0 rounded-0" key={i}>
+              <p className="w-30 my-auto text-start">{name}</p>
+              <p className="w-25 my-auto text-start">建立者：{auth.name}</p>
+              <p className="w-25 my-auto text-start">建立時間：</p>
+              {/* <Button
+                className="ms-auto me-2"
+                style={{ boxShadow: 'none' }}
+                variant="outline-revo me-2"
+                onClick={() => {
+                  // setselectedId(time_id || range_id || draft_id)
+                  // setshow(true)
+                }}
+                title="編 輯 名 稱"
+                size
+              >
+                編輯&ensp;
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </Button> */}
+              <Button
+                className="ms-auto me-2"
+                style={{ boxShadow: 'none' }}
+                variant="outline-red"
+                onClick={() => {
+                  setnewFiles(newFiles.filter((f, j) => i !== j))
+                }}
+                title="刪 除 計 劃"
+              >
+                刪除&ensp;
+                <FontAwesomeIcon icon={faTrashCan} />
+              </Button>
+
+              <h2 className="my-auto text-grey" style={{ userSelect: 'none' }}>
+                ｜
+              </h2>
+            </ListGroupItem>
+          ))}
+        </ListGroup>
+      </Row>
+
+      <Row
+        className="pt-3 pb-5 px-4 pe-5 d-flex"
+        style={{
+          height: '10%',
+        }}
+      >
+        <Button
+          variant="revo2"
+          className="m-auto d-flex justify-content-center"
+          style={{
+            width: '15%',
+          }}
+          onClick={() => {
+            setuploading(1)
+          }}
+          disabled={uploading || !newFiles.length}
+        >
+          <p className="my-auto me-2">確定上傳</p>
+          {uploading ? (
+            <span className="my-auto spinner-border spinner-border-sm" />
+          ) : (
+            <FontAwesomeIcon
+              icon={faCircleCheck}
+              className="my-auto fs-5 text-dai-lighter fs-8"
+            />
+          )}
+        </Button>
+      </Row>
+      <DeleteModal setting={deleting} />
+      <WarnModal setting={warning} />
+    </>
   )
 }
 
@@ -211,7 +695,7 @@ function Files({ setting }) {
         }}
       >
         {models && models.length ? (
-          <ListGroup className="h-100 overflow-scroll scrollbarShow">
+          <ListGroup className="h-100 overflow-scroll scrollbarShow border">
             {models.map(({ name, user, created_on }, i) => (
               <ListGroupItem
                 style={{
@@ -219,7 +703,7 @@ function Files({ setting }) {
                   minHeight: '33%',
                   maxHeight: '33%',
                 }}
-                className="d-flex"
+                className="d-flex border-end-0 rounded-0"
                 key={i}
               >
                 {editing === i ? (
@@ -339,7 +823,7 @@ function Files({ setting }) {
         )}
       </Row>
       <Row>
-        <Col xs={12} className="d-flex px-5">
+        <Col xs={6} className="d-flex px-5">
           <h5 className="my-auto text-revo-light fw-bold">待上傳</h5>
         </Col>
       </Row>
@@ -351,7 +835,6 @@ function Files({ setting }) {
             background: 'rgba(35, 61, 99, 0.1)',
             border: '1px solid rgba(35, 61, 99, 0.1)',
             borderRadius: '0.375rem',
-            width: '99%',
           }}
         >
           <Form.Label
@@ -392,9 +875,9 @@ function Files({ setting }) {
           maxHeight: '35%',
         }}
       >
-        <ListGroup className="h-100 overflow-scroll scrollbarShow">
+        <ListGroup className="h-100 overflow-scroll scrollbarShow border">
           {newFiles.map(({ name }, i) => (
-            <ListGroupItem className="d-flex" key={i}>
+            <ListGroupItem className="d-flex border-end-0 rounded-0" key={i}>
               <p className="w-30 my-auto text-start">{name}</p>
               <p className="w-25 my-auto text-start">建立者：{auth.name}</p>
               <p className="w-25 my-auto text-start">建立時間：</p>
@@ -468,22 +951,19 @@ function Files({ setting }) {
 
 function Step4({ setting }) {
   const { modals = [], toolState, handleToolChange, handleDataChange } = setting
-  // const [selected, setselected] = useState('')
-  const [checked, setchecked] = useState(false)
-  const [show, setshow] = useState(false)
 
   const components = {
     selector: (
       <Row className="h-100 justify-content-center">
         {[
           {
-            label: '模型上傳',
+            label: '模型檔案管理',
             name: 'step4',
             value: '模型上傳',
             check: modals.length > 0,
           },
           {
-            label: '模型驅動',
+            label: '實驗檔案管理',
             name: 'step4',
             value: '模型驅動',
           },
@@ -531,108 +1011,12 @@ function Step4({ setting }) {
       />
     ),
     模型驅動: (
-      <>
-        <Row className="h-100 overflow-hidden px-4">
-          <Col xs={4} className="h-100 mh-100">
-            <FormLabel className="text-revo fw-bold">選擇模型</FormLabel>
-            <Form.Select
-              className="w-100 mb-3 mx-3"
-              aria-label="Default select example"
-              // onChange={(e) => setselected(e.target.value)}
-            >
-              {[
-                {
-                  label: '固定時刻模型',
-                },
-                {
-                  label: 'Vistro最佳化時制模型',
-                },
-              ].map((c, i) => (
-                <option key={i} value={c.label}>
-                  {c.label}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-          <Col xs={4} className="h-100 mh-100">
-            <Row className="d-flex">
-              <FormLabel className="text-revo fw-bold text-center">
-                功能列表
-              </FormLabel>
-              <Button
-                variant="revo"
-                className="w-80 mx-auto"
-                onClick={() => {
-                  setchecked(!checked)
-                }}
-              >
-                {checked ? '已啟動AI調校監控' : '未啟動AI調校監控'}&ensp;
-                <FontAwesomeIcon
-                  icon={checked ? faCheckCircle : faCircleXmark}
-                />
-              </Button>
-            </Row>
-            <Row className="d-flex px-0 mt-3">
-              <Button
-                variant="revo"
-                className="w-80 mx-auto"
-                onClick={() => {
-                  setshow(true)
-                }}
-              >
-                發送派工單&ensp;
-                <FontAwesomeIcon icon={faEnvelope} />
-              </Button>
-            </Row>
-          </Col>
-          <Col xs={4} className="h-50">
-            <FormLabel className="text-revo fw-bold">已執行列表</FormLabel>
-            <CheckTable
-              setting={{
-                options: [
-                  {
-                    label: '',
-                  },
-                  {
-                    label: '',
-                  },
-                  {
-                    label: '',
-                  },
-                ],
-              }}
-            />
-          </Col>
-        </Row>
-        <Modal
-          style={{ zIndex: '1501' }}
-          show={show}
-          onHide={() => setshow(false)}
-          className="p-2"
-        >
-          <Modal.Header closeButton />
-          <Modal.Body className="d-flex flex-column text-center pb-5">
-            <div className="d-flex h-50">
-              <FontAwesomeIcon
-                className="m-auto p-5 text-revo"
-                style={{ fontSize: '4rem' }}
-                icon={faCheckCircle}
-              />
-            </div>
-            <h4 className="text-revo fw-bold">已寄送模型調校工單至email:</h4>
-            <h4>smalloshin@gmail.com</h4>
-          </Modal.Body>
-          <Modal.Footer className="justify-content-center">
-            <Button
-              style={{ boxShadow: 'none', color: '#317985' }}
-              variant="revo2"
-              onClick={() => setshow(false)}
-            >
-              確 認
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
+      <Results
+        setting={{
+          handleDataChange,
+          handleToolChange,
+        }}
+      />
     ),
   }
 
@@ -651,7 +1035,15 @@ Files.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
+Results.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
 DeleteModal.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+WarnModal.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
