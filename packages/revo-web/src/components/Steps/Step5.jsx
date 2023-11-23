@@ -13,6 +13,8 @@ import apiServices from '../../services/apiServices'
 
 function SpeedTable({ setting }) {
   const { width = 1000, height = 1000, result = '', title = '' } = setting
+  if (!result || result.error) return <div />
+
   const refinedData = result
     .split('\r\n')
     .slice(1)
@@ -74,7 +76,7 @@ function BarGroups({ setting }) {
   const {
     width = 1000,
     height = 1000,
-    events = false,
+    // events = false,
     result = '',
     subTitle,
   } = setting
@@ -85,7 +87,7 @@ function BarGroups({ setting }) {
 
   const margin = { top: 40, right: 40, bottom: 120, left: 40 }
 
-  if (!result) return <div />
+  if (!result || result.error) return <div />
 
   // bounds
   const xMax = width - margin.left - margin.right
@@ -185,11 +187,11 @@ function BarGroups({ setting }) {
                     height={bar.height}
                     fill={bar.color}
                     rx={4}
-                    onClick={() => {
-                      if (!events) return
-                      const { key, value } = bar
-                      alert(JSON.stringify({ key, value }))
-                    }}
+                    // onClick={() => {
+                    //   if (!events) return
+                    //   const { key, value } = bar
+                    //   alert(JSON.stringify({ key, value }))
+                    // }}
                   />
                 ))}
               </Group>
@@ -240,39 +242,32 @@ function Step5() {
   const delayFunc = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
   // this is list of results and files
-  const { draftId, rangeId, timeId } = useContext(DraftContext)
+  const { draftId, rangeId, timeId, time = {} } = useContext(DraftContext)
+  const { results = [] } = time.setting || {}
+  const labels = [
+    '路口延滯時間',
+    '停等車隊長度',
+    '路段旅行速率',
+    '成效比較總表',
+    '方法比較影片',
+  ]
   const [list, setlist] = useState({})
-  const getList = async () => {
-    const res = await apiServices.data({
-      path: `model/file/${draftId}/${rangeId}/${timeId}/list.csv`,
-      method: 'get',
-    })
-    const temp = {}
-    if (res.error) {
-      setlist({})
-      return
-    }
-    const files = res.split('\r\n')
-    files.slice(1, files.length).forEach((f) => {
-      if (temp[f.split(',')[0].trim()]) {
-        temp[f.split(',')[0]].push({
-          path: f.split(',')[1].trim(),
-          note: f.split(',')[2].trim(),
-        })
-      } else {
-        temp[f.split(',')[0].trim()] = [
-          {
-            path: f.split(',')[1].trim(),
-            note: f.split(',')[2].trim(),
-          },
-        ]
-      }
-    })
-    setlist(temp)
-  }
   useEffect(() => {
-    getList()
-  }, [])
+    setlist(
+      labels.reduce(
+        (prev, cur) => ({
+          ...prev,
+          [cur]: results
+            .filter((result) => result.type === cur)
+            .map((r) => ({
+              path: r.originName.split('/')[r.originName.split('/').length - 1],
+              name: r.name.split('/')[r.name.split('/').length - 1],
+            })),
+        }),
+        {}
+      )
+    )
+  }, [results])
 
   useEffect(() => {
     const generate = async () => {
@@ -310,14 +305,6 @@ function Step5() {
     return () => ref.current && observer.unobserve(ref.current)
   }, [])
 
-  const labels = [
-    '路口延滯時間',
-    '停等車隊長度',
-    '路段旅行速率',
-    '成效比較總表',
-    '方法比較影片',
-  ]
-
   const [selected, setselected] = useState('')
   const [result, setresult] = useState('')
   useEffect(() => {
@@ -329,7 +316,8 @@ function Step5() {
       })
       setresult(res)
     }
-    if (list[labels[selected]]) getData(list[labels[selected]][0].path)
+    if (list[labels[selected]] && list[labels[selected]][0])
+      getData(list[labels[selected]][0].path)
   }, [selected])
 
   const reports = [
@@ -385,8 +373,24 @@ function Step5() {
     {
       label: '方法比較影片',
       hover: (
-        <>
-          <div className="w-50 p-3 d-flex flex-column">
+        <Row className="flex-nowrap overflow-scroll">
+          {list['方法比較影片'] &&
+            list['方法比較影片'].map((l) => (
+              <Col>
+                {/* <FormLabel>固定</FormLabel> */}
+                <video width="auto" height="300px" controls>
+                  <track kind="captions" />
+                  <source
+                    src={
+                      list['方法比較影片']
+                        ? `/api/model/file/${draftId}/${rangeId}/${timeId}/${l.path}`
+                        : ''
+                    }
+                  />
+                </video>
+              </Col>
+            ))}
+          {/* <div className="w-50 p-3 d-flex flex-column">
             <FormLabel>固定</FormLabel>
             <video width="auto" height="300px" controls>
               <track kind="captions" />
@@ -411,8 +415,8 @@ function Step5() {
                 }
               />
             </video>
-          </div>
-        </>
+          </div> */}
+        </Row>
       ),
     },
   ]
@@ -450,12 +454,12 @@ function Step5() {
               <FormLabel className="text-revo fw-bold text-start">
                 （2） 檢視結果
               </FormLabel>
-              {list[labels[selected]] && list[labels[selected]][0] && (
+              {list[labels[selected]] && list[labels[selected]][0] ? (
                 <Row className="px-4 py-0 my-0">
                   {list[labels[selected]].map((l) => (
                     <Col className="d-flex">
                       <FormLabel className="text-revo fw-bold text-start text-nowrap w-50">
-                        檔案名稱：{l.path}
+                        檔案名稱：{l.name}
                       </FormLabel>
                       <FormLabel className="text-revo fw-bold text-end pe-3 w-50">
                         註解：{l.note}
@@ -463,9 +467,21 @@ function Step5() {
                     </Col>
                   ))}
                 </Row>
+              ) : (
+                <Row className="px-4 py-0 my-0">
+                  <Col className="d-flex">
+                    <FormLabel className="text-revo fw-bold text-start text-nowrap w-50">
+                      {selected ? '尚未上傳本類型檔案' : '請選擇檔案類型'}
+                    </FormLabel>
+                  </Col>
+                </Row>
               )}
               <div className="d-flex w-100 flex-fill" ref={ref}>
-                {reports[selected]?.hover || <div />}
+                {list[labels[selected]] && list[labels[selected]][0] ? (
+                  reports[selected]?.hover || <div />
+                ) : (
+                  <div />
+                )}
               </div>
             </div>
           </Col>
