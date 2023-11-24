@@ -217,10 +217,10 @@ function ProjectedModal({ setting }) {
         path: `warp_image`,
         method: 'post',
         params: {
-          lu: `${points[0].style.top},${points[0].style.left}`,
-          ld: `${points[1].style.top},${points[1].style.left}`,
-          ru: `${points[2].style.top},${points[2].style.left}`,
-          rd: `${points[3].style.top},${points[3].style.left}`,
+          lu: `${points[0].style.left},${points[0].style.top}`,
+          ld: `${points[1].style.left},${points[1].style.top}`,
+          ru: `${points[2].style.left},${points[2].style.top}`,
+          rd: `${points[3].style.left},${points[3].style.top}`,
           Key: thumbnail.name,
         },
       })
@@ -253,7 +253,7 @@ function ProjectedModal({ setting }) {
           &ensp;在影片截圖上按下路段 4 個角， 並按下校正進行投影視角轉換。
         </h6>
         <div className="d-flex">
-          <div className="position-relative w-75 mx-3 ps-4">
+          <div className="position-relative w-75 mx-3 p-0">
             <Image
               className="mx-auto w-100"
               height="auto"
