@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-nested-ternary */
-import React, { useContext, useEffect, useState, useMemo } from 'react'
+import React, { useContext, useEffect, useState, useMemo, useRef } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import { DateRange } from 'react-date-range'
@@ -208,19 +208,35 @@ function ProjectedModal({ setting }) {
     setproject({ loading: true, show: false })
   }
 
+  const imageRef = useRef(null)
+
   const [fixed, setfixed] = useState(data?.fixed)
   useEffect(() => {
     const generate = async () => {
       await delay(1000)
+      let wScale = 1
+      let hScale = 1
+      if (imageRef.current) {
+        wScale = imageRef.current.naturalWidth / imageRef.current.clientWidth
+        hScale = imageRef.current.naturalHeight / imageRef.current.clientHeight
+      }
 
       const res = await apiServices.data({
         path: `warp_image`,
         method: 'post',
         params: {
-          lu: `${points[0].style.left},${points[0].style.top}`,
-          ld: `${points[1].style.left},${points[1].style.top}`,
-          ru: `${points[2].style.left},${points[2].style.top}`,
-          rd: `${points[3].style.left},${points[3].style.top}`,
+          lu: `${points[0].style.left * wScale},${
+            points[0].style.top * hScale
+          }`,
+          ld: `${points[1].style.left * wScale},${
+            points[1].style.top * hScale
+          }`,
+          ru: `${points[2].style.left * wScale},${
+            points[2].style.top * hScale
+          }`,
+          rd: `${points[3].style.left * wScale},${
+            points[3].style.top * hScale
+          }`,
           Key: thumbnail.name,
         },
       })
@@ -248,13 +264,24 @@ function ProjectedModal({ setting }) {
         投影轉換
       </Modal.Header>
       <Modal.Body>
-        <h6 className="position-relative py-3 text-center text-secondary">
-          <FontAwesomeIcon icon={faCircleInfo} title="說明" />
-          &ensp;在影片截圖上按下路段 4 個角， 並按下校正進行投影視角轉換。
-        </h6>
         <div className="d-flex">
-          <div className="position-relative w-75 mx-3 p-0">
+          <h6 className="w-50 position-relative py-3 ps-3 text-left text-secondary">
+            <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+            &ensp;在影片截圖上按下路段 4 個角， 並按下校正進行投影視角轉換。
+          </h6>
+          <h6 className="w-50 position-relative py-3 text-center text-secondary">
+            &ensp;校正後
+          </h6>
+        </div>
+        <div className="d-flex">
+          <div
+            className="position-relative"
+            style={{
+              width: '49%',
+            }}
+          >
             <Image
+              ref={imageRef}
               className="mx-auto w-100"
               height="auto"
               src={`/api/draft/video/${thumbnail.name}`}
@@ -286,20 +313,36 @@ function ProjectedModal({ setting }) {
               />
             ))}
           </div>
-          <div className="position-relative w-25 d-flex justify-content-center rounded-lg">
+          <div
+            style={{
+              width: '1%',
+              borderRight: '2px dashed #888',
+            }}
+          />
+          <div
+            style={{
+              width: '1%',
+            }}
+          />
+          <div
+            className="position-relative d-flex justify-content-center rounded-lg"
+            style={{
+              width: '49%',
+            }}
+          >
             {project.loading && (
               <Spinner className="m-auto" animation="border" />
             )}
             {!project.loading && (project.show || fixed) && (
               <Image
-                className="mx-auto w-50"
+                className="mx-auto"
                 height="auto"
                 src={fixed ? `/api/draft/video/${fixed}` : camera7projected}
                 fluid
               />
             )}
             {!project.loading && !project.show && !fixed && (
-              <div className="d-flex px-5 border">
+              <div className="d-flex w-100 border">
                 <h5 className="m-auto text-revo-light text-center">
                   校正後路段
                 </h5>
