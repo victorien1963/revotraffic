@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState, useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
+import ExcelJS from 'exceljs'
 import {
   Container,
   Row,
@@ -15,7 +16,7 @@ import {
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-import { DraftContext } from '../ContextProvider'
+import { DraftContext, SocketContext } from '../ContextProvider'
 import {
   camera14,
   camera7projection,
@@ -143,76 +144,148 @@ function SpeedTable() {
 function AccuracyTable({ setting }) {
   const { trueValue } = setting
 
-  const result = {
-    0: {
-      機車: {
-        左轉: '22',
-        直行: '583',
-        右轉: '93',
-      },
-      小客車: {
-        左轉: '51',
-        直行: '173',
-        右轉: '45',
-      },
-      大客車: {
-        左轉: '1',
-        直行: '3',
-        右轉: '1',
-      },
-    },
-    1: {
-      機車: {
-        左轉: '104',
-        直行: '961',
-        右轉: '78',
-      },
-      小客車: {
-        左轉: '93',
-        直行: '650',
-        右轉: '110',
-      },
-      大客車: {
-        左轉: '3',
-        直行: '38',
-        右轉: '2',
-      },
-    },
-    2: {
-      機車: {
-        左轉: '106',
-        直行: '761',
-        右轉: '87',
-      },
-      小客車: {
-        左轉: '63',
-        直行: '220',
-        右轉: '67',
-      },
-      大客車: {
-        左轉: '9',
-        直行: '3',
-        右轉: '1',
-      },
-    },
-    3: {
-      機車: {
-        左轉: '72',
-        直行: '513',
-        右轉: '125',
-      },
-      小客車: {
-        左轉: '40',
-        直行: '529',
-        右轉: '70',
-      },
-      大客車: {
-        左轉: '1',
-        直行: '24',
-        右轉: '13',
-      },
-    },
-  }
+  const result =
+    setting.result && setting.result.length
+      ? {
+          0: {
+            機車: {
+              左轉: setting.result[3][7],
+              直行: setting.result[4][7],
+              右轉: setting.result[5][7],
+            },
+            小客車: {
+              左轉: setting.result[3][8],
+              直行: setting.result[4][8],
+              右轉: setting.result[5][8],
+            },
+            大客車: {
+              左轉: setting.result[3][9],
+              直行: setting.result[4][9],
+              右轉: setting.result[5][9],
+            },
+          },
+          1: {
+            機車: {
+              左轉: setting.result[6][7],
+              直行: setting.result[7][7],
+              右轉: setting.result[8][7],
+            },
+            小客車: {
+              左轉: setting.result[6][8],
+              直行: setting.result[7][8],
+              右轉: setting.result[8][8],
+            },
+            大客車: {
+              左轉: setting.result[6][9],
+              直行: setting.result[7][9],
+              右轉: setting.result[8][9],
+            },
+          },
+          2: {
+            機車: {
+              左轉: setting.result[9][7],
+              直行: setting.result[10][7],
+              右轉: setting.result[11][7],
+            },
+            小客車: {
+              左轉: setting.result[9][8],
+              直行: setting.result[10][8],
+              右轉: setting.result[11][8],
+            },
+            大客車: {
+              左轉: setting.result[9][9],
+              直行: setting.result[10][9],
+              右轉: setting.result[11][9],
+            },
+          },
+          3: {
+            機車: {
+              左轉: setting.result[12][7],
+              直行: setting.result[13][7],
+              右轉: setting.result[14][7],
+            },
+            小客車: {
+              左轉: setting.result[12][8],
+              直行: setting.result[13][8],
+              右轉: setting.result[14][8],
+            },
+            大客車: {
+              左轉: setting.result[12][9],
+              直行: setting.result[13][9],
+              右轉: setting.result[14][9],
+            },
+          },
+        }
+      : {
+          0: {
+            機車: {
+              左轉: '22',
+              直行: '583',
+              右轉: '93',
+            },
+            小客車: {
+              左轉: '51',
+              直行: '173',
+              右轉: '45',
+            },
+            大客車: {
+              左轉: '1',
+              直行: '3',
+              右轉: '1',
+            },
+          },
+          1: {
+            機車: {
+              左轉: '104',
+              直行: '961',
+              右轉: '78',
+            },
+            小客車: {
+              左轉: '93',
+              直行: '650',
+              右轉: '110',
+            },
+            大客車: {
+              左轉: '3',
+              直行: '38',
+              右轉: '2',
+            },
+          },
+          2: {
+            機車: {
+              左轉: '106',
+              直行: '761',
+              右轉: '87',
+            },
+            小客車: {
+              左轉: '63',
+              直行: '220',
+              右轉: '67',
+            },
+            大客車: {
+              左轉: '9',
+              直行: '3',
+              右轉: '1',
+            },
+          },
+          3: {
+            機車: {
+              左轉: '72',
+              直行: '513',
+              右轉: '125',
+            },
+            小客車: {
+              左轉: '40',
+              直行: '529',
+              右轉: '70',
+            },
+            大客車: {
+              左轉: '1',
+              直行: '24',
+              右轉: '13',
+            },
+          },
+        }
 
   return (
     <div className="w-100 h-100 d-flex px-3">
@@ -274,7 +347,9 @@ function AccuracyTable({ setting }) {
                 trueValue[0][key][way] ? (
                   <Row className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[0][key][way] - trueValue[0][key][way]}
+                      {(result[0][key][way] - trueValue[0][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -327,7 +402,9 @@ function AccuracyTable({ setting }) {
                 trueValue[1][key][way] ? (
                   <Row className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[1][key][way] - trueValue[1][key][way]}
+                      {(result[1][key][way] - trueValue[1][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -380,7 +457,9 @@ function AccuracyTable({ setting }) {
                 trueValue[2][key][way] ? (
                   <Row className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[2][key][way] - trueValue[2][key][way]}
+                      {(result[2][key][way] - trueValue[2][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -433,7 +512,9 @@ function AccuracyTable({ setting }) {
                 trueValue[3][key][way] ? (
                   <Row className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[3][key][way] - trueValue[3][key][way]}
+                      {(result[3][key][way] - trueValue[3][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -536,11 +617,33 @@ function Step3({ setting }) {
     () => (selectedVideo !== null ? videos[selectedVideo] : {}),
     [selectedVideo, videos]
   )
-  // const handleDataChange = (data) => {
-  //   handleTimeEdit(timeId, {
-  //     videos: videos.map((v, i) => (i === selected ? { ...v, ...data } : v)),
-  //   })
-  // }
+
+  const [result, setresult] = useState(null)
+  const { socket, sendMessage } = useContext(SocketContext)
+  useEffect(() => {
+    if (!socket) return
+    socket.on('video', (message) => {
+      const workbook = new ExcelJS.Workbook()
+      try {
+        workbook.xlsx.load(message).then((sheets) => {
+          const sheet = sheets.worksheets[0]
+          if (sheet) {
+            const table = []
+            sheet.eachRow((row) => {
+              const temp = []
+              row.eachCell({ includeEmpty: true }, (cell) => {
+                temp.push(cell.value)
+              })
+              table.push(temp)
+            })
+            setresult(table)
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    })
+  }, [socket])
 
   const [selected, setselected] = useState('')
   const [progress, setprogress] = useState(0)
@@ -577,6 +680,10 @@ function Step3({ setting }) {
         })
       }, 50)
     }
+    sendMessage('video', {
+      timeId,
+      target: selectedVideo,
+    })
   }
 
   const gallerys = [
@@ -629,6 +736,7 @@ function Step3({ setting }) {
     每15分鐘各方向交通量: (
       <AccuracyTable
         setting={{
+          result,
           trueValue,
         }}
       />
@@ -636,6 +744,7 @@ function Step3({ setting }) {
     每小時各方向交通量: (
       <AccuracyTable
         setting={{
+          result,
           trueValue,
         }}
       />

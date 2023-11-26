@@ -1,24 +1,11 @@
 const { Server } = require('socket.io')
-const { getImage, getStreamResponse, getChatResponse } = require('./chatgpt')
-const { initDraft, editDraft } = require('./draft')
-// const { getPic } = require('./stableDiffusion')
 const pg = require('./pgService')
+const fs = require('fs/promises')
+const { createWriteStream } = require('fs')
+const { download } = require('./minio')
+const { upload, start, getResultXlsx } = require('./video')
 
-const initHelper = async (user_id, callback) => {
-  let chats = await pg.exec('any', 'SELECT * FROM chats WHERE user_id = $1', [user_id])
-  callback(chats)
-}
-
-const splitText = (origin) => {
-  const t = origin.replaceAll('：', ':')
-  if (t.includes(':'))
-    return t.split(':').map((s) => s.trim())
-  else if (t.includes('：'))
-    return t.split('：').map((s) => s.trim())
-  else if (t.includes('-'))
-    return t.split('-').map((s) => s.trim())
-  else return [t, '']
-}
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const socket = {}
 socket.init = (server, setting) => {
@@ -27,27 +14,49 @@ socket.init = (server, setting) => {
     const id = socket.handshake.auth.auth
     socket.join(id)
 
-    // gpt helper
-    initHelper(id, (chats) => io.to(id).emit('gpt', chats))
-    socket.on('gpt', async (message) => {
-      const newMessage = await pg.exec('one', 'INSERT INTO chats(user_id, setting, created_on) VALUES($1, $2, current_timestamp) RETURNING *', [id, { chat: message, from: id }])
-      io.to(id).emit('chat', newMessage)
-      const history = await pg.exec('any', 'SELECT setting FROM chats WHERE user_id = $1', [id])
-      getChatResponse(history.slice(Math.max(0, history.length - 11), history.length).map((h) => ({ role: h.setting.from === 'gpt' ? 'assistant' : 'user', content: h.setting.chat })), (stream) => io.to(id).emit('stream', stream), async (chat) => {
-        const newChat = await pg.exec('one', 'INSERT INTO chats(user_id, setting, created_on) VALUES($1, $2, current_timestamp) RETURNING *', [id, { chat, from: 'gpt'  }])
-        io.to(id).emit('chat', newChat)
-      }, 200)
-    })
-
     // draft
-    socket.on('draft', async ({ action, data }) => {
-      if (action === 'init') {
-        const draft = await initDraft(id)
-        io.to(id).emit('draft', draft)
-      } else if (action === 'update') {
-        editDraft(data)
+    socket.on('video', async ({ timeId, target }) => {
+      try {
+        const getTask = async (task_id) => {
+          console.log('---------------delaying result-------------------')
+          console.log(task_id)
+          await delay(5000)
+          const result = await getResultXlsx(task_id)
+          console.log('---------------getting result-------------------')
+          if (result.error) {
+            console.log('---------------result not completed-------------------')
+            getTask(task_id)
+          } else {
+            io.to(id).emit('video', result)
+          }
+        }
+        const { setting } = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [timeId])
+        const { name } = setting.videos[target]
+        console.log('---------------getting video-------------------')
+        const file = await download({ Key: name })
+        const destination = createWriteStream("./public/video.mp4")
+        file.pipe(destination)
+        await delay(10000)
+        const saved = await fs.readFile('./public/video.mp4')
+        console.log('---------------uploading video-------------------')
+        const { video_id } = await upload(saved)
+        console.log('---------------starting job-------------------')
+        const started = await start(video_id)
+        const task_id = started.id
+        console.log('---------------writing status-------------------')
+        await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {
+          ...setting,
+          videos: setting.videos.map((v, i) => i === target ? {
+            ...v,
+            task_id,
+            task_status: 'pending'
+          } : v)
+        }])
+        getTask(task_id)
+      } catch (e) {
+        console.log(e)
       }
-    })    
+    })
   })
   socket.io = io
 }
