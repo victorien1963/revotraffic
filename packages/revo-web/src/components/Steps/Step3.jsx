@@ -149,70 +149,70 @@ function AccuracyTable({ setting }) {
       ? {
           0: {
             機車: {
-              左轉: setting.result[3][7],
-              直行: setting.result[4][7],
-              右轉: setting.result[5][7],
+              左轉: setting.result[3][11],
+              直行: setting.result[4][11],
+              右轉: setting.result[5][11],
             },
             小客車: {
-              左轉: setting.result[3][8],
-              直行: setting.result[4][8],
-              右轉: setting.result[5][8],
+              左轉: setting.result[3][12],
+              直行: setting.result[4][12],
+              右轉: setting.result[5][12],
             },
             大客車: {
-              左轉: setting.result[3][9],
-              直行: setting.result[4][9],
-              右轉: setting.result[5][9],
+              左轉: setting.result[3][13],
+              直行: setting.result[4][13],
+              右轉: setting.result[5][13],
             },
           },
           1: {
             機車: {
-              左轉: setting.result[6][7],
-              直行: setting.result[7][7],
-              右轉: setting.result[8][7],
+              左轉: setting.result[6][11],
+              直行: setting.result[7][11],
+              右轉: setting.result[8][11],
             },
             小客車: {
-              左轉: setting.result[6][8],
-              直行: setting.result[7][8],
-              右轉: setting.result[8][8],
+              左轉: setting.result[6][12],
+              直行: setting.result[7][12],
+              右轉: setting.result[8][12],
             },
             大客車: {
-              左轉: setting.result[6][9],
-              直行: setting.result[7][9],
-              右轉: setting.result[8][9],
+              左轉: setting.result[6][13],
+              直行: setting.result[7][13],
+              右轉: setting.result[8][13],
             },
           },
           2: {
             機車: {
-              左轉: setting.result[9][7],
-              直行: setting.result[10][7],
-              右轉: setting.result[11][7],
+              左轉: setting.result[9][11],
+              直行: setting.result[10][11],
+              右轉: setting.result[11][11],
             },
             小客車: {
-              左轉: setting.result[9][8],
-              直行: setting.result[10][8],
-              右轉: setting.result[11][8],
+              左轉: setting.result[9][12],
+              直行: setting.result[10][12],
+              右轉: setting.result[11][12],
             },
             大客車: {
-              左轉: setting.result[9][9],
-              直行: setting.result[10][9],
-              右轉: setting.result[11][9],
+              左轉: setting.result[9][13],
+              直行: setting.result[10][13],
+              右轉: setting.result[11][13],
             },
           },
           3: {
             機車: {
-              左轉: setting.result[12][7],
-              直行: setting.result[13][7],
-              右轉: setting.result[14][7],
+              左轉: setting.result[12][11],
+              直行: setting.result[13][11],
+              右轉: setting.result[14][11],
             },
             小客車: {
-              左轉: setting.result[12][8],
-              直行: setting.result[13][8],
-              右轉: setting.result[14][8],
+              左轉: setting.result[12][12],
+              直行: setting.result[13][12],
+              右轉: setting.result[14][12],
             },
             大客車: {
-              左轉: setting.result[12][9],
-              直行: setting.result[13][9],
-              右轉: setting.result[14][9],
+              左轉: setting.result[12][13],
+              直行: setting.result[13][13],
+              右轉: setting.result[14][13],
             },
           },
         }
@@ -940,7 +940,24 @@ function Step3({ setting }) {
               <Button
                 variant="revo2"
                 className="text-nowrap"
-                onClick={() => {}}
+                onClick={() => {
+                  if (videoData && videoData.result) {
+                    const { buffer } = new Uint8Array(videoData.result.data)
+                    const blob = new Blob([buffer], {
+                      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    })
+                    const objectUrl = URL.createObjectURL(blob)
+                    const link = document.createElement('a')
+                    link.setAttribute('href', objectUrl)
+                    link.setAttribute(
+                      'download',
+                      `${videoData.name}_result.xlsx`
+                    )
+                    document.body.appendChild(link)
+                    link.click()
+                    link.remove()
+                  }
+                }}
               >
                 匯出
               </Button>
