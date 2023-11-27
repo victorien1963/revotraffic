@@ -16,7 +16,7 @@ import {
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-import { DraftContext, SocketContext } from '../ContextProvider'
+import { DraftContext, SocketContext, ToastContext } from '../ContextProvider'
 import {
   camera14,
   camera7projection,
@@ -611,6 +611,8 @@ function Step3({ setting }) {
     time = {},
     handleTimeEdit = () => {},
   } = useContext(DraftContext)
+  const { setToast } = useContext(ToastContext)
+
   const { videos = [] } = time.setting || {}
   const [selectedVideo, setselectedVideo] = useState(null)
   const videoData = useMemo(
@@ -618,7 +620,35 @@ function Step3({ setting }) {
     [selectedVideo, videos]
   )
 
+  const [videoStatus, setvideoStatus] = useState({
+    status: '',
+    message: '',
+  })
   const [result, setresult] = useState(null)
+  useEffect(() => {
+    if (videoData.result) {
+      const workbook = new ExcelJS.Workbook()
+      try {
+        workbook.xlsx.load(videoData.result.data).then((sheets) => {
+          const sheet = sheets.worksheets[0]
+          if (sheet) {
+            const table = []
+            sheet.eachRow((row) => {
+              const temp = []
+              row.eachCell({ includeEmpty: true }, (cell) => {
+                temp.push(cell.value)
+              })
+              table.push(temp)
+            })
+            setresult(table)
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    } else setresult(null)
+  }, [videoData])
+
   const { socket, sendMessage } = useContext(SocketContext)
   useEffect(() => {
     if (!socket) return
@@ -639,47 +669,22 @@ function Step3({ setting }) {
             setresult(table)
           }
         })
+        setvideoStatus({
+          ...videoStatus,
+          status: 'success',
+        })
       } catch (e) {
         console.log(e)
       }
     })
+    socket.on('video_status', (message) => {
+      setvideoStatus(message)
+      if (message.message) setToast({ show: true, text: message.message })
+    })
   }, [socket])
 
   const [selected, setselected] = useState('')
-  const [progress, setprogress] = useState(0)
-  const startProgress = async () => {
-    if (progress > 99) {
-      setprogress(1)
-      const interval = setInterval(() => {
-        setprogress((oldvalue) => {
-          const newValue = oldvalue + 1
-          if (newValue > 99) {
-            clearInterval(interval)
-          }
-          return newValue
-        })
-      }, 50)
-    } else {
-      const interval = setInterval(() => {
-        setprogress((oldvalue) => {
-          const newValue = oldvalue + 1
-          if (newValue > 99) {
-            handleTimeEdit(timeId, {
-              videos: videos.map((v, i) =>
-                i === parseInt(selectedVideo, 10)
-                  ? {
-                      ...v,
-                      forensics: true,
-                    }
-                  : v
-              ),
-            })
-            clearInterval(interval)
-          }
-          return newValue
-        })
-      }, 50)
-    }
+  const startProgress = () => {
     sendMessage('video', {
       timeId,
       target: selectedVideo,
@@ -797,7 +802,6 @@ function Step3({ setting }) {
 
   useEffect(() => {
     setselected('')
-    setprogress(0)
   }, [selectedVideo])
 
   const components = {
@@ -830,7 +834,8 @@ function Step3({ setting }) {
                 onClick={startProgress}
                 disabled={!selectedVideo}
               >
-                {progress && progress !== 100 ? (
+                {videoStatus.status &&
+                !['success', 'error'].includes(videoStatus.status) ? (
                   <Spinner size="sm" />
                 ) : (
                   '執行辨識'
@@ -856,7 +861,7 @@ function Step3({ setting }) {
                 aria-label="Default select example"
                 onChange={(e) => setselected(e.target.value)}
                 value={selected}
-                disabled={!selectedVideo || !videoData?.forensics}
+                disabled={!selectedVideo || !videoData || !result}
               >
                 <option value="" className="d-none">
                   下拉檢視辨識結果
