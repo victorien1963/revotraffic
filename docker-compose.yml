@@ -32,6 +32,7 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - IMAGE_WARP_API=${IMAGE_WARP_API}
+      - VIDEO_JOB_API=${VIDEO_JOB_API}
     depends_on:
       - "revo-postgres"
       - "minio"
