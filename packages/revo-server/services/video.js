@@ -13,15 +13,27 @@ const upload = async (video) => {
     return res
 }
 
-const start = async (video_id) => {
+const start = async (name) => {
     const res = await apiServices.send({
         url: `${process.env.VIDEO_JOB_API}/add_task`,
         method: 'get',
         params: {
-            video_id,
+            bucket_name: 'revotraffic',
+            object_name: name,
+            camera_no: '106'            
         },
       })
-    console.log(res)
+    return res
+}
+
+const getTaskStatus = async (task_id) => {
+    const res = await apiServices.send({
+        url: `${process.env.VIDEO_JOB_API}/get_task`,
+        method: 'get',
+        params: {
+            task_id,
+        },
+      })
     return res
 }
 
@@ -51,6 +63,7 @@ const getResultXlsx = async (task_id) => {
 module.exports = {
     upload,
     start,
+    getTaskStatus,
     getResult,
     getResultXlsx,
 }
