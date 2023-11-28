@@ -18,8 +18,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { DraftContext, SocketContext, ToastContext } from '../ContextProvider'
 import {
-  camera14,
-  camera7projection,
+  // camera14,
+  // camera7projection,
   gallery1,
   gallery2,
   gallery3,
@@ -29,6 +29,7 @@ import {
   gallery7,
   // turning,
 } from '../../assets'
+import apiServices from '../../services/apiServices'
 
 const defaultTrueValue = {
   0: {
@@ -619,13 +620,16 @@ function Step3({ setting }) {
     () => (selectedVideo !== null ? videos[selectedVideo] : {}),
     [selectedVideo, videos]
   )
+  console.log(videoData)
 
   const [videoStatus, setvideoStatus] = useState({
     status: '',
     message: '',
   })
   const [result, setresult] = useState(null)
+  const [src, setsrc] = useState('')
   useEffect(() => {
+    if (!videoData) return
     if (videoData.result) {
       const workbook = new ExcelJS.Workbook()
       try {
@@ -647,8 +651,12 @@ function Step3({ setting }) {
         console.log(e)
       }
     } else setresult(null)
+    if (videoData.result_video) {
+      setsrc(`api/draft/video/${videoData.result_video.name}`)
+    } else setresult(null)
   }, [videoData])
 
+  const [selected, setselected] = useState('')
   const { socket, sendMessage } = useContext(SocketContext)
   useEffect(() => {
     if (!socket) return
@@ -683,7 +691,6 @@ function Step3({ setting }) {
     })
   }, [socket])
 
-  const [selected, setselected] = useState('')
   const startProgress = () => {
     sendMessage('video', {
       timeId,
@@ -789,17 +796,16 @@ function Step3({ setting }) {
     '車間距（視覺化）': (
       <video width="auto" height="100%" controls>
         <track kind="captions" />
-        <source src={camera7projection} />
+        <source src={src} />
       </video>
     ),
     '車輛辨識與追蹤（視覺化）': (
       <video width="auto" height="100%" controls>
         <track kind="captions" />
-        <source src={camera14} />
+        <source src={src} />
       </video>
     ),
   }
-
   useEffect(() => {
     setselected('')
   }, [selectedVideo])
@@ -940,22 +946,47 @@ function Step3({ setting }) {
               <Button
                 variant="revo2"
                 className="text-nowrap"
-                onClick={() => {
-                  if (videoData && videoData.result) {
-                    const { buffer } = new Uint8Array(videoData.result.data)
-                    const blob = new Blob([buffer], {
-                      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    })
-                    const objectUrl = URL.createObjectURL(blob)
-                    const link = document.createElement('a')
-                    link.setAttribute('href', objectUrl)
-                    link.setAttribute(
-                      'download',
-                      `${videoData.name}_result.xlsx`
-                    )
-                    document.body.appendChild(link)
-                    link.click()
-                    link.remove()
+                onClick={async () => {
+                  switch (selected) {
+                    case '車輛辨識與追蹤（視覺化）':
+                    case '車間距（視覺化）':
+                      if (videoData && videoData.result_video) {
+                        const res = await apiServices.data({
+                          path: `/draft/video/${videoData.result_video.name}`,
+                          method: 'get',
+                          responseType: 'arraybuffer',
+                        })
+                        console.log(res)
+                        const blob = new Blob([res])
+                        const link = document.createElement('a')
+                        link.setAttribute('href', URL.createObjectURL(blob))
+                        link.setAttribute('download', 'result.mp4')
+                        document.body.appendChild(link)
+                        link.click()
+                        link.remove()
+                      }
+                      break
+                    case '每15分鐘各方向交通量':
+                    case '每小時各方向交通量':
+                      if (videoData && videoData.result) {
+                        const { buffer } = new Uint8Array(videoData.result.data)
+                        const blob = new Blob([buffer], {
+                          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        })
+                        const objectUrl = URL.createObjectURL(blob)
+                        const link = document.createElement('a')
+                        link.setAttribute('href', objectUrl)
+                        link.setAttribute(
+                          'download',
+                          `${videoData.name}_result.xlsx`
+                        )
+                        document.body.appendChild(link)
+                        link.click()
+                        link.remove()
+                      }
+                      break
+                    default:
+                      break
                   }
                 }}
               >
