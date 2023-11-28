@@ -130,7 +130,7 @@ function SpeedTable() {
           <Col xs={3}>Ymax</Col>
         </Row>
         {result.map((r, i) => (
-          <Row className="w-100">
+          <Row key={i} className="w-100">
             <Col xs={3}>{i * 10}</Col>
             <Col xs={3}>{r[0]}</Col>
             <Col xs={3}>{r[1]}</Col>
@@ -336,17 +336,17 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[0]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[0][key]).map((way) => (
-                <Row>{result[0][key][way]}</Row>
+                <Row key={way}>{result[0][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[0]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[0][key]).map((way) =>
                 trueValue[0][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
                       {(result[0][key][way] - trueValue[0][key][way]).toFixed(
                         2
@@ -361,7 +361,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -391,17 +391,17 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[1]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[1][key]).map((way) => (
-                <Row>{result[1][key][way]}</Row>
+                <Row key={way}>{result[1][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[1]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[1][key]).map((way) =>
                 trueValue[1][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
                       {(result[1][key][way] - trueValue[1][key][way]).toFixed(
                         2
@@ -416,7 +416,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -446,17 +446,17 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[2]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[2][key]).map((way) => (
-                <Row>{result[2][key][way]}</Row>
+                <Row key={way}>{result[2][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[2]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[2][key]).map((way) =>
                 trueValue[2][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
                       {(result[2][key][way] - trueValue[2][key][way]).toFixed(
                         2
@@ -471,7 +471,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -501,17 +501,17 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[3]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[3][key]).map((way) => (
-                <Row>{result[3][key][way]}</Row>
+                <Row key={way}>{result[3][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[0]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[3][key]).map((way) =>
                 trueValue[3][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
                       {(result[3][key][way] - trueValue[3][key][way]).toFixed(
                         2
@@ -526,7 +526,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -610,6 +610,8 @@ function Step3({ setting }) {
   const {
     timeId,
     time = {},
+    times,
+    setTimes,
     handleTimeEdit = () => {},
   } = useContext(DraftContext)
   const { setToast } = useContext(ToastContext)
@@ -620,7 +622,6 @@ function Step3({ setting }) {
     () => (selectedVideo !== null ? videos[selectedVideo] : {}),
     [selectedVideo, videos]
   )
-  console.log(videoData)
 
   const [videoStatus, setvideoStatus] = useState({
     status: '',
@@ -633,20 +634,22 @@ function Step3({ setting }) {
     if (videoData.result) {
       const workbook = new ExcelJS.Workbook()
       try {
-        workbook.xlsx.load(videoData.result.data).then((sheets) => {
-          const sheet = sheets.worksheets[0]
-          if (sheet) {
-            const table = []
-            sheet.eachRow((row) => {
-              const temp = []
-              row.eachCell({ includeEmpty: true }, (cell) => {
-                temp.push(cell.value)
+        workbook.xlsx
+          .load(videoData.result.data || videoData.result)
+          .then((sheets) => {
+            const sheet = sheets.worksheets[0]
+            if (sheet) {
+              const table = []
+              sheet.eachRow((row) => {
+                const temp = []
+                row.eachCell({ includeEmpty: true }, (cell) => {
+                  temp.push(cell.value)
+                })
+                table.push(temp)
               })
-              table.push(temp)
-            })
-            setresult(table)
-          }
-        })
+              setresult(table)
+            }
+          })
       } catch (e) {
         console.log(e)
       }
@@ -661,29 +664,11 @@ function Step3({ setting }) {
   useEffect(() => {
     if (!socket) return
     socket.on('video', (message) => {
-      const workbook = new ExcelJS.Workbook()
-      try {
-        workbook.xlsx.load(message).then((sheets) => {
-          const sheet = sheets.worksheets[0]
-          if (sheet) {
-            const table = []
-            sheet.eachRow((row) => {
-              const temp = []
-              row.eachCell({ includeEmpty: true }, (cell) => {
-                temp.push(cell.value)
-              })
-              table.push(temp)
-            })
-            setresult(table)
-          }
-        })
-        setvideoStatus({
-          ...videoStatus,
-          status: 'success',
-        })
-      } catch (e) {
-        console.log(e)
-      }
+      setTimes(times.map((t) => (t.time_id === message.time_id ? message : t)))
+      setvideoStatus({
+        ...videoStatus,
+        status: 'success',
+      })
     })
     socket.on('video_status', (message) => {
       setvideoStatus(message)
@@ -956,7 +941,6 @@ function Step3({ setting }) {
                           method: 'get',
                           responseType: 'arraybuffer',
                         })
-                        console.log(res)
                         const blob = new Blob([res])
                         const link = document.createElement('a')
                         link.setAttribute('href', URL.createObjectURL(blob))
@@ -1064,9 +1048,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[0]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[0][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[0][key][way]}
                         onChange={(e) =>
@@ -1111,9 +1095,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[1]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[1][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[1][key][way]}
                         onChange={(e) =>
@@ -1158,9 +1142,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[2]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[2][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[2][key][way]}
                         onChange={(e) =>
@@ -1205,9 +1189,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[3]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[3][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[3][key][way]}
                         onChange={(e) =>
