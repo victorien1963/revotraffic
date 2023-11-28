@@ -1,6 +1,7 @@
 const { Server } = require('socket.io')
 const pg = require('./pgService')
-const { start, getTaskStatus, getResultXlsx } = require('./video')
+const { upload } = require('./minio')
+const { start, getTaskStatus, getResultXlsx, getResultVideo } = require('./video')
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -40,6 +41,8 @@ socket.init = (server, setting) => {
             })
           } else{
             const result = await getResultXlsx(task_id)
+            const resultVideo = await getResultVideo(task_id)
+            const result_video = await upload({ Key: 'result.mp4', Body: Buffer.from(resultVideo) })
             console.log('save data')
             console.log(parseInt(target, 10))
             const updated = await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {
@@ -48,7 +51,8 @@ socket.init = (server, setting) => {
                 ...v,
                 task_id,
                 task_status: 'success',
-                result
+                result,
+                result_video,
               } : v)
             }])
             console.log(updated.setting.videos)

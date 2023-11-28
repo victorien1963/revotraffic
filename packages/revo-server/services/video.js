@@ -60,10 +60,23 @@ const getResultXlsx = async (task_id) => {
     return res
 }
 
+const getResultVideo = async (task_id) => {
+    const res = await apiServices.send({
+        url: `${process.env.VIDEO_JOB_API}/get_result_video`,
+        method: 'get',
+        params: {
+            task_id,
+        },
+        responseType: 'arraybuffer'
+      })
+    return res
+}
+
 module.exports = {
     upload,
     start,
     getTaskStatus,
     getResult,
     getResultXlsx,
+    getResultVideo,
 }
