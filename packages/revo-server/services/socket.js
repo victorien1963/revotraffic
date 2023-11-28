@@ -43,8 +43,6 @@ socket.init = (server, setting) => {
             const result = await getResultXlsx(task_id)
             const resultVideo = await getResultVideo(task_id)
             const result_video = await upload({ Key: 'result.mp4', Body: Buffer.from(resultVideo) })
-            console.log('save data')
-            console.log(parseInt(target, 10))
             const updated = await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {
               ...setting,
               videos: setting.videos.map((v, i) => parseInt(i, 10) === parseInt(target, 10) ? {
@@ -55,8 +53,7 @@ socket.init = (server, setting) => {
                 result_video,
               } : v)
             }])
-            console.log(updated.setting.videos)
-            io.to(id).emit('video', result)
+            io.to(id).emit('video', updated)
           }
         }
         const { setting } = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [timeId])
