@@ -13,10 +13,12 @@ function Breadcrumb({ setting }) {
             {i ? '>' : ''}
             <Col
               xs={3}
+              className="oneLineEllipsis px-3"
               style={{
                 cursor: 'pointer',
               }}
               onClick={path.onClick}
+              title={path.label}
             >
               {path.label}
             </Col>

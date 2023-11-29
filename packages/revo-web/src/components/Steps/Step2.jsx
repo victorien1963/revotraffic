@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-nested-ternary */
@@ -6,6 +7,17 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import { DateRange } from 'react-date-range'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faFileVideo,
+  faLocationDot,
+  faCarRear,
+  faArrowsToDot,
+  faCheckCircle,
+  faCircle,
+  faCircleInfo,
+  faFileArrowUp,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons'
 import {
   Container,
   Row,
@@ -20,11 +32,6 @@ import {
   Spinner,
   InputGroup,
 } from 'react-bootstrap'
-import {
-  faCheckCircle,
-  faCircle,
-  faCircleInfo,
-} from '@fortawesome/free-solid-svg-icons'
 import VideoSnapshot from 'video-snapshot'
 import { camera7projected } from '../../assets'
 import LoadingButton from '../LoadingButton'
@@ -316,7 +323,7 @@ function ProjectedModal({ setting }) {
           <div
             style={{
               width: '1%',
-              borderRight: '2px dashed #888',
+              borderRight: '2px dashed rgb(204 204 204)',
             }}
           />
           <div
@@ -801,8 +808,13 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={3}>
-                          <Form.Label className="mb-0">{f.label}</Form.Label>
+                        <Col xs={2}>
+                          <Form.Label
+                            className="mb-0"
+                            style={{ letterSpacing: '31px' }}
+                          >
+                            {f.label}
+                          </Form.Label>
                         </Col>
                         <Col>
                           <FontAwesomeIcon
@@ -822,15 +834,14 @@ function Road({ setting }) {
                     <React.Fragment key={i}>
                       {f.show && (
                         <Row className="py-3">
+                          <Col xs={1} />
                           <Col
                             xs={3}
-                            className="text-end pt-1 text-revo fw-bold"
+                            className="text-start pt-1 text-revo fw-bold"
                           >
-                            <Form.Label className="mb-0 text-">
-                              {f.label}
-                            </Form.Label>
+                            <Form.Label className="mb-0">{f.label}</Form.Label>
                           </Col>
-                          <Col>
+                          <Col className="pe-4">
                             <FontAwesomeIcon
                               className={`h5 mt-2 ${
                                 f.check ? 'check-revo' : 'text-secondary'
@@ -850,12 +861,21 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
-                          <Form.Label className="mb-0">{f.label}</Form.Label>
+                        <Col xs={1} />
+                        <Col
+                          xs={2}
+                          className="text-start pt-1 text-revo fw-bold"
+                        >
+                          <Form.Label
+                            className="mb-0"
+                            style={{ letterSpacing: '31px' }}
+                          >
+                            {f.label}
+                          </Form.Label>
                         </Col>
                         {f.content.map((c) => (
                           <Col
-                            className={`py-1 ${
+                            className={`py-1 me-4 ${
                               data.type === c.value ? 'bg-revo-mid rounded' : ''
                             }`}
                             style={{ cursor: 'pointer' }}
@@ -878,10 +898,19 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="pt-3 pb-2">
-                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
-                          <Form.Label className="mb-0">{f.label}</Form.Label>
+                        <Col xs={1} />
+                        <Col
+                          xs={2}
+                          className="text-start pt-1 text-revo fw-bold"
+                        >
+                          <Form.Label
+                            className="mb-0"
+                            style={{ letterSpacing: '31px' }}
+                          >
+                            {f.label}
+                          </Form.Label>
                         </Col>
-                        <Col>
+                        <Col className="pe-4">
                           <InputGroup>
                             <Form.Control
                               name={f.name}
@@ -933,7 +962,7 @@ function Road({ setting }) {
                         className="lh-sm me-auto small ps-5 text-secondary"
                         style={{ textAlign: 'start' }}
                       >
-                        <div className="ps-5 ms-4">
+                        <div className="ps-5 ms-5">
                           <div className="ps-5">
                             路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
                             <br />
@@ -947,10 +976,19 @@ function Road({ setting }) {
                   return (
                     <React.Fragment key={i}>
                       <Row className="py-3">
-                        <Col xs={3} className="text-end pt-1 text-revo fw-bold">
-                          <Form.Label className="mb-0">{f.label}</Form.Label>
+                        <Col xs={1} />
+                        <Col
+                          xs={2}
+                          className="text-start pt-1 text-revo fw-bold"
+                        >
+                          <Form.Label
+                            className="mb-0"
+                            style={{ letterSpacing: '31px' }}
+                          >
+                            {f.label}
+                          </Form.Label>
                         </Col>
-                        <Col>
+                        <Col className="pe-4">
                           <Form.Control
                             name={f.name}
                             type={f.type}
@@ -967,11 +1005,11 @@ function Road({ setting }) {
             })}
           </Col>
           <Col className="d-flex flex-column">
-            <video className="my-auto" width="100%" height="auto" controls>
+            <video className="my-auto" width="95%" height="auto" controls>
               <track kind="captions" />
               <source src={`/api/time/video/${videos[selected]?.name}`} />
             </video>
-            <div className="d-flex mt-auto">
+            <div className="d-flex mt-auto me-4 pt-3">
               <Button
                 variant="warning"
                 className="ms-auto me-2"
@@ -1201,8 +1239,13 @@ function Video({ setting }) {
       <Row className="pt-3 pb-2 px-2" style={{ height: '10vh' }}>
         <Col xs={2}>
           <Button variant="revo">
-            <FormLabel htmlFor="file" className="mb-0">
-              ⇪ 上傳影片檔案
+            <FormLabel
+              htmlFor="file"
+              className="mb-0"
+              style={{ cursor: 'pointer' }}
+            >
+              <FontAwesomeIcon icon={faFileArrowUp} />
+              &ensp;上傳影片檔案
             </FormLabel>
           </Button>
           <Form.Control
@@ -1280,12 +1323,13 @@ function Video({ setting }) {
                   </video>
                 </div>
                 <Button
-                  variant="danger"
+                  variant="outline-danger"
                   className="mb-auto mt-2 mx-auto"
                   size="sm"
                   onClick={() => handleRemoveVideo(i)}
                 >
-                  ✖ 移 除
+                  <FontAwesomeIcon icon={faTrashCan} />
+                  &ensp;移除
                 </Button>
               </Col>
             ))}
@@ -1329,11 +1373,13 @@ function Step2({ setting }) {
             name: 'step2',
             value: '影片上傳',
             check: videos.length !== 0,
+            icon: faFileVideo,
           },
           {
-            label: '路口、路段標記',
+            label: '路口＆路段標記',
             name: 'step2',
-            value: '路口、路段標記',
+            value: '路口＆路段標記',
+            icon: faLocationDot,
             check:
               videos &&
               videos.length &&
@@ -1343,11 +1389,13 @@ function Step2({ setting }) {
             label: '車種標記',
             name: 'step2',
             value: '車種標記',
+            icon: faCarRear,
           },
           {
             label: '軌跡標記',
             name: 'step2',
             value: '軌跡標記',
+            icon: faArrowsToDot,
           },
         ].map((s) => (
           <Col xs={3} className="d-flex px-3" key={s.value}>
@@ -1367,7 +1415,11 @@ function Step2({ setting }) {
                   })
                 }
               >
-                <span className="m-auto">{s.label}</span>
+                <FontAwesomeIcon
+                  icon={s.icon}
+                  className="fs-2 text-revo mx-auto mt-auto pb-3"
+                />
+                <div className="mx-auto mb-auto">{s.label}</div>
               </Card>
               <FontAwesomeIcon
                 className={`h5 mt-2 ${

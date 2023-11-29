@@ -17,6 +17,15 @@ img {
   min-height: 8vh;
 }
 
+.oneLineEllipsis {
+  display: block;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .textShadow {
   box-shadow: none;
   text-shadow: rgb(87, 179, 255) 0.1em 0.1em 0.2em;
@@ -314,6 +323,10 @@ img {
 
 .w-30 {
   width: 30% !important;
+}
+
+.w-40 {
+  width: 40% !important;
 }
 
 .w-60 {

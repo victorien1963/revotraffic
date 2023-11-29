@@ -927,7 +927,7 @@ function Step3({ setting }) {
             （3） 匯出與確認
           </FormLabel>
           <div className="w-100 h-100 d-flex flex-column pe-2 pt-3">
-            <div className="d-flex w-100">
+            <div className="d-flex w-100 ps-3">
               <Button
                 variant="revo2"
                 className="text-nowrap"

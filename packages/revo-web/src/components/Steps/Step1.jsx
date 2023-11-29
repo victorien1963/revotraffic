@@ -292,8 +292,7 @@ function Projects() {
   )
 
   const btntext = useMemo(
-    () =>
-      draftId ? (rangeId ? '新 增 交 維 階 段' : '新 增 範 圍') : '新 增 計 畫',
+    () => (draftId ? (rangeId ? '新增交維階段' : '新增範圍') : '新增計畫'),
     [draftId, rangeId]
   )
 
@@ -360,13 +359,13 @@ function Projects() {
 
   return (
     <>
-      <Row>
-        <Col xs={10} className="d-flex px-5">
+      <Row className="px-5">
+        <Col xs={10} className="d-flex">
           <h5 className="my-auto text-revo-light fw-bold">{title}</h5>
         </Col>
-        <Col xs={2} className="d-flex ps-0">
+        <Col xs={2} className="d-flex ms-auto pe-0">
           <Button
-            className="mx-auto"
+            className="ms-auto"
             variant="outline-revo2"
             onClick={() => setshow(true)}
           >
@@ -377,21 +376,27 @@ function Projects() {
       </Row>
       <Row className="flex-grow-1 pt-3 pb-5 px-5">
         {list && list.length ? (
-          <ListGroup>
+          <ListGroup className="pe-0">
             {list.map(
               (
                 { time_id, range_id, draft_id, setting, created_on, user_name },
                 i
               ) => (
                 <ListGroupItem className="d-flex" key={i}>
-                  <p className="w-25 my-auto text-start">
+                  <p
+                    className="w-40 my-auto text-start oneLineEllipsis"
+                    title={setting.name}
+                  >
+                    <span className="fw-regular text-revo">計畫名稱：</span>
                     {setting.date || setting.id}-{setting.name}
                   </p>
-                  <p className="w-25 my-auto text-start">
-                    建立者：{user_name || draft.user_name}
+                  <p className="w-15 my-auto text-start ps-2">
+                    <span className="fw-regular text-revo">建立者</span>：
+                    {user_name || draft.user_name}
                   </p>
-                  <p className="w-25 my-auto text-start">
-                    建立時間：{moment(created_on).format('yyyy-MM-DD')}
+                  <p className="w-15 my-auto text-start ps-2">
+                    <span className="fw-regular text-revo">建立時間：</span>
+                    {moment(created_on).format('yyyy-MM-DD')}
                   </p>
                   <Button
                     className="ms-auto me-2"

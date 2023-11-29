@@ -132,12 +132,12 @@ function Steps() {
       />
 
       <Row
-        className="px-4"
+        className="px-5"
         style={{
           height: '10%',
           minHeight: '10%',
           alignContent: 'center',
-          color: '#0e594f',
+          color: 'dark',
           fontWeight: '600',
           fontSize: '1rem',
         }}
