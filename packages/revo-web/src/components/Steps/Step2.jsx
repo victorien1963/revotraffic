@@ -1051,11 +1051,11 @@ function Road({ setting }) {
             style={{ minHeight: '82%' }}
           >
             {videos && videos.length ? (
-              videos.map(({ name, ...v }, i) => (
+              videos.map(({ originName, name, ...v }, i) => (
                 <Col
                   xs={3}
                   className="flex-column h5 text-revo"
-                  key={name}
+                  key={originName || name}
                   style={{
                     cursor: 'pointer',
                   }}
@@ -1066,12 +1066,13 @@ function Road({ setting }) {
                       height: '10%',
                     }}
                   >{`${i + 1}.${
-                    name
+                    originName ||
+                    (name
                       ? name
                           .split('_')
                           .slice(1, name.split('_').length)
                           .join('')
-                      : '- -'
+                      : '- -')
                   }`}</p>
                   <div className="position-relative">
                     <div className="d-flex h-100">
@@ -1173,6 +1174,7 @@ function Video({ setting }) {
   const { timeId, time = {}, setTimes } = useContext(DraftContext)
   const { videos = [] } = time.setting || {}
 
+  // const [fileList, setfileList] = useState([])
   const [tempFile, settempFile] = useState(null)
   const tempurl = useMemo(
     () => (tempFile ? URL.createObjectURL(tempFile) : ''),
@@ -1216,6 +1218,7 @@ function Video({ setting }) {
       path: `time/video/${timeId}`,
       method: 'post',
       data: {
+        fileName,
         video: uploadedVideo,
         files: JSON.stringify(arrayed),
       },
@@ -1223,6 +1226,7 @@ function Video({ setting }) {
     setTimes((prevState) =>
       prevState.map((ps) => (ps.time_id === timeId ? res : ps))
     )
+    setfileName('')
     setuploading(false)
   }
   const handleRemoveVideo = async (i) => {
@@ -1252,9 +1256,13 @@ function Video({ setting }) {
             id="file"
             name="file"
             type="file"
+            multiple
+            accept="video/*"
+            // value={fileList}
             onChange={(e) => {
               setuploading(true)
               settempFile(e.target.files[0])
+              e.target.value = null
             }}
             style={{
               visibility: 'hidden',
@@ -1295,11 +1303,11 @@ function Video({ setting }) {
           </>
         ) : videos.length ? (
           <>
-            {videos.map(({ name }, i) => (
+            {videos.map(({ originName, name }, i) => (
               <Col
                 xs={3}
                 className="d-flex flex-column h5 text-revo"
-                key={name}
+                key={originName || name}
               >
                 <p
                   style={{
@@ -1307,9 +1315,10 @@ function Video({ setting }) {
                     marginBottom: '0',
                   }}
                 >{`${`${i + 1} `}.${
-                  name
+                  originName ||
+                  (name
                     ? name.split('_').slice(1, name.split('_').length).join('')
-                    : '- -'
+                    : '- -')
                 }`}</p>
                 <div className="d-flex h-100">
                   <video
@@ -1441,13 +1450,9 @@ function Step2({ setting }) {
         }}
       />
     ),
-    '路口、路段標記': (
+    '路口＆路段標記': (
       <Road
         setting={{
-          videos,
-          roads,
-          roadAdjust,
-          roadLine,
           handleDataChange,
           handleToolChange,
         }}
