@@ -43,9 +43,9 @@ const init = async () => {
 }
 init()
 
-const upload = async ({ Key, Body }) => {
+const upload = async ({ Key, Body, hasTimeStamp }) => {
   try {
-    const fileName = `${Date.now()}_${Key}`
+    const fileName = hasTimeStamp ? Key :`${Date.now()}_${Key}`
     const object_upload_params = {
       Bucket: bucket_name,
       // To create a directory for the object, use '/'. For example, 'myApp/package.json'.

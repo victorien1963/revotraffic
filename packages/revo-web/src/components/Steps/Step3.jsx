@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState, useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
+import ExcelJS from 'exceljs'
 import {
   Container,
   Row,
@@ -15,10 +16,10 @@ import {
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
-import { DraftContext } from '../ContextProvider'
+import { DraftContext, SocketContext, ToastContext } from '../ContextProvider'
 import {
-  camera14,
-  camera7projection,
+  // camera14,
+  // camera7projection,
   gallery1,
   gallery2,
   gallery3,
@@ -28,6 +29,7 @@ import {
   gallery7,
   // turning,
 } from '../../assets'
+import apiServices from '../../services/apiServices'
 
 const defaultTrueValue = {
   0: {
@@ -128,7 +130,7 @@ function SpeedTable() {
           <Col xs={3}>Ymax</Col>
         </Row>
         {result.map((r, i) => (
-          <Row className="w-100">
+          <Row key={i} className="w-100">
             <Col xs={3}>{i * 10}</Col>
             <Col xs={3}>{r[0]}</Col>
             <Col xs={3}>{r[1]}</Col>
@@ -143,76 +145,148 @@ function SpeedTable() {
 function AccuracyTable({ setting }) {
   const { trueValue } = setting
 
-  const result = {
-    0: {
-      機車: {
-        左轉: '22',
-        直行: '583',
-        右轉: '93',
-      },
-      小客車: {
-        左轉: '51',
-        直行: '173',
-        右轉: '45',
-      },
-      大客車: {
-        左轉: '1',
-        直行: '3',
-        右轉: '1',
-      },
-    },
-    1: {
-      機車: {
-        左轉: '104',
-        直行: '961',
-        右轉: '78',
-      },
-      小客車: {
-        左轉: '93',
-        直行: '650',
-        右轉: '110',
-      },
-      大客車: {
-        左轉: '3',
-        直行: '38',
-        右轉: '2',
-      },
-    },
-    2: {
-      機車: {
-        左轉: '106',
-        直行: '761',
-        右轉: '87',
-      },
-      小客車: {
-        左轉: '63',
-        直行: '220',
-        右轉: '67',
-      },
-      大客車: {
-        左轉: '9',
-        直行: '3',
-        右轉: '1',
-      },
-    },
-    3: {
-      機車: {
-        左轉: '72',
-        直行: '513',
-        右轉: '125',
-      },
-      小客車: {
-        左轉: '40',
-        直行: '529',
-        右轉: '70',
-      },
-      大客車: {
-        左轉: '1',
-        直行: '24',
-        右轉: '13',
-      },
-    },
-  }
+  const result =
+    setting.result && setting.result.length
+      ? {
+          0: {
+            機車: {
+              左轉: setting.result[3][11],
+              直行: setting.result[4][11],
+              右轉: setting.result[5][11],
+            },
+            小客車: {
+              左轉: setting.result[3][12],
+              直行: setting.result[4][12],
+              右轉: setting.result[5][12],
+            },
+            大客車: {
+              左轉: setting.result[3][13],
+              直行: setting.result[4][13],
+              右轉: setting.result[5][13],
+            },
+          },
+          1: {
+            機車: {
+              左轉: setting.result[6][11],
+              直行: setting.result[7][11],
+              右轉: setting.result[8][11],
+            },
+            小客車: {
+              左轉: setting.result[6][12],
+              直行: setting.result[7][12],
+              右轉: setting.result[8][12],
+            },
+            大客車: {
+              左轉: setting.result[6][13],
+              直行: setting.result[7][13],
+              右轉: setting.result[8][13],
+            },
+          },
+          2: {
+            機車: {
+              左轉: setting.result[9][11],
+              直行: setting.result[10][11],
+              右轉: setting.result[11][11],
+            },
+            小客車: {
+              左轉: setting.result[9][12],
+              直行: setting.result[10][12],
+              右轉: setting.result[11][12],
+            },
+            大客車: {
+              左轉: setting.result[9][13],
+              直行: setting.result[10][13],
+              右轉: setting.result[11][13],
+            },
+          },
+          3: {
+            機車: {
+              左轉: setting.result[12][11],
+              直行: setting.result[13][11],
+              右轉: setting.result[14][11],
+            },
+            小客車: {
+              左轉: setting.result[12][12],
+              直行: setting.result[13][12],
+              右轉: setting.result[14][12],
+            },
+            大客車: {
+              左轉: setting.result[12][13],
+              直行: setting.result[13][13],
+              右轉: setting.result[14][13],
+            },
+          },
+        }
+      : {
+          0: {
+            機車: {
+              左轉: '22',
+              直行: '583',
+              右轉: '93',
+            },
+            小客車: {
+              左轉: '51',
+              直行: '173',
+              右轉: '45',
+            },
+            大客車: {
+              左轉: '1',
+              直行: '3',
+              右轉: '1',
+            },
+          },
+          1: {
+            機車: {
+              左轉: '104',
+              直行: '961',
+              右轉: '78',
+            },
+            小客車: {
+              左轉: '93',
+              直行: '650',
+              右轉: '110',
+            },
+            大客車: {
+              左轉: '3',
+              直行: '38',
+              右轉: '2',
+            },
+          },
+          2: {
+            機車: {
+              左轉: '106',
+              直行: '761',
+              右轉: '87',
+            },
+            小客車: {
+              左轉: '63',
+              直行: '220',
+              右轉: '67',
+            },
+            大客車: {
+              左轉: '9',
+              直行: '3',
+              右轉: '1',
+            },
+          },
+          3: {
+            機車: {
+              左轉: '72',
+              直行: '513',
+              右轉: '125',
+            },
+            小客車: {
+              左轉: '40',
+              直行: '529',
+              右轉: '70',
+            },
+            大客車: {
+              左轉: '1',
+              直行: '24',
+              右轉: '13',
+            },
+          },
+        }
 
   return (
     <div className="w-100 h-100 d-flex px-3">
@@ -262,19 +336,21 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[0]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[0][key]).map((way) => (
-                <Row>{result[0][key][way]}</Row>
+                <Row key={way}>{result[0][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[0]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[0][key]).map((way) =>
                 trueValue[0][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[0][key][way] - trueValue[0][key][way]}
+                      {(result[0][key][way] - trueValue[0][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -285,7 +361,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -315,19 +391,21 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[1]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[1][key]).map((way) => (
-                <Row>{result[1][key][way]}</Row>
+                <Row key={way}>{result[1][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[1]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[1][key]).map((way) =>
                 trueValue[1][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[1][key][way] - trueValue[1][key][way]}
+                      {(result[1][key][way] - trueValue[1][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -338,7 +416,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -368,19 +446,21 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[2]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[2][key]).map((way) => (
-                <Row>{result[2][key][way]}</Row>
+                <Row key={way}>{result[2][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[2]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[2][key]).map((way) =>
                 trueValue[2][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[2][key][way] - trueValue[2][key][way]}
+                      {(result[2][key][way] - trueValue[2][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -391,7 +471,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -421,19 +501,21 @@ function AccuracyTable({ setting }) {
             <Row>右轉</Row>
           </Col>
           {Object.keys(result[3]).map((key) => (
-            <Col xs={1}>
+            <Col key={key} xs={1}>
               {Object.keys(result[3][key]).map((way) => (
-                <Row>{result[3][key][way]}</Row>
+                <Row key={way}>{result[3][key][way]}</Row>
               ))}
             </Col>
           ))}
           {Object.keys(trueValue[0]).map((key) => (
-            <Col xs={1} className="flex-grow-1">
+            <Col key={key} xs={1} className="flex-grow-1">
               {Object.keys(trueValue[3][key]).map((way) =>
                 trueValue[3][key][way] ? (
-                  <Row className="w-100 flex-nowrap ms-0">
+                  <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
-                      {result[3][key][way] - trueValue[3][key][way]}
+                      {(result[3][key][way] - trueValue[3][key][way]).toFixed(
+                        2
+                      )}
                     </Col>
                     <Col xs={8} className="px-0">
                       {`${(
@@ -444,7 +526,7 @@ function AccuracyTable({ setting }) {
                     </Col>
                   </Row>
                 ) : (
-                  <Row />
+                  <Row key={way} />
                 )
               )}
             </Col>
@@ -528,55 +610,77 @@ function Step3({ setting }) {
   const {
     timeId,
     time = {},
+    times,
+    setTimes,
     handleTimeEdit = () => {},
   } = useContext(DraftContext)
+  const { setToast } = useContext(ToastContext)
+
   const { videos = [] } = time.setting || {}
   const [selectedVideo, setselectedVideo] = useState(null)
   const videoData = useMemo(
     () => (selectedVideo !== null ? videos[selectedVideo] : {}),
     [selectedVideo, videos]
   )
-  // const handleDataChange = (data) => {
-  //   handleTimeEdit(timeId, {
-  //     videos: videos.map((v, i) => (i === selected ? { ...v, ...data } : v)),
-  //   })
-  // }
+
+  const [videoStatus, setvideoStatus] = useState({
+    status: '',
+    message: '',
+  })
+  const [result, setresult] = useState(null)
+  const [src, setsrc] = useState('')
+  useEffect(() => {
+    if (!videoData) return
+    if (videoData.result) {
+      const workbook = new ExcelJS.Workbook()
+      try {
+        workbook.xlsx
+          .load(videoData.result.data || videoData.result)
+          .then((sheets) => {
+            const sheet = sheets.worksheets[0]
+            if (sheet) {
+              const table = []
+              sheet.eachRow((row) => {
+                const temp = []
+                row.eachCell({ includeEmpty: true }, (cell) => {
+                  temp.push(cell.value)
+                })
+                table.push(temp)
+              })
+              setresult(table)
+            }
+          })
+      } catch (e) {
+        console.log(e)
+      }
+    } else setresult(null)
+    if (videoData.result_video) {
+      setsrc(`api/draft/video/${videoData.result_video.name}`)
+    } else setresult(null)
+  }, [videoData])
 
   const [selected, setselected] = useState('')
-  const [progress, setprogress] = useState(0)
-  const startProgress = async () => {
-    if (progress > 99) {
-      setprogress(1)
-      const interval = setInterval(() => {
-        setprogress((oldvalue) => {
-          const newValue = oldvalue + 1
-          if (newValue > 99) {
-            clearInterval(interval)
-          }
-          return newValue
-        })
-      }, 50)
-    } else {
-      const interval = setInterval(() => {
-        setprogress((oldvalue) => {
-          const newValue = oldvalue + 1
-          if (newValue > 99) {
-            handleTimeEdit(timeId, {
-              videos: videos.map((v, i) =>
-                i === parseInt(selectedVideo, 10)
-                  ? {
-                      ...v,
-                      forensics: true,
-                    }
-                  : v
-              ),
-            })
-            clearInterval(interval)
-          }
-          return newValue
-        })
-      }, 50)
-    }
+  const { socket, sendMessage } = useContext(SocketContext)
+  useEffect(() => {
+    if (!socket) return
+    socket.on('video', (message) => {
+      setTimes(times.map((t) => (t.time_id === message.time_id ? message : t)))
+      setvideoStatus({
+        ...videoStatus,
+        status: 'success',
+      })
+    })
+    socket.on('video_status', (message) => {
+      setvideoStatus(message)
+      if (message.message) setToast({ show: true, text: message.message })
+    })
+  }, [socket])
+
+  const startProgress = () => {
+    sendMessage('video', {
+      timeId,
+      target: selectedVideo,
+    })
   }
 
   const gallerys = [
@@ -629,6 +733,7 @@ function Step3({ setting }) {
     每15分鐘各方向交通量: (
       <AccuracyTable
         setting={{
+          result,
           trueValue,
         }}
       />
@@ -636,6 +741,7 @@ function Step3({ setting }) {
     每小時各方向交通量: (
       <AccuracyTable
         setting={{
+          result,
           trueValue,
         }}
       />
@@ -675,20 +781,18 @@ function Step3({ setting }) {
     '車間距（視覺化）': (
       <video width="auto" height="100%" controls>
         <track kind="captions" />
-        <source src={camera7projection} />
+        <source src={src} />
       </video>
     ),
     '車輛辨識與追蹤（視覺化）': (
       <video width="auto" height="100%" controls>
         <track kind="captions" />
-        <source src={camera14} />
+        <source src={src} />
       </video>
     ),
   }
-
   useEffect(() => {
     setselected('')
-    setprogress(0)
   }, [selectedVideo])
 
   const components = {
@@ -721,7 +825,8 @@ function Step3({ setting }) {
                 onClick={startProgress}
                 disabled={!selectedVideo}
               >
-                {progress && progress !== 100 ? (
+                {videoStatus.status &&
+                !['success', 'error'].includes(videoStatus.status) ? (
                   <Spinner size="sm" />
                 ) : (
                   '執行辨識'
@@ -747,7 +852,7 @@ function Step3({ setting }) {
                 aria-label="Default select example"
                 onChange={(e) => setselected(e.target.value)}
                 value={selected}
-                disabled={!selectedVideo || !videoData?.forensics}
+                disabled={!selectedVideo || !videoData || !result}
               >
                 <option value="" className="d-none">
                   下拉檢視辨識結果
@@ -826,9 +931,50 @@ function Step3({ setting }) {
               <Button
                 variant="revo2"
                 className="text-nowrap"
-                onClick={() => {}}
+                onClick={async () => {
+                  switch (selected) {
+                    case '車輛辨識與追蹤（視覺化）':
+                    case '車間距（視覺化）':
+                      if (videoData && videoData.result_video) {
+                        const res = await apiServices.data({
+                          path: `/draft/video/${videoData.result_video.name}`,
+                          method: 'get',
+                          responseType: 'arraybuffer',
+                        })
+                        const blob = new Blob([res])
+                        const link = document.createElement('a')
+                        link.setAttribute('href', URL.createObjectURL(blob))
+                        link.setAttribute('download', 'result.mp4')
+                        document.body.appendChild(link)
+                        link.click()
+                        link.remove()
+                      }
+                      break
+                    case '每15分鐘各方向交通量':
+                    case '每小時各方向交通量':
+                      if (videoData && videoData.result) {
+                        const { buffer } = new Uint8Array(videoData.result.data)
+                        const blob = new Blob([buffer], {
+                          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        })
+                        const objectUrl = URL.createObjectURL(blob)
+                        const link = document.createElement('a')
+                        link.setAttribute('href', objectUrl)
+                        link.setAttribute(
+                          'download',
+                          `${videoData.name}_result.xlsx`
+                        )
+                        document.body.appendChild(link)
+                        link.click()
+                        link.remove()
+                      }
+                      break
+                    default:
+                      break
+                  }
+                }}
               >
-                匯出Excel
+                匯出
               </Button>
               <Button
                 variant="revo"
@@ -902,9 +1048,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[0]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[0][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[0][key][way]}
                         onChange={(e) =>
@@ -949,9 +1095,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[1]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[1][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[1][key][way]}
                         onChange={(e) =>
@@ -996,9 +1142,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[2]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[2][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[2][key][way]}
                         onChange={(e) =>
@@ -1043,9 +1189,9 @@ function Step3({ setting }) {
                 <Row>右轉</Row>
               </Col>
               {Object.keys(trueValue[3]).map((key) => (
-                <Col>
+                <Col key={key}>
                   {Object.keys(trueValue[3][key]).map((way) => (
-                    <Row className="px-3">
+                    <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[3][key][way]}
                         onChange={(e) =>

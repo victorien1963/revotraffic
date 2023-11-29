@@ -276,24 +276,32 @@ img {
   background-color: #f4fcf8 !important;
 }
 
+.h-20 {
+  height: 20% !important;
+}
+
 .h-35 {
   height: 35% !important;
+}
+
+.h-40 {
+  height: 40% !important;
 }
 
 .h-70 {
   height: 70% !important;
 }
 
+.h-80 {
+  height: 80% !important;
+}
+
 .h-82 {
   height: 82% !important;
 }
 
-.w-60 {
-  width: 60% !important;
-}
-
-.w-80 {
-  width: 80% !important;
+.w-8 {
+  width: 8% !important;
 }
 
 .w-15 {
@@ -306,6 +314,14 @@ img {
 
 .w-30 {
   width: 30% !important;
+}
+
+.w-60 {
+  width: 60% !important;
+}
+
+.w-80 {
+  width: 80% !important;
 }
 
 .modal-table > .container > .row > div:nth-child(2) > p {
@@ -345,4 +361,26 @@ img {
   border-left: 1px solid;
   border-right: 1px solid;
   padding: 0;
+}
+
+.scrollbarShow::-webkit-scrollbar {
+  width: .6em !important;
+  height: 0em !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-button {
+  background: transparent !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-track-piece {
+  background: transparent !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-track {
+  box-shadow: inset 0px transparent !important;
+}
+
+.scrollbarShow::-webkit-scrollbar-thumb {
+  background-color: #5d5275 !important;
+  border-radius: 50rem !important;
 }
