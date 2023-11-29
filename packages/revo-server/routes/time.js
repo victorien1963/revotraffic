@@ -55,7 +55,7 @@ router.post('/video/:time_id', async (req, res) => {
     const uploads = await Promise.all(JSON.parse(req.body.files).map((file) => {
         return upload({ Key: file.name, Body: Buffer.from(file.data) })
     }))
-    const { video } = req.body
+    const { video, fileName } = req.body
     console.log(video)
     console.log(uploads)
     const old = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [req.params.time_id])
@@ -69,6 +69,7 @@ router.post('/video/:time_id', async (req, res) => {
                     ...old.setting.videos,
                     {
                         ...video,
+                        originName: fileName,
                         thumbnail: uploads[0],
                         label: '',
                         date: '',

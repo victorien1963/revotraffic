@@ -813,9 +813,9 @@ function Step3({ setting }) {
                 <option value="" className="d-none">
                   選擇影片
                 </option>
-                {videos.map(({ name }, i) => (
-                  <option key={name} value={i}>
-                    {name}
+                {videos.map(({ originName, name }, i) => (
+                  <option key={originName || name} value={i}>
+                    {originName || name}
                   </option>
                 ))}
               </Form.Select>
