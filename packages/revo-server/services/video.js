@@ -92,7 +92,7 @@ const getResultVideo = async (task_id) => {
         params: {
             task_id,
         },
-        // responseType: 'arraybuffer'
+        responseType: 'arraybuffer'
       })
     return res
 }
@@ -104,7 +104,7 @@ const getResultVideoWarp = async (task_id) => {
         params: {
             task_id,
         },
-        // responseType: 'arraybuffer'
+        responseType: 'arraybuffer'
       })
     return res
 }

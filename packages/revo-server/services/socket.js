@@ -61,11 +61,13 @@ socket.init = (server, setting) => {
             try {
               result_video = await upload({ Key: 'result.mp4', Body: Buffer.from(resultVideo) })
             } catch (e) {
+              console.log(resultVideo)
               console.log(e)
             }
             try {
               result_video_warp = await upload({ Key: 'resultWarp.mp4', Body: Buffer.from(resultVideoWarp) })
             } catch (e) {
+              console.log(resultVideoWarp)
               console.log(e)
             }
             const updated = await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {
@@ -90,10 +92,19 @@ socket.init = (server, setting) => {
         const started = await start({
           name,
           'road_mode': type === '路口' ? 'cross' : 'straight',
-          srcPoints: roadAdjust && roadAdjust.points ? roadAdjust.points.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join() : '',
+          srcPoints: roadAdjust && roadAdjust.points ? [
+            parseInt(roadAdjust.points[0].style.left, 10),
+            parseInt(roadAdjust.points[0].style.top, 10),
+            parseInt(roadAdjust.points[1].style.left, 10),
+            parseInt(roadAdjust.points[1].style.top, 10),
+            parseInt(roadAdjust.points[3].style.left, 10),
+            parseInt(roadAdjust.points[3].style.top, 10),
+            parseInt(roadAdjust.points[2].style.left, 10),
+            parseInt(roadAdjust.points[2].style.top, 10),
+          ].join() : '',
           tarW: parseInt(tarW, 10),
           tarH: parseInt(tarH, 10),
-          warpPixelRate: parseInt(warpPixelRate, 10)
+          warpPixelRate: warpPixelRate
         })
         const task_id = started.id
         console.log('---------------writing status-------------------')
