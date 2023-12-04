@@ -77,9 +77,9 @@ function ToolBar({ setting }) {
           value: '影片上傳',
         },
         {
-          label: '路口、路段標記',
+          label: '路口＆路段標記',
           name: 'step2',
-          value: '路口、路段標記',
+          value: '路口＆路段標記',
         },
         {
           label: '車種標記',
