@@ -87,11 +87,43 @@ function PointTag({ setting }) {
 }
 
 function LineModal({ setting }) {
-  const { show, thumbnail, data, handleClose } = setting
+  const { show, thumbnail, data } = setting
   const initPoints = []
   const [points, setpoints] = useState(data || initPoints)
   const handleRemovePoint = (id) => {
     setpoints(points.filter((point) => id !== point.id))
+  }
+
+  const imageRef = useRef(null)
+
+  const handleClose = (roadLine) => {
+    if (!roadLine) return
+
+    let scale = {
+      wScale: 1,
+      hScale: 1,
+    }
+    try {
+      scale = {
+        wScale: imageRef.current.naturalWidth / imageRef.current.clientWidth,
+        hScale: imageRef.current.naturalHeight / imageRef.current.clientHeight,
+        tarW: imageRef.current.naturalWidth,
+        tarH: imageRef.current.naturalHeight,
+      }
+    } catch (e) {
+      console.log('-----scale not included-----')
+    }
+    const { wScale, hScale, tarW, tarH } = scale
+    const warpPixelRate = Math.sqrt(
+      (Math.abs(points[0].style.top - points[1].style.top) * hScale) ** 2 +
+        (Math.abs(points[0].style.left - points[1].style.left) * wScale) ** 2
+    )
+    setting.handleClose({
+      tarW,
+      tarH,
+      warpPixelRate,
+      roadLine,
+    })
   }
 
   return (
@@ -112,6 +144,7 @@ function LineModal({ setting }) {
         </h6>
         <div className="d-flex position-relative w-75 mx-auto">
           <Image
+            ref={imageRef}
             style={{ cursor: 'pointer' }}
             className="w-100"
             height="auto"
@@ -797,6 +830,8 @@ function Road({ setting }) {
     },
   ]
 
+  console.log(videos[selected])
+
   return (
     <>
       {selected !== '' ? (
@@ -1154,10 +1189,9 @@ function Road({ setting }) {
               show: showLine,
               thumbnail,
               handleClose: (value) => {
+                console.log(value)
                 if (value) {
-                  handleDataChange({
-                    roadLine: value,
-                  })
+                  handleDataChange(value)
                 }
                 setshowLine(false)
               },

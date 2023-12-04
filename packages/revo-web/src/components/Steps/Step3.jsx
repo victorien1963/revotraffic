@@ -102,45 +102,45 @@ const defaultTrueValue = {
   },
 }
 
-function SpeedTable() {
-  const result = [
-    ['1.25461803281359', '0.301129160269795', '8.6948798106613'],
-    ['1.82005253118489', '0.300347873944984', '9.9389992337925'],
-    ['3.42607483534419', '0.301118844606688', '9.47823468375696'],
-    ['4.32605083532848', '0.309979938830038', '10.2952546918134'],
-    ['5.05740903868158', '0.303420175730289', '10.8777690744131'],
-    ['1.22491390814632', '0.31440543552304', '8.46606946927862'],
-    ['0.820256322986837', '0.34167361421527', '3.31530632154377'],
-    [],
-    [],
-  ]
+// function SpeedTable() {
+//   const result = [
+//     ['1.25461803281359', '0.301129160269795', '8.6948798106613'],
+//     ['1.82005253118489', '0.300347873944984', '9.9389992337925'],
+//     ['3.42607483534419', '0.301118844606688', '9.47823468375696'],
+//     ['4.32605083532848', '0.309979938830038', '10.2952546918134'],
+//     ['5.05740903868158', '0.303420175730289', '10.8777690744131'],
+//     ['1.22491390814632', '0.31440543552304', '8.46606946927862'],
+//     ['0.820256322986837', '0.34167361421527', '3.31530632154377'],
+//     [],
+//     [],
+//   ]
 
-  return (
-    <div className="w-100 h-100 d-flex px-2">
-      <div
-        className="border-table h-100 d-flex flex-column mx-auto"
-        style={{
-          width: '97%',
-        }}
-      >
-        <Row className="w-100">
-          <Col xs={3}>X</Col>
-          <Col xs={3}>Y</Col>
-          <Col xs={3}>Ymin</Col>
-          <Col xs={3}>Ymax</Col>
-        </Row>
-        {result.map((r, i) => (
-          <Row key={i} className="w-100">
-            <Col xs={3}>{i * 10}</Col>
-            <Col xs={3}>{r[0]}</Col>
-            <Col xs={3}>{r[1]}</Col>
-            <Col xs={3}>{r[2]}</Col>
-          </Row>
-        ))}
-      </div>
-    </div>
-  )
-}
+//   return (
+//     <div className="w-100 h-100 d-flex px-2">
+//       <div
+//         className="border-table h-100 d-flex flex-column mx-auto"
+//         style={{
+//           width: '97%',
+//         }}
+//       >
+//         <Row className="w-100">
+//           <Col xs={3}>X</Col>
+//           <Col xs={3}>Y</Col>
+//           <Col xs={3}>Ymin</Col>
+//           <Col xs={3}>Ymax</Col>
+//         </Row>
+//         {result.map((r, i) => (
+//           <Row key={i} className="w-100">
+//             <Col xs={3}>{i * 10}</Col>
+//             <Col xs={3}>{r[0]}</Col>
+//             <Col xs={3}>{r[1]}</Col>
+//             <Col xs={3}>{r[2]}</Col>
+//           </Row>
+//         ))}
+//       </div>
+//     </div>
+//   )
+// }
 
 function AccuracyTable({ setting }) {
   const { trueValue } = setting
@@ -619,7 +619,7 @@ function Step3({ setting }) {
   const { videos = [] } = time.setting || {}
   const [selectedVideo, setselectedVideo] = useState(null)
   const videoData = useMemo(
-    () => (selectedVideo !== null ? videos[selectedVideo] : {}),
+    () => (selectedVideo !== null ? videos[selectedVideo] || {} : {}),
     [selectedVideo, videos]
   )
 
@@ -628,7 +628,10 @@ function Step3({ setting }) {
     message: '',
   })
   const [result, setresult] = useState(null)
+  const [resultCarSpacing, setresultCarSpacing] = useState(null)
+  const [resultSpeed, setresultSpeed] = useState(null)
   const [src, setsrc] = useState('')
+  const [vwSrc, setvwSrc] = useState('')
   useEffect(() => {
     if (!videoData) return
     if (videoData.result) {
@@ -654,9 +657,32 @@ function Step3({ setting }) {
         console.log(e)
       }
     } else setresult(null)
+    if (videoData.resultCarSpacing) {
+      try {
+        const csv = videoData.resultCarSpacing
+          .split('\n')
+          .map((row) => row.split(','))
+        setresultCarSpacing(csv)
+      } catch (e) {
+        console.log(e)
+      }
+    } else setresultCarSpacing(null)
+    if (videoData.resultSpeed) {
+      try {
+        const csv = videoData.resultSpeed
+          .split('\n')
+          .map((row) => row.split(','))
+        setresultSpeed(csv)
+      } catch (e) {
+        console.log(e)
+      }
+    } else setresultSpeed(null)
     if (videoData.result_video) {
       setsrc(`api/draft/video/${videoData.result_video.name}`)
-    } else setresult(null)
+    } else setsrc(null)
+    if (videoData.result_video_warp) {
+      setvwSrc(`api/draft/video/${videoData.result_video_warp.name}`)
+    } else setvwSrc(null)
   }, [videoData])
 
   const [selected, setselected] = useState('')
@@ -691,34 +717,6 @@ function Step3({ setting }) {
     gallery5,
     gallery6,
     gallery7,
-  ]
-
-  const headers = ['CarType', 'minD', 'maxD', 'ax', 'bx_add', 'bx_mult']
-  const csvData = [
-    {
-      CarType: 'MotorBike',
-      minD: '1.76',
-      maxD: '16.7',
-      ax: '0.4',
-      bx_add: '-0.53475',
-      bx_mult: '5.587497',
-    },
-    {
-      CarType: 'SmallCar',
-      minD: '1.13',
-      maxD: '19.33',
-      ax: '2.1',
-      bx_add: '0.212431',
-      bx_mult: '5.832322',
-    },
-    {
-      CarType: 'BigCar',
-      minD: '3.2',
-      maxD: '15.08',
-      ax: '2',
-      bx_add: '1.900348',
-      bx_mult: '18.22893',
-    },
   ]
 
   // true value
@@ -759,29 +757,43 @@ function Step3({ setting }) {
         ))}
       </Row>
     ),
-    期望加減速率: <SpeedTable />,
-    '車間距（計算量）': (
+    // 期望加減速率: <SpeedTable />,
+    期望加減速率: resultSpeed ? (
       <Table bordered responsive>
         <tbody>
-          <tr>
-            {headers.map((header) => (
-              <td key={header}>{header}</td>
-            ))}
-          </tr>
-          {csvData.map((d, i) => (
+          {resultSpeed.map((row, i) => (
             <tr key={i}>
-              {headers.map((header) => (
-                <td key={header}>{d[header]}</td>
+              {row.map((r, j) => (
+                <td key={`${i}_${j}`}>{r}</td>
               ))}
             </tr>
           ))}
         </tbody>
       </Table>
+    ) : (
+      <h5>未產生本類型結果</h5>
+    ),
+    '車間距（計算量）': resultCarSpacing ? (
+      <Table bordered responsive>
+        <tbody>
+          {resultCarSpacing
+            .filter((row) => row.length > 1)
+            .map((row, i) => (
+              <tr key={i}>
+                {row.map((r, j) => (
+                  <td key={`${i}_${j}`}>{r}</td>
+                ))}
+              </tr>
+            ))}
+        </tbody>
+      </Table>
+    ) : (
+      <h5>未產生本類型結果</h5>
     ),
     '車間距（視覺化）': (
       <video width="auto" height="100%" controls>
         <track kind="captions" />
-        <source src={src} />
+        <source src={vwSrc} />
       </video>
     ),
     '車輛辨識與追蹤（視覺化）': (
@@ -794,6 +806,8 @@ function Step3({ setting }) {
   useEffect(() => {
     setselected('')
   }, [selectedVideo])
+
+  console.log(videoData)
 
   const components = {
     影像辨識: (
