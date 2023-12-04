@@ -21,7 +21,7 @@ const start = async (params) => {
             bucket_name: 'revotraffic',
             camera_no: '106',
             ...params,
-            object_name: '1700819033575_test_video.mp4' || params.name,
+            object_name: params.name,
         },
       })
     return res
