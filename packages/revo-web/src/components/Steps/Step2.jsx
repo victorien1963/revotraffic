@@ -107,20 +107,18 @@ function LineModal({ setting }) {
       scale = {
         wScale: imageRef.current.naturalWidth / imageRef.current.clientWidth,
         hScale: imageRef.current.naturalHeight / imageRef.current.clientHeight,
-        tarW: imageRef.current.naturalWidth,
-        tarH: imageRef.current.naturalHeight,
       }
     } catch (e) {
       console.log('-----scale not included-----')
     }
-    const { wScale, hScale, tarW, tarH } = scale
-    const warpPixelRate = Math.sqrt(
-      (Math.abs(points[0].style.top - points[1].style.top) * hScale) ** 2 +
-        (Math.abs(points[0].style.left - points[1].style.left) * wScale) ** 2
-    )
+    const { wScale, hScale } = scale
+    const warpPixelRate =
+      10 /
+      Math.max(
+        Math.abs(points[0].style.top - points[1].style.top) * hScale,
+        Math.abs(points[0].style.left - points[1].style.left) * wScale
+      )
     setting.handleClose({
-      tarW,
-      tarH,
       warpPixelRate,
       roadLine,
     })
@@ -232,7 +230,7 @@ function LineModal({ setting }) {
 }
 
 function ProjectedModal({ setting }) {
-  const { show, thumbnail, data = {}, handleClose } = setting
+  const { show, thumbnail, data = {} } = setting
   const initPoints = []
   const [points, setpoints] = useState(data?.points || initPoints)
   const handleRemovePoint = (id) => {
@@ -249,6 +247,34 @@ function ProjectedModal({ setting }) {
   }
 
   const imageRef = useRef(null)
+  const handleClose = (value) => {
+    const params = {
+      roadAdjust: value,
+    }
+    const slopeRLDifference = Math.abs(
+      (points[0].style.top - points[1].style.top) /
+        (points[0].style.left - points[1].style.left) -
+        (points[3].style.top - points[2].style.top) /
+          (points[3].style.left - points[2].style.left)
+    )
+    const slopeUDDifference = Math.abs(
+      (points[0].style.top - points[3].style.top) /
+        (points[0].style.left - points[3].style.left) -
+        (points[1].style.top - points[2].style.top) /
+          (points[1].style.left - points[2].style.left)
+    )
+    if (imageRef.current) {
+      params.tarW =
+        slopeRLDifference > slopeUDDifference
+          ? imageRef.current.naturalWidth / 4
+          : imageRef.current.naturalWidth
+      params.tarH =
+        slopeRLDifference < slopeUDDifference
+          ? imageRef.current.naturalHeight / 4
+          : imageRef.current.naturalHeight
+    }
+    setting.handleClose(params)
+  }
 
   const [fixed, setfixed] = useState(data?.fixed)
   useEffect(() => {
@@ -1175,10 +1201,7 @@ function Road({ setting }) {
               show: showProject,
               thumbnail,
               handleClose: (value) => {
-                if (value)
-                  handleDataChange({
-                    roadAdjust: value,
-                  })
+                if (value) handleDataChange(value)
                 setshowProject(false)
               },
             }}
