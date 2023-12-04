@@ -1,7 +1,15 @@
 const { Server } = require('socket.io')
 const pg = require('./pgService')
 const { upload } = require('./minio')
-const { start, getTaskStatus, getResultXlsx, getResultVideo } = require('./video')
+const {
+  start,
+  getTaskStatus,
+  getResultXlsx,
+  getResultCarSpacing,
+  getResultSpeed,
+  getResultVideo,
+  getResultVideoWarp,
+} = require('./video')
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -40,9 +48,26 @@ socket.init = (server, setting) => {
               message,
             })
           } else{
-            const result = await getResultXlsx(task_id)
-            const resultVideo = await getResultVideo(task_id)
-            const result_video = await upload({ Key: 'result.mp4', Body: Buffer.from(resultVideo) })
+            const [result, resultVideo, resultCarSpacing, resultSpeed, resultVideoWarp] = await Promise.all([
+              getResultXlsx(task_id),
+              getResultVideo(task_id),
+              getResultCarSpacing(task_id),
+              getResultSpeed(task_id),
+              getResultVideoWarp(task_id)
+            ])
+
+            let result_video = { name: '' }
+            let result_video_warp = { name: '' }
+            try {
+              result_video = await upload({ Key: 'result.mp4', Body: Buffer.from(resultVideo) })
+            } catch (e) {
+              console.log(e)
+            }
+            try {
+              result_video_warp = await upload({ Key: 'resultWarp.mp4', Body: Buffer.from(resultVideoWarp) })
+            } catch (e) {
+              console.log(e)
+            }
             const updated = await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {
               ...setting,
               videos: setting.videos.map((v, i) => parseInt(i, 10) === parseInt(target, 10) ? {
@@ -51,15 +76,25 @@ socket.init = (server, setting) => {
                 task_status: 'success',
                 result,
                 result_video,
+                resultCarSpacing,
+                resultSpeed,
+                result_video_warp
               } : v)
             }])
             io.to(id).emit('video', updated)
           }
         }
         const { setting } = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [timeId])
-        const { name } = setting.videos[target]
+        const { name, type, roadAdjust, tarW, tarH, warpPixelRate } = setting.videos[target]
         console.log('---------------starting job-------------------')
-        const started = await start(name)
+        const started = await start({
+          name,
+          'road_mode': type === '路口' ? 'cross' : 'straight',
+          srcPoints: roadAdjust && roadAdjust.points ? roadAdjust.points.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join() : '',
+          tarW: parseInt(tarW, 10),
+          tarH: parseInt(tarH, 10),
+          warpPixelRate: parseInt(warpPixelRate, 10)
+        })
         const task_id = started.id
         console.log('---------------writing status-------------------')
         await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {
