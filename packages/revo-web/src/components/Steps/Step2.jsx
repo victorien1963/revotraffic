@@ -1170,7 +1170,10 @@ function Road({ setting }) {
                     >
                       <FontAwesomeIcon
                         className={`fs-1 ${
-                          v.roads && v.roadAdjust && v.roadLine
+                          v.type &&
+                          (v.type === '路口'
+                            ? v.roads
+                            : v.roads && v.roadAdjust && v.roadLine)
                             ? 'check-revo'
                             : 'text-secondary'
                         }`}
