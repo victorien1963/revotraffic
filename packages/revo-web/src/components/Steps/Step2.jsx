@@ -97,31 +97,40 @@ function LineModal({ setting }) {
   const imageRef = useRef(null)
 
   const handleClose = (roadLine) => {
-    if (!roadLine) return
+    if (!roadLine) {
+      setting.handleClose()
+      return
+    }
 
-    let scale = {
-      wScale: 1,
-      hScale: 1,
-    }
     try {
-      scale = {
-        wScale: imageRef.current.naturalWidth / imageRef.current.clientWidth,
-        hScale: imageRef.current.naturalHeight / imageRef.current.clientHeight,
+      let scale = {
+        wScale: 1,
+        hScale: 1,
       }
+      try {
+        scale = {
+          wScale: imageRef.current.naturalWidth / imageRef.current.clientWidth,
+          hScale:
+            imageRef.current.naturalHeight / imageRef.current.clientHeight,
+        }
+      } catch (e) {
+        console.log('-----scale not included-----')
+      }
+      const { wScale, hScale } = scale
+      const warpPixelRate =
+        10 /
+        Math.max(
+          Math.abs(points[0].style.top - points[1].style.top) * hScale,
+          Math.abs(points[0].style.left - points[1].style.left) * wScale
+        )
+      setting.handleClose({
+        warpPixelRate,
+        roadLine,
+      })
     } catch (e) {
-      console.log('-----scale not included-----')
+      console.log(e)
+      setting.handleClose()
     }
-    const { wScale, hScale } = scale
-    const warpPixelRate =
-      10 /
-      Math.max(
-        Math.abs(points[0].style.top - points[1].style.top) * hScale,
-        Math.abs(points[0].style.left - points[1].style.left) * wScale
-      )
-    setting.handleClose({
-      warpPixelRate,
-      roadLine,
-    })
   }
 
   return (
@@ -248,32 +257,37 @@ function ProjectedModal({ setting }) {
 
   const imageRef = useRef(null)
   const handleClose = (value) => {
-    const params = {
-      roadAdjust: value,
+    try {
+      const params = {
+        roadAdjust: value,
+      }
+      const slopeRLDifference = Math.abs(
+        (points[0].style.top - points[1].style.top) /
+          (points[0].style.left - points[1].style.left) -
+          (points[3].style.top - points[2].style.top) /
+            (points[3].style.left - points[2].style.left)
+      )
+      const slopeUDDifference = Math.abs(
+        (points[0].style.top - points[3].style.top) /
+          (points[0].style.left - points[3].style.left) -
+          (points[1].style.top - points[2].style.top) /
+            (points[1].style.left - points[2].style.left)
+      )
+      if (imageRef.current) {
+        params.tarW =
+          slopeRLDifference > slopeUDDifference
+            ? imageRef.current.naturalWidth / 4
+            : imageRef.current.naturalWidth
+        params.tarH =
+          slopeRLDifference < slopeUDDifference
+            ? imageRef.current.naturalHeight / 4
+            : imageRef.current.naturalHeight
+      }
+      setting.handleClose(params)
+    } catch (e) {
+      console.log(e)
+      setting.handleClose()
     }
-    const slopeRLDifference = Math.abs(
-      (points[0].style.top - points[1].style.top) /
-        (points[0].style.left - points[1].style.left) -
-        (points[3].style.top - points[2].style.top) /
-          (points[3].style.left - points[2].style.left)
-    )
-    const slopeUDDifference = Math.abs(
-      (points[0].style.top - points[3].style.top) /
-        (points[0].style.left - points[3].style.left) -
-        (points[1].style.top - points[2].style.top) /
-          (points[1].style.left - points[2].style.left)
-    )
-    if (imageRef.current) {
-      params.tarW =
-        slopeRLDifference > slopeUDDifference
-          ? imageRef.current.naturalWidth / 4
-          : imageRef.current.naturalWidth
-      params.tarH =
-        slopeRLDifference < slopeUDDifference
-          ? imageRef.current.naturalHeight / 4
-          : imageRef.current.naturalHeight
-    }
-    setting.handleClose(params)
   }
 
   const [fixed, setfixed] = useState(data?.fixed)

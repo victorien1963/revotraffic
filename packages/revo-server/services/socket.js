@@ -29,6 +29,13 @@ socket.init = (server, setting) => {
         })
         const getTask = async (task_id) => {
           console.log('---------------delaying result-------------------')
+          if (!task_id) {
+            io.to(id).emit('video_status', {
+              status: 'error',
+              message: '發生錯誤，請檢查路口或路段標記',
+            })
+            return
+          }
           console.log(task_id)
           await delay(5000)
           const { status, message } = await getTaskStatus(task_id)
@@ -89,23 +96,24 @@ socket.init = (server, setting) => {
         const { setting } = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [timeId])
         const { name, type, roadAdjust, tarW, tarH, warpPixelRate } = setting.videos[target]
         console.log('---------------starting job-------------------')
-        const started = await start({
-          name,
-          'road_mode': type === '路口' ? 'cross' : 'straight',
-          srcPoints: roadAdjust && roadAdjust.points ? [
-            parseInt(roadAdjust.points[0].style.left, 10),
-            parseInt(roadAdjust.points[0].style.top, 10),
-            parseInt(roadAdjust.points[1].style.left, 10),
-            parseInt(roadAdjust.points[1].style.top, 10),
-            parseInt(roadAdjust.points[3].style.left, 10),
-            parseInt(roadAdjust.points[3].style.top, 10),
-            parseInt(roadAdjust.points[2].style.left, 10),
-            parseInt(roadAdjust.points[2].style.top, 10),
-          ].join() : '',
-          tarW: parseInt(tarW, 10),
-          tarH: parseInt(tarH, 10),
-          warpPixelRate: warpPixelRate
-        })
+        const params = { name }
+        params.road_mode = type === '路口' ? 'cross' : 'straight'
+        if (roadAdjust && roadAdjust.points) params.srcPoints = [
+          parseInt(roadAdjust.points[0].style.left, 10),
+          parseInt(roadAdjust.points[0].style.top, 10),
+          parseInt(roadAdjust.points[1].style.left, 10),
+          parseInt(roadAdjust.points[1].style.top, 10),
+          parseInt(roadAdjust.points[3].style.left, 10),
+          parseInt(roadAdjust.points[3].style.top, 10),
+          parseInt(roadAdjust.points[2].style.left, 10),
+          parseInt(roadAdjust.points[2].style.top, 10),
+        ].join()
+        if (tarW) params.tarW = parseInt(tarW, 10)
+        if (tarH) params.tarH = parseInt(tarH, 10)
+        if (warpPixelRate) params.warpPixelRate = warpPixelRate
+        console.log('---------calling api with these params--------')
+        console.log(params)
+        const started = await start(params)
         const task_id = started.id
         console.log('---------------writing status-------------------')
         await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {

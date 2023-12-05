@@ -15,7 +15,10 @@ import {
   Spinner,
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheckCircle,
+  faCircleExclamation,
+} from '@fortawesome/free-solid-svg-icons'
 import { DraftContext, SocketContext, ToastContext } from '../ContextProvider'
 import {
   // camera14,
@@ -30,6 +33,48 @@ import {
   // turning,
 } from '../../assets'
 import apiServices from '../../services/apiServices'
+
+function WarnModal({ setting }) {
+  const { show, handleClose } = setting
+
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      show={show}
+      onHide={() => handleClose()}
+      className="py-2 px-4"
+    >
+      <Modal.Header closeButton>系統提示</Modal.Header>
+      <Modal.Body className="p-4 h-100">
+        <Row
+          style={{
+            height: '100px',
+          }}
+        >
+          <FontAwesomeIcon
+            className="h-75 px-0 my-auto text-revo"
+            icon={faCircleExclamation}
+          />
+        </Row>
+        <Row>
+          <h4 className="text-center py-3 text-revo">
+            Oops! 請先完成路口或路段標記
+          </h4>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-center">
+        <Button
+          className="mx-auto"
+          style={{ boxShadow: 'none' }}
+          variant="outline-revo2"
+          onClick={handleClose}
+        >
+          確 認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
 
 const defaultTrueValue = {
   0: {
@@ -702,7 +747,14 @@ function Step3({ setting }) {
     })
   }, [socket])
 
+  const [showWarn, setshowWarn] = useState(false)
   const startProgress = () => {
+    const { type, roads, roadLine, roadAdjust } = videoData
+    const ready = type === '路段' ? roads && roadLine && roadAdjust : roads
+    if (!ready) {
+      setshowWarn(true)
+      return
+    }
     sendMessage('video', {
       timeId,
       target: selectedVideo,
@@ -873,10 +925,18 @@ function Step3({ setting }) {
                 </option>
                 {[
                   {
-                    label: '每15分鐘各方向交通量',
+                    label:
+                      videoData.type === '路口'
+                        ? '每15分鐘各方向交通量'
+                        : '每15分鐘各方向交通量（路段影像不適用）',
+                    disabled: videoData.type === '路段',
                   },
                   {
-                    label: '每小時各方向交通量',
+                    label:
+                      videoData.type === '路口'
+                        ? '每小時各方向交通量'
+                        : '每小時各方向交通量（路段影像不適用）',
+                    disabled: videoData.type === '路段',
                   },
                   {
                     label:
@@ -1019,6 +1079,19 @@ function Step3({ setting }) {
       >
         {components[toolState.step3]}
       </Container>
+      <WarnModal
+        setting={{
+          show: showWarn,
+          handleClose: () => {
+            handleToolChange({
+              target: {
+                name: 'step2',
+                value: '路口＆路段標記',
+              },
+            })
+          },
+        }}
+      />
       <Modal size="xl" show={show} onHide={() => setshow(false)}>
         <Modal.Header closeButton>
           <h4>輸入真值</h4>
@@ -1272,6 +1345,10 @@ CheckTable.propTypes = {
 }
 
 AccuracyTable.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+WarnModal.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
