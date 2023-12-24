@@ -94,7 +94,7 @@ socket.init = (server, setting) => {
           }
         }
         const { setting } = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [timeId])
-        const { name, type, roadAdjust, tarW, tarH, warpPixelRate } = setting.videos[target]
+        const { name, type, roadAdjust, tarW, tarH, warpPixelRate, roads } = setting.videos[target]
         console.log('---------------starting job-------------------')
         const params = { name }
         params.road_mode = type === '路口' ? 'cross' : 'straight'
@@ -111,6 +111,22 @@ socket.init = (server, setting) => {
         if (tarW) params.tarW = parseInt(tarW, 10)
         if (tarH) params.tarH = parseInt(tarH, 10)
         if (warpPixelRate) params.warpPixelRate = warpPixelRate
+        if (roads) {
+          const { clicks, draggables } = roads
+          const { entry, outry } = clicks
+          if (entry) {
+            params.road_in_points = entry.map(({ style }) => `${style.left},${style.top}`).join()
+          }
+          if (outry) {
+            params.road_out_points = entry.map(({ style }) => `${style.left},${style.top}`).join()
+          }
+          if (draggables) {
+            params.road_1_name = draggables[1].name ? `${draggables[1].name}（西）` : '西'
+            params.road_2_name = draggables[3].name ? `${draggables[3].name}（北）` : '北'
+            params.road_3_name = draggables[0].name ? `${draggables[0].name}（東）` : '東'
+            params.road_4_name = draggables[2].name ? `${draggables[2].name}（南）` : '南'
+          }
+        }
         console.log('---------calling api with these params--------')
         console.log(params)
         const started = await start(params)

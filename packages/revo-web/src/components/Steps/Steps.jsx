@@ -12,9 +12,9 @@ import { DraftContext } from '../ContextProvider'
 function Steps() {
   const {
     draft,
-    draftId,
+    // draftId,
     range,
-    rangeId,
+    // rangeId,
     time,
     timeId,
     setDraftId,
@@ -33,9 +33,7 @@ function Steps() {
   const handleToolChange = (e) => {
     if (e.target.name.startsWith('step')) setstep(e.target.name)
     if (e.target.name === 'step1') {
-      if (timeId) setTimeId('')
-      else if (rangeId) setRangeId('')
-      else if (draftId) setDraftId('')
+      setDraftId('')
     }
     settoolState({ ...toolState, [e.target.name]: e.target.value })
   }
@@ -97,8 +95,8 @@ function Steps() {
         },
         {
           label:
-            toolState.step2 === '路口、路段標記'
-              ? '路口、路段資訊'
+            toolState.step2 === '路口＆路段標記'
+              ? '路口＆路段標記'
               : '影片上傳',
         },
       ]
