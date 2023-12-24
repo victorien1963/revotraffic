@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useEffect, useState, useContext, useMemo } from 'react'
+import React, { useEffect, useState, useContext, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import ExcelJS from 'exceljs'
 import {
@@ -146,46 +146,6 @@ const defaultTrueValue = {
     },
   },
 }
-
-// function SpeedTable() {
-//   const result = [
-//     ['1.25461803281359', '0.301129160269795', '8.6948798106613'],
-//     ['1.82005253118489', '0.300347873944984', '9.9389992337925'],
-//     ['3.42607483534419', '0.301118844606688', '9.47823468375696'],
-//     ['4.32605083532848', '0.309979938830038', '10.2952546918134'],
-//     ['5.05740903868158', '0.303420175730289', '10.8777690744131'],
-//     ['1.22491390814632', '0.31440543552304', '8.46606946927862'],
-//     ['0.820256322986837', '0.34167361421527', '3.31530632154377'],
-//     [],
-//     [],
-//   ]
-
-//   return (
-//     <div className="w-100 h-100 d-flex px-2">
-//       <div
-//         className="border-table h-100 d-flex flex-column mx-auto"
-//         style={{
-//           width: '97%',
-//         }}
-//       >
-//         <Row className="w-100">
-//           <Col xs={3}>X</Col>
-//           <Col xs={3}>Y</Col>
-//           <Col xs={3}>Ymin</Col>
-//           <Col xs={3}>Ymax</Col>
-//         </Row>
-//         {result.map((r, i) => (
-//           <Row key={i} className="w-100">
-//             <Col xs={3}>{i * 10}</Col>
-//             <Col xs={3}>{r[0]}</Col>
-//             <Col xs={3}>{r[1]}</Col>
-//             <Col xs={3}>{r[2]}</Col>
-//           </Row>
-//         ))}
-//       </div>
-//     </div>
-//   )
-// }
 
 function AccuracyTable({ setting }) {
   const { trueValue } = setting
@@ -366,15 +326,14 @@ function AccuracyTable({ setting }) {
           <Col xs={1}>
             <Row />
             <Row>路口直向</Row>
-            <Row>4</Row>
+            <Row>{setting.result[4][2]}</Row>
           </Col>
           <Col xs={1}>
             <Row />
             <Row>N↓</Row>
             <Row />
           </Col>
-          <Col xs={1}>{`1(西)
-(南平路)`}</Col>
+          <Col xs={1}>1</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>
@@ -415,7 +374,7 @@ function AccuracyTable({ setting }) {
         <Row className="flex-fill">
           <Col xs={1}>
             <Row>路口橫向</Row>
-            <Row>3</Row>
+            <Row>{setting.result[6][1]}</Row>
             <Row />
           </Col>
           <Col xs={1}>
@@ -425,11 +384,10 @@ function AccuracyTable({ setting }) {
           </Col>
           <Col xs={1}>
             <Row />
-            <Row>1</Row>
+            <Row>{setting.result[6][3]}</Row>
             <Row />
           </Col>
-          <Col xs={1}>{`2(北)
-(中正路)`}</Col>
+          <Col xs={1}>2</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>
@@ -474,7 +432,7 @@ function AccuracyTable({ setting }) {
             <Row />
           </Col>
           <Col xs={1}>
-            <Row>2</Row>
+            <Row>{setting.result[8][2]}</Row>
             <Row />
             <Row />
           </Col>
@@ -483,8 +441,7 @@ function AccuracyTable({ setting }) {
             <Row />
             <Row />
           </Col>
-          <Col xs={1}>{`3(東)
-(南平路)`}</Col>
+          <Col xs={1}>3</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>
@@ -538,8 +495,7 @@ function AccuracyTable({ setting }) {
             <Row />
             <Row />
           </Col>
-          <Col xs={1}>{`4(南)
-(中正路)`}</Col>
+          <Col xs={1}>4</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>
@@ -796,7 +752,7 @@ function Step3({ setting }) {
         }}
       />
     ),
-    '軌跡分群與轉向量（視覺化）': (
+    '軌跡辨識與轉向 (視覺化)': (
       <Row className="h-100 overflow-scroll justify-content-start">
         {gallerys.map((gallery, i) => (
           <Image
@@ -859,7 +815,10 @@ function Step3({ setting }) {
     setselected('')
   }, [selectedVideo])
 
-  console.log(videoData)
+  const videoRef = useRef(null)
+  useEffect(() => {
+    videoRef.current?.load()
+  }, [videoData])
 
   const components = {
     影像辨識: (
@@ -900,7 +859,13 @@ function Step3({ setting }) {
               </Button>
             </div>
             {videoData.name && (
-              <video className="mt-3" width="100%" height="auto" controls>
+              <video
+                ref={videoRef}
+                className="mt-3"
+                width="100%"
+                height="auto"
+                controls
+              >
                 <track kind="captions" />
                 <source src={`/api/draft/video/${videoData.name}`} />
               </video>
@@ -941,8 +906,8 @@ function Step3({ setting }) {
                   {
                     label:
                       videoData.type === '路口'
-                        ? '軌跡分群與轉向量（視覺化）'
-                        : '軌跡分群與轉向量（視覺化）（路段影像不適用）',
+                        ? '軌跡辨識與轉向 (視覺化)'
+                        : '軌跡辨識與轉向 (視覺化)（路段影像不適用）',
                     disabled: videoData.type === '路段',
                   },
                   {
@@ -1120,15 +1085,14 @@ function Step3({ setting }) {
               <Col xs={1}>
                 <Row />
                 <Row>路口直向</Row>
-                <Row>4</Row>
+                <Row>{result && result[4] ? result[4][2] : ''}</Row>
               </Col>
               <Col xs={1}>
                 <Row />
                 <Row>N↓</Row>
                 <Row />
               </Col>
-              <Col xs={1}>{`1(西)
-(南平路)`}</Col>
+              <Col xs={1}>1</Col>
               <Col xs={1}>
                 <Row>左轉</Row>
                 <Row>直行</Row>
@@ -1161,7 +1125,7 @@ function Step3({ setting }) {
             <Row className="flex-fill">
               <Col xs={1}>
                 <Row>路口橫向</Row>
-                <Row>3</Row>
+                <Row>{result && result[6] ? result[6][1] : ''}</Row>
                 <Row />
               </Col>
               <Col xs={1}>
@@ -1171,11 +1135,10 @@ function Step3({ setting }) {
               </Col>
               <Col xs={1}>
                 <Row />
-                <Row>1</Row>
+                <Row>{result && result[6] ? result[6][3] : ''}</Row>
                 <Row />
               </Col>
-              <Col xs={1}>{`2(北)
-(中正路)`}</Col>
+              <Col xs={1}>2</Col>
               <Col xs={1}>
                 <Row>左轉</Row>
                 <Row>直行</Row>
@@ -1212,7 +1175,7 @@ function Step3({ setting }) {
                 <Row />
               </Col>
               <Col xs={1}>
-                <Row>2</Row>
+                <Row>{result && result[8] ? result[8][2] : ''}</Row>
                 <Row />
                 <Row />
               </Col>
@@ -1221,8 +1184,7 @@ function Step3({ setting }) {
                 <Row />
                 <Row />
               </Col>
-              <Col xs={1}>{`3(東)
-(南平路)`}</Col>
+              <Col xs={1}>3</Col>
               <Col xs={1}>
                 <Row>左轉</Row>
                 <Row>直行</Row>
@@ -1268,8 +1230,7 @@ function Step3({ setting }) {
                 <Row />
                 <Row />
               </Col>
-              <Col xs={1}>{`4(南)
-(中正路)`}</Col>
+              <Col xs={1}>4</Col>
               <Col xs={1}>
                 <Row>左轉</Row>
                 <Row>直行</Row>

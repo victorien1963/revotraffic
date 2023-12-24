@@ -17,6 +17,7 @@ import {
   faCircleInfo,
   faFileArrowUp,
   faTrashCan,
+  faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   Container,
@@ -33,10 +34,60 @@ import {
   InputGroup,
 } from 'react-bootstrap'
 import VideoSnapshot from 'video-snapshot'
-import { camera7projected } from '../../assets'
+import { remark1, remark2 } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext } from '../ContextProvider'
+
+function WarnModal({ setting }) {
+  const { show, handleClose, content, hasCancel } = setting
+
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      show={show}
+      onHide={() => handleClose()}
+      className="py-2 px-4"
+    >
+      <Modal.Header closeButton>系統提示</Modal.Header>
+      <Modal.Body className="p-4 h-100">
+        <Row
+          style={{
+            height: '100px',
+          }}
+        >
+          <FontAwesomeIcon
+            className="h-75 px-0 my-auto text-revo"
+            icon={faCircleExclamation}
+          />
+        </Row>
+        <Row>
+          <h4 className="text-center py-3 text-revo">{content}</h4>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-center">
+        {hasCancel && (
+          <Button
+            className="ms-auto"
+            style={{ boxShadow: 'none' }}
+            variant="secondary"
+            onClick={() => handleClose()}
+          >
+            取消
+          </Button>
+        )}
+        <Button
+          className={hasCancel ? 'me-auto' : 'mx-auto'}
+          style={{ boxShadow: 'none' }}
+          variant="outline-revo2"
+          onClick={() => handleClose(true)}
+        >
+          確 認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
 
 function LabelTag({ setting }) {
   const { id, label = '', style, handleRemovePoint } = setting
@@ -70,9 +121,17 @@ function LabelTag({ setting }) {
 }
 
 function PointTag({ setting }) {
-  const { id, style, handleRemovePoint } = setting
+  const { id, style, handleRemovePoint, draging, setdraging } = setting
   return (
-    <div className="position-absolute d-flex" style={style}>
+    <div
+      className="position-absolute d-flex"
+      onDrag={() => {}}
+      onDragStart={() => {
+        if (draging !== id) setdraging(id)
+      }}
+      draggable="true"
+      style={style}
+    >
       <FontAwesomeIcon
         id={id}
         className="h5 mt-2"
@@ -87,7 +146,7 @@ function PointTag({ setting }) {
 }
 
 function LineModal({ setting }) {
-  const { show, thumbnail, data } = setting
+  const { show, fixed, data } = setting
   const initPoints = []
   const [points, setpoints] = useState(data || initPoints)
   const handleRemovePoint = (id) => {
@@ -133,6 +192,8 @@ function LineModal({ setting }) {
     }
   }
 
+  const [draging, setdraging] = useState(-1)
+
   return (
     <Modal
       style={{ zIndex: '1501' }}
@@ -144,18 +205,14 @@ function LineModal({ setting }) {
       <Modal.Header className="h5 text-revo" closeButton>
         標記距離基準
       </Modal.Header>
-      <Modal.Body>
-        <h6 className="text-center text-secondary">
-          <FontAwesomeIcon icon={faCircleInfo} title="說明" />
-          &ensp;雙擊於圖片中拉出兩個點，並使其相連（距離 10 公尺）。
-        </h6>
+      <Modal.Body className="d-flex">
         <div className="d-flex position-relative w-75 mx-auto">
           <Image
             ref={imageRef}
             style={{ cursor: 'pointer' }}
             className="w-100"
             height="auto"
-            src={`/api/draft/video/${thumbnail.name}`}
+            src={`/api/draft/video/${fixed}`}
             fluid
             onClick={(e) => {
               if (points.length > 1) return
@@ -176,11 +233,29 @@ function LineModal({ setting }) {
                 },
               ])
             }}
+            onDrop={(e) => {
+              const target = e.target.getBoundingClientRect()
+              const left = e.clientX - target.x
+              const top = e.clientY - target.y
+              if (draging > 0) {
+                setpoints(
+                  points.map((point) =>
+                    point.id === draging
+                      ? { ...point, style: { ...point.style, top, left } }
+                      : point
+                  )
+                )
+              }
+            }}
+            onDragOver={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+            }}
           />
           {points.map((point) => (
             <PointTag
               key={point.id}
-              setting={{ ...point, handleRemovePoint }}
+              setting={{ ...point, handleRemovePoint, draging, setdraging }}
             />
           ))}
           {points.length === 2 && (
@@ -214,7 +289,13 @@ function LineModal({ setting }) {
             />
           )}
         </div>
-        <div className="ms-auto d-flex" />
+        <div className="w-25 ms-auto d-flex flex-column">
+          <h6 className="text-center text-secondary">
+            <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+            &ensp;雙擊於圖片中拉出兩個點，並使其相連（距離 10 公尺）。
+          </h6>
+          <Image className="mx-auto" height="auto" src={remark2} fluid />
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -260,6 +341,7 @@ function ProjectedModal({ setting }) {
     try {
       const params = {
         roadAdjust: value,
+        fixed: value.fixed,
       }
       const slopeRLDifference = Math.abs(
         (points[0].style.top - points[1].style.top) /
@@ -417,7 +499,7 @@ function ProjectedModal({ setting }) {
               <Image
                 className="mx-auto"
                 height="auto"
-                src={fixed ? `/api/draft/video/${fixed}` : camera7projected}
+                src={`/api/draft/video/${fixed}`}
                 fluid
               />
             )}
@@ -458,7 +540,14 @@ function ProjectedModal({ setting }) {
 }
 
 function NumberTag({ setting }) {
-  const { id, style, handleDelete, draging, setdraging } = setting
+  const {
+    id,
+    style,
+    handleDelete,
+    draging,
+    setdraging,
+    draggable = true,
+  } = setting
   const numbers = {
     5: '➊',
     6: '➋',
@@ -477,8 +566,8 @@ function NumberTag({ setting }) {
       }}
       onDrag={() => {}}
       onDoubleClick={handleDelete}
-      draggable="true"
-      style={style}
+      draggable={draggable}
+      style={{ ...style, cursor: draggable ? 'grab' : 'auto' }}
     >
       {numbers[id]}
     </h1>
@@ -486,7 +575,7 @@ function NumberTag({ setting }) {
 }
 
 function RoadTag({ setting }) {
-  const { id, style, content, draging, setdraging } = setting
+  const { id, style, content, draging, setdraging, draggable = true } = setting
   return (
     <div
       id={id}
@@ -495,8 +584,8 @@ function RoadTag({ setting }) {
       }}
       onDrag={() => {}}
       className="position-absolute d-flex"
-      draggable="true"
-      style={{ ...style, cursor: 'grab' }}
+      draggable={draggable}
+      style={{ ...style, cursor: draggable ? 'grab' : 'auto' }}
     >
       {content}
     </div>
@@ -504,7 +593,14 @@ function RoadTag({ setting }) {
 }
 
 function RoadModal({ setting }) {
-  const { show, handleClose, thumbnail, hasDraggable = false, data } = setting
+  const {
+    show,
+    handleClose,
+    thumbnail,
+    data,
+    hasDraggable = false,
+    hasRoadName = true,
+  } = setting
   const initDraggables = [
     {
       id: 1,
@@ -654,6 +750,10 @@ function RoadModal({ setting }) {
                 key={d.id}
                 setting={{
                   ...d,
+                  style: {
+                    ...d.style,
+                    width: hasRoadName ? '200px' : '35px',
+                  },
                   content: (
                     <>
                       <FormLabel
@@ -662,25 +762,28 @@ function RoadModal({ setting }) {
                       >
                         {d.label}
                       </FormLabel>
-                      <Form.Control
-                        value={d.name}
-                        name={d.id}
-                        onChange={(e) =>
-                          setdraggables((prevState) =>
-                            prevState.map((ps) => ({
-                              ...ps,
-                              name:
-                                ps.id === parseInt(e.target.name, 10)
-                                  ? e.target.value
-                                  : ps.name,
-                            }))
-                          )
-                        }
-                      />
+                      {hasRoadName && (
+                        <Form.Control
+                          value={d.name}
+                          name={d.id}
+                          onChange={(e) =>
+                            setdraggables((prevState) =>
+                              prevState.map((ps) => ({
+                                ...ps,
+                                name:
+                                  ps.id === parseInt(e.target.name, 10)
+                                    ? e.target.value
+                                    : ps.name,
+                              }))
+                            )
+                          }
+                        />
+                      )}
                     </>
                   ),
                   draging,
                   setdraging,
+                  hasRoadName,
                 }}
               />
             ))}
@@ -739,6 +842,7 @@ function RoadModal({ setting }) {
             <FontAwesomeIcon icon={faCircleInfo} title="說明" />
             &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。
           </h6>
+          <Image className="mx-auto" height="auto" src={remark1} fluid />
         </div>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-end">
@@ -764,13 +868,167 @@ function RoadModal({ setting }) {
   )
 }
 
+function Preview({ setting }) {
+  const {
+    show,
+    handleClose,
+    thumbnail,
+    data,
+    hasDraggable = false,
+    hasRoadName = true,
+  } = setting
+  const initDraggables = [
+    {
+      id: 1,
+      style: { width: '200px', top: '2%', left: '110%' },
+      label: '東',
+      name: '',
+    },
+    {
+      id: 2,
+      style: { width: '200px', top: '16%', left: '110%' },
+      label: '西',
+      name: '',
+    },
+    {
+      id: 3,
+      style: { width: '200px', top: '30%', left: '110%' },
+      label: '南',
+      name: '',
+    },
+    {
+      id: 4,
+      style: { width: '200px', top: '44%', left: '110%' },
+      label: '北',
+      name: '',
+    },
+  ]
+  const [draggables, setdraggables] = useState(
+    data ? data.draggables : initDraggables
+  )
+
+  const initClicks = {
+    entry: [],
+    outry: [],
+  }
+  const [clicks, setclicks] = useState(data ? data.clicks : initClicks)
+
+  useEffect(() => {
+    if (show) {
+      setdraggables(data ? data.draggables : initDraggables)
+      setclicks(data ? data.clicks : initClicks)
+    }
+  }, [show])
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      size="xl"
+      show={show}
+      onHide={() => handleClose()}
+      className="p-2"
+    >
+      <Modal.Header className="h5 text-revo" closeButton>
+        預覽
+      </Modal.Header>
+      <Modal.Body className="d-flex">
+        <div className="position-relative w-50">
+          <h5 className="text-revo">方向與出入口標記</h5>
+          <Image
+            className="mx-auto w-100 h-100"
+            src={`/api/draft/video/${thumbnail.name}`}
+            fluid
+          />
+          {hasDraggable &&
+            draggables.map((d) => (
+              <RoadTag
+                key={d.id}
+                setting={{
+                  ...d,
+                  style: {
+                    ...d.style,
+                    width: hasRoadName ? '200px' : '35px',
+                  },
+                  content: (
+                    <>
+                      <FormLabel
+                        className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        {d.label}
+                      </FormLabel>
+                      <Form.Control
+                        value={d.name}
+                        name={d.id}
+                        onChange={() => {}}
+                      />
+                    </>
+                  ),
+                  draging: 0,
+                  setdraging: () => {},
+                  draggable: false,
+                }}
+              />
+            ))}
+          {clicks.entry.map((e) => (
+            <NumberTag
+              key={e.id}
+              setting={{
+                ...e,
+                handleDelete: () => {},
+                draging: 0,
+                setdraging: () => {},
+                draggable: false,
+              }}
+            />
+          ))}
+          {clicks.outry.map((o) => (
+            <NumberTag
+              key={o.id}
+              setting={{
+                ...o,
+                handleDelete: () => {},
+                setclicks: () => {},
+                draging: 0,
+                setdraging: () => {},
+                draggable: false,
+              }}
+            />
+          ))}
+        </div>
+        {/* <div className="w-25 ms-auto d-flex flex-column">
+        </div> */}
+      </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-end">
+        <Button
+          variant="revo2"
+          className="mt-auto ms-2"
+          onClick={() => handleClose()}
+        >
+          確認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
+
 function Road({ setting }) {
   const { handleToolChange } = setting
 
+  const [showWarn, setshowWarn] = useState({
+    show: false,
+    content: 'Oops! 請先完成投影轉換再進行距離基準標記',
+    handleClose: () => {},
+  })
   const { timeId, time = {}, handleTimeEdit } = useContext(DraftContext)
   const { videos = [] } = time.setting || {}
   const [selected, setselected] = useState('')
-  const { roads, roadAdjust, roadLine, thumbnail = {} } = videos[selected] || {}
+  const {
+    roads,
+    roadAdjust,
+    roadLine,
+    fixed,
+    thumbnail = {},
+  } = videos[selected] || {}
 
   const handleDataChange = (data) => {
     handleTimeEdit(timeId, {
@@ -785,7 +1043,7 @@ function Road({ setting }) {
     key: 'selection',
   })
   const [data, setdata] = useState({
-    label: '',
+    originName: '',
     date: '',
     type: '路口',
   })
@@ -794,7 +1052,7 @@ function Road({ setting }) {
   useEffect(() => {
     if (!videos[selected]) return
     setdata({
-      label: videos[selected].label || '',
+      originName: videos[selected].originName || videos[selected].name || '',
       date: videos[selected].date || '',
       type: videos[selected].type || '路口',
     })
@@ -810,12 +1068,13 @@ function Road({ setting }) {
   }, [selected])
 
   const [show, setshow] = useState(false)
+  const [showPreview, setshowPreview] = useState(false)
   const [showProject, setshowProject] = useState(false)
   const [showLine, setshowLine] = useState(false)
 
   const form = [
     {
-      name: 'label',
+      name: 'originName',
       label: '名稱',
       placeholder: '',
       type: 'text',
@@ -865,12 +1124,26 @@ function Road({ setting }) {
       placeholder: '',
       type: 'road',
       check: roadLine && roadLine.length === 2,
-      click: () => setshowLine(true),
+      click: () => {
+        if (!fixed) {
+          setshowWarn({
+            ...showWarn,
+            show: true,
+            content: 'Oops! 請先完成投影轉換再進行距離基準標記',
+            handleClose: () =>
+              setshowWarn({
+                ...showWarn,
+                show: false,
+              }),
+            hasCancel: false,
+          })
+          return
+        }
+        setshowLine(true)
+      },
       show: data.type === '路段',
     },
   ]
-
-  console.log(videos[selected])
 
   return (
     <>
@@ -948,24 +1221,81 @@ function Road({ setting }) {
                             {f.label}
                           </Form.Label>
                         </Col>
-                        {f.content.map((c) => (
-                          <Col
-                            className={`py-1 me-4 ${
-                              data.type === c.value ? 'bg-revo-mid rounded' : ''
-                            }`}
-                            style={{ cursor: 'pointer' }}
-                            key={c.value}
-                            onClick={() => {
-                              onDataChange({
-                                target: {
-                                  ...c,
-                                },
-                              })
+                        <Col
+                          xs={9}
+                          className="text-start pt-1 text-revo fw-bold"
+                        >
+                          <Form.Select
+                            className="w-100 h-100"
+                            aria-label="Default select example"
+                            onChange={(e) => {
+                              if (e.target.value === '路口' && roads) {
+                                setshowWarn({
+                                  ...showWarn,
+                                  show: true,
+                                  content: `此影片已經標記成[路段] ，
+                                  更改會造成標記結果喪失，請
+                                  ”問是否要更改？`,
+                                  handleClose: (value) => {
+                                    if (value) {
+                                      onDataChange({
+                                        target: {
+                                          name: 'type',
+                                          value: '路口',
+                                        },
+                                      })
+                                    }
+                                    setshowWarn({
+                                      ...showWarn,
+                                      show: false,
+                                    })
+                                  },
+                                  hasCancel: true,
+                                })
+                              } else if (e.target.value === '路段' && roads) {
+                                setshowWarn({
+                                  ...showWarn,
+                                  show: true,
+                                  content: `此影片已經標記成[路口] ，
+                                  更改會造成標記結果喪失，請
+                                  ”問是否要更改？`,
+                                  handleClose: (value) => {
+                                    if (value) {
+                                      onDataChange({
+                                        target: {
+                                          name: 'type',
+                                          value: '路段',
+                                        },
+                                      })
+                                    }
+                                    setshowWarn({
+                                      ...showWarn,
+                                      show: false,
+                                    })
+                                  },
+                                  hasCancel: true,
+                                })
+                              } else {
+                                onDataChange({
+                                  target: {
+                                    name: 'type',
+                                    value: e.target.value,
+                                  },
+                                })
+                              }
                             }}
+                            value={data.type}
                           >
-                            {c.label}
-                          </Col>
-                        ))}
+                            <option value="" className="d-none">
+                              下拉選擇類型
+                            </option>
+                            {f.content.map((c, j) => (
+                              <option key={j} value={c.value}>
+                                {c.label}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </Col>
                       </Row>
                     </React.Fragment>
                   )
@@ -1088,9 +1418,7 @@ function Road({ setting }) {
               <Button
                 variant="warning"
                 className="ms-auto me-2"
-                onClick={() =>
-                  data.type === '路口' ? setshow(true) : setshowProject(true)
-                }
+                onClick={() => setshowPreview(true)}
               >
                 預覽
               </Button>
@@ -1126,11 +1454,11 @@ function Road({ setting }) {
             style={{ minHeight: '82%' }}
           >
             {videos && videos.length ? (
-              videos.map(({ originName, name, ...v }, i) => (
+              videos.map(({ originName, ...v }, i) => (
                 <Col
                   xs={3}
                   className="flex-column h5 text-revo"
-                  key={originName || name}
+                  key={originName || v.name}
                   style={{
                     cursor: 'pointer',
                   }}
@@ -1142,10 +1470,10 @@ function Road({ setting }) {
                     }}
                   >{`${i + 1}.${
                     originName ||
-                    (name
-                      ? name
+                    (v.name
+                      ? v.name
                           .split('_')
-                          .slice(1, name.split('_').length)
+                          .slice(1, v.name.split('_').length)
                           .join('')
                       : '- -')
                   }`}</p>
@@ -1158,7 +1486,7 @@ function Road({ setting }) {
                         controls
                       >
                         <track kind="captions" />
-                        <source src={`/api/draft/video/${name}`} />
+                        <source src={`/api/draft/video/${v.name}`} />
                       </video>
                     </div>
                     <div
@@ -1209,7 +1537,7 @@ function Road({ setting }) {
                   })
                 setshow(false)
               },
-              hasDraggable: true,
+              hasDraggable: data.type === '路口',
             }}
           />
           <ProjectedModal
@@ -1227,14 +1555,28 @@ function Road({ setting }) {
             setting={{
               data: roadLine,
               show: showLine,
+              fixed,
               thumbnail,
               handleClose: (value) => {
-                console.log(value)
                 if (value) {
                   handleDataChange(value)
                 }
                 setshowLine(false)
               },
+            }}
+          />
+          <Preview
+            setting={{
+              show: showPreview,
+              data: roads,
+              thumbnail,
+              handleClose: () => setshowPreview(false),
+              hasDraggable: data.type === '路口',
+            }}
+          />
+          <WarnModal
+            setting={{
+              ...showWarn,
             }}
           />
         </>
@@ -1549,6 +1891,10 @@ Video.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
+Preview.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
 Road.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
@@ -1578,6 +1924,10 @@ PointTag.propTypes = {
 }
 
 LabelTag.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+WarnModal.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 

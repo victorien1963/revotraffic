@@ -30,6 +30,8 @@ import camera14 from './images/camera_14.mp4'
 import camera7projection from './images/camera_7_projection.mp4'
 import v04 from './images/04.mp4'
 import v04Rl from './images/04_rl.mp4'
+import remark1 from './images/remark1.png'
+import remark2 from './images/remark2.png'
 
 export {
   // image
@@ -61,6 +63,8 @@ export {
   report,
   delay,
   turning,
+  remark1,
+  remark2,
   // video
   camera14,
   camera7projection,
