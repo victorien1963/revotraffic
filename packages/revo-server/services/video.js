@@ -109,6 +109,20 @@ const getResultVideoWarp = async (task_id) => {
     return res
 }
 
+const getResultTrackMaps = async (task_id, start = 0, get_nums = 10) => {
+    const res = await apiServices.send({
+        url: `${process.env.VIDEO_JOB_API}/get_result_track_maps`,
+        method: 'get',
+        params: {
+            task_id,
+            start,
+            get_nums,
+        },
+        // responseType: 'arraybuffer'
+    })
+    return res
+}
+
 module.exports = {
     upload,
     start,
@@ -119,4 +133,5 @@ module.exports = {
     getResultSpeed,
     getResultVideo,
     getResultVideoWarp,
+    getResultTrackMaps,
 }
