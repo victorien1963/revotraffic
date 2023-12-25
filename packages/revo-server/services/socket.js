@@ -9,6 +9,7 @@ const {
   getResultSpeed,
   getResultVideo,
   getResultVideoWarp,
+  getResultTrackMaps,
 } = require('./video')
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -54,13 +55,14 @@ socket.init = (server, setting) => {
               status,
               message,
             })
-          } else{
-            const [result, resultVideo, resultCarSpacing, resultSpeed, resultVideoWarp] = await Promise.all([
+          } else {
+            const [result, resultVideo, resultCarSpacing, resultSpeed, resultVideoWarp, resultTrackMap] = await Promise.all([
               getResultXlsx(task_id),
               getResultVideo(task_id),
               getResultCarSpacing(task_id),
               getResultSpeed(task_id),
-              getResultVideoWarp(task_id)
+              getResultVideoWarp(task_id),
+              getResultTrackMaps(task_id, 0, 1000)
             ])
 
             let result_video = { name: '' }
@@ -87,7 +89,8 @@ socket.init = (server, setting) => {
                 result_video,
                 resultCarSpacing,
                 resultSpeed,
-                result_video_warp
+                result_video_warp,
+                result_track_maps: resultTrackMap.error ? [] : resultTrackMap,
               } : v)
             }])
             io.to(id).emit('video', updated)
