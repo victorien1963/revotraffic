@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState, useContext, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
@@ -16,22 +17,12 @@ import {
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faCaretLeft,
   faCheckCircle,
+  faCaretRight,
   faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
 import { DraftContext, SocketContext, ToastContext } from '../ContextProvider'
-import {
-  // camera14,
-  // camera7projection,
-  gallery1,
-  gallery2,
-  gallery3,
-  gallery4,
-  gallery5,
-  gallery6,
-  gallery7,
-  // turning,
-} from '../../assets'
 import apiServices from '../../services/apiServices'
 
 function WarnModal({ setting }) {
@@ -633,6 +624,7 @@ function Step3({ setting }) {
   const [resultSpeed, setresultSpeed] = useState(null)
   const [src, setsrc] = useState('')
   const [vwSrc, setvwSrc] = useState('')
+  const [trackMap, settrackMap] = useState([])
   useEffect(() => {
     if (!videoData) return
     if (videoData.result) {
@@ -684,6 +676,9 @@ function Step3({ setting }) {
     if (videoData.result_video_warp) {
       setvwSrc(`api/draft/video/${videoData.result_video_warp.name}`)
     } else setvwSrc(null)
+    if (videoData.result_track_maps && !videoData.result_track_maps.error) {
+      settrackMap(videoData.result_track_maps)
+    } else settrackMap([])
   }, [videoData])
 
   const [selected, setselected] = useState('')
@@ -717,16 +712,6 @@ function Step3({ setting }) {
     })
   }
 
-  const gallerys = [
-    gallery1,
-    gallery2,
-    gallery3,
-    gallery4,
-    gallery5,
-    gallery6,
-    gallery7,
-  ]
-
   // true value
   const [show, setshow] = useState(false)
   const [trueValue, settrueValue] = useState(defaultTrueValue)
@@ -734,6 +719,13 @@ function Step3({ setting }) {
     () => settrueValue(videoData.trueValue?.traffic15 || defaultTrueValue),
     [videoData, selected]
   )
+
+  // page
+  const [tempPage, settempPage] = useState(1)
+  const [page, setpage] = useState(1)
+  useEffect(() => {
+    settempPage(page)
+  }, [page])
 
   const optionComponent = {
     每15分鐘各方向交通量: (
@@ -753,16 +745,84 @@ function Step3({ setting }) {
       />
     ),
     '軌跡辨識與轉向 (視覺化)': (
-      <Row className="h-100 overflow-scroll justify-content-start">
-        {gallerys.map((gallery, i) => (
-          <Image
-            key={i}
-            className="w-50 py-3"
-            height="auto"
-            src={gallery}
-            fluid
+      <Row className="position-relative h-100">
+        <Image
+          className="mx-auto py-3"
+          style={{
+            maxWidth: '95%',
+            maxHeight: '100%',
+            height: 'auto',
+            width: 'auto',
+          }}
+          src={`data:image/png;base64, ${trackMap[page - 1]}`}
+          fluid
+        />
+        <div
+          className="position-absolute d-flex justify-content-center"
+          style={{
+            height: '50px',
+            bottom: '-55px',
+          }}
+        >
+          <Form.Control
+            className="h-50 mx-1"
+            type="phone"
+            style={{
+              width: '55px',
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+                if (!Number.isNaN(event.target.value))
+                  setpage(
+                    Math.max(Math.min(event.target.value, trackMap.length), 1)
+                  )
+              }
+            }}
+            onBlur={(event) => {
+              if (!Number.isNaN(event.target.value))
+                setpage(
+                  Math.max(Math.min(event.target.value, trackMap.length), 1)
+                )
+            }}
+            onChange={(e) => {
+              settempPage(e.target.value)
+            }}
+            value={tempPage}
+          />{' '}
+          / {trackMap.length}
+        </div>
+        <a
+          className="carousel-control-prev"
+          role="button"
+          tabIndex="0"
+          onClick={() => setpage(Math.max(1, page - 1))}
+          href="#"
+        >
+          <FontAwesomeIcon
+            style={{
+              fontSize: '4rem',
+            }}
+            className="px-0 my-auto text-revo"
+            icon={faCaretLeft}
+            title="上一張"
           />
-        ))}
+        </a>
+        <a
+          className="carousel-control-next"
+          role="button"
+          tabIndex="0"
+          onClick={() => setpage(Math.min(trackMap.length, page + 1))}
+          href="#"
+        >
+          <FontAwesomeIcon
+            style={{
+              fontSize: '4rem',
+            }}
+            className="px-0 my-auto text-revo"
+            icon={faCaretRight}
+            title="下一張"
+          />
+        </a>
       </Row>
     ),
     // 期望加減速率: <SpeedTable />,
@@ -956,7 +1016,7 @@ function Step3({ setting }) {
                 </Button>
               )}
             </div>
-            <div className="h-70 w-100 overflow-hidden">
+            <div className="h-70 w-100 overflow-show">
               {optionComponent[selected] || <div />}
             </div>
           </div>
