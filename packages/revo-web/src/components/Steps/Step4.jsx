@@ -17,14 +17,18 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheckCircle,
-  faCheckSquare,
-  faCircleCheck,
   faCircleExclamation,
   faCirclePlus,
+  faCloudArrowUp,
+  faCubes,
+  faFlaskVial,
   faPenToSquare,
-  faTimesSquare,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCircleCheck,
+  faCircleXmark,
+} from '@fortawesome/free-regular-svg-icons'
 import { AuthContext, DraftContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
 
@@ -40,8 +44,15 @@ function WarnModal({ setting }) {
       <Modal.Header closeButton>
         <h4>通知</h4>
       </Modal.Header>
-      <Modal.Body className="p-4">
-        <h5>{text}</h5>
+      <Modal.Body className="p-4 text-revo">
+        <div className="d-flex pb-4">
+          <FontAwesomeIcon
+            icon={faCircleExclamation}
+            className="text-revo text-center m-auto"
+            style={{ height: '10vh' }}
+          />
+        </div>
+        <h5 className="text-center">{text}</h5>
       </Modal.Body>
       <Modal.Footer className="justify-content-center">
         <Button
@@ -123,7 +134,7 @@ function CheckTable({ setting }) {
                   cursor: 'pointer',
                   color: option.label ? 'black' : 'transparent',
                 }}
-                icon={faCheckCircle}
+                icon={faCircleCheck}
                 onClick={() => {}}
               />
             )}
@@ -280,9 +291,9 @@ function Results({ setting }) {
             {results.map(({ name, user, type, note, created_on }, i) => (
               <ListGroupItem
                 style={{
-                  height: '33%',
-                  minHeight: '33%',
-                  maxHeight: '33%',
+                  height: '29%',
+                  minHeight: '29%',
+                  maxHeight: '29%',
                 }}
                 className="d-flex border-end-0 rounded-0"
                 key={i}
@@ -350,13 +361,13 @@ function Results({ setting }) {
                       <p className="text-nowrap">確定&ensp;</p>
                       <FontAwesomeIcon
                         className="my-auto"
-                        icon={faCheckSquare}
+                        icon={faCircleCheck}
                       />
                     </Button>
                     <Button
                       className="me-2 d-flex flex-nowrap"
                       style={{ boxShadow: 'none' }}
-                      variant="outline-revo"
+                      variant="outline-secondary"
                       onClick={() => setediting(-1)}
                       title="取消"
                       size
@@ -364,7 +375,7 @@ function Results({ setting }) {
                       <p className="text-nowrap">取消&ensp;</p>
                       <FontAwesomeIcon
                         className="my-auto"
-                        icon={faTimesSquare}
+                        icon={faCircleXmark}
                       />
                     </Button>
                   </>
@@ -406,13 +417,6 @@ function Results({ setting }) {
                   <p className="text-nowrap">刪除&ensp;</p>
                   <FontAwesomeIcon className="my-auto" icon={faTrashCan} />
                 </Button>
-
-                <h2
-                  className="my-auto text-grey"
-                  style={{ userSelect: 'none' }}
-                >
-                  ｜
-                </h2>
               </ListGroupItem>
             ))}
           </ListGroup>
@@ -423,8 +427,8 @@ function Results({ setting }) {
         )}
       </Row>
       <Row className="pt-1">
-        <Col xs={7} className="d-flex px-5">
-          <h5 className="my-auto text-revo-light fw-bold">待上傳</h5>
+        <Col xs={7} className="d-flex px-5 pt-2">
+          <h5 className="mt-auto text-revo-light fw-bold mb-0">待上傳</h5>
         </Col>
         <Col xs={5} className="d-flex pe-5 py-0">
           <Form.Select
@@ -461,7 +465,7 @@ function Results({ setting }) {
       <Row className="py-0 px-5">
         <Button
           title="新增"
-          className="text-revo fs-7 p-2 mx-0 my-1"
+          className="text-revo fs-7 py-1 mx-0 my-1 mb-0"
           style={{
             background: 'rgba(35, 61, 99, 0.1)',
             border: '1px solid rgba(35, 61, 99, 0.1)',
@@ -510,7 +514,7 @@ function Results({ setting }) {
               setwarning({
                 ...warning,
                 show: true,
-                text: '同類型檔案超過數量上限，請先刪除檔案或減少上傳檔案數量',
+                text: '同類型檔案超過數量上限，請先刪除或減少上傳檔案數量。',
                 handleClose: () =>
                   setwarning({
                     ...warning,
@@ -522,7 +526,7 @@ function Results({ setting }) {
             setnewFiles(Array.from(e.target.files))
             e.stopPropagation()
           }}
-          className="p-0 m-0 border-0"
+          className="p-0 m-0 border-0 text-revo"
           style={{
             visibility: 'hidden',
             width: '0px',
@@ -569,24 +573,20 @@ function Results({ setting }) {
                 刪除&ensp;
                 <FontAwesomeIcon icon={faTrashCan} />
               </Button>
-
-              <h2 className="my-auto text-grey" style={{ userSelect: 'none' }}>
-                ｜
-              </h2>
             </ListGroupItem>
           ))}
         </ListGroup>
       </Row>
 
       <Row
-        className="pt-3 pb-5 px-4 pe-5 d-flex"
+        className="px-4 py-2 d-flex"
         style={{
           height: '10%',
         }}
       >
         <Button
           variant="revo2"
-          className="m-auto d-flex justify-content-center"
+          className="mx-auto mb-auto d-flex justify-content-center"
           style={{
             width: '15%',
           }}
@@ -600,7 +600,7 @@ function Results({ setting }) {
             <span className="my-auto spinner-border spinner-border-sm" />
           ) : (
             <FontAwesomeIcon
-              icon={faCircleCheck}
+              icon={faCloudArrowUp}
               className="my-auto fs-5 text-dai-lighter fs-8"
             />
           )}
@@ -716,9 +716,9 @@ function Files({ setting }) {
             {models.map(({ name, user, created_on }, i) => (
               <ListGroupItem
                 style={{
-                  height: '33%',
-                  minHeight: '33%',
-                  maxHeight: '33%',
+                  height: '29%',
+                  minHeight: '29%',
+                  maxHeight: '29%',
                 }}
                 className="d-flex border-end-0 rounded-0"
                 key={i}
@@ -768,13 +768,13 @@ function Files({ setting }) {
                       <p className="text-nowrap">確定&ensp;</p>
                       <FontAwesomeIcon
                         className="my-auto"
-                        icon={faCheckSquare}
+                        icon={faCircleCheck}
                       />
                     </Button>
                     <Button
                       className="me-2 d-flex flex-nowrap"
                       style={{ boxShadow: 'none' }}
-                      variant="outline-revo"
+                      variant="outline-secondary"
                       onClick={() => setediting(-1)}
                       title="取消"
                       size
@@ -782,7 +782,7 @@ function Files({ setting }) {
                       <p className="text-nowrap">取消&ensp;</p>
                       <FontAwesomeIcon
                         className="my-auto"
-                        icon={faTimesSquare}
+                        icon={faCircleXmark}
                       />
                     </Button>
                   </>
@@ -823,13 +823,6 @@ function Files({ setting }) {
                   <p className="text-nowrap">刪除&ensp;</p>
                   <FontAwesomeIcon className="my-auto" icon={faTrashCan} />
                 </Button>
-
-                <h2
-                  className="my-auto text-grey"
-                  style={{ userSelect: 'none' }}
-                >
-                  ｜
-                </h2>
               </ListGroupItem>
             ))}
           </ListGroup>
@@ -840,14 +833,14 @@ function Files({ setting }) {
         )}
       </Row>
       <Row>
-        <Col xs={6} className="d-flex px-5">
-          <h5 className="my-auto text-revo-light fw-bold">待上傳</h5>
+        <Col xs={6} className="d-flex px-5 pt-2">
+          <h5 className="mt-auto text-revo-light fw-bold">待上傳</h5>
         </Col>
       </Row>
       <Row className="py-0 px-5">
         <Button
           title="新增"
-          className="text-revo fs-7 p-2 mx-0 my-1"
+          className="text-revo fs-7 py-1 mx-0 my-1 mb-0"
           style={{
             background: 'rgba(35, 61, 99, 0.1)',
             border: '1px solid rgba(35, 61, 99, 0.1)',
@@ -924,24 +917,20 @@ function Files({ setting }) {
                 刪除&ensp;
                 <FontAwesomeIcon icon={faTrashCan} />
               </Button>
-
-              <h2 className="my-auto text-grey" style={{ userSelect: 'none' }}>
-                ｜
-              </h2>
             </ListGroupItem>
           ))}
         </ListGroup>
       </Row>
 
       <Row
-        className="pt-3 pb-5 px-4 pe-5 d-flex"
+        className="px-4 py-2 d-flex"
         style={{
           height: '10%',
         }}
       >
         <Button
           variant="revo2"
-          className="m-auto d-flex justify-content-center"
+          className="mx-auto mb-auto d-flex justify-content-center"
           style={{
             width: '15%',
           }}
@@ -955,7 +944,7 @@ function Files({ setting }) {
             <span className="my-auto spinner-border spinner-border-sm" />
           ) : (
             <FontAwesomeIcon
-              icon={faCircleCheck}
+              icon={faCloudArrowUp}
               className="my-auto fs-5 text-dai-lighter fs-8"
             />
           )}
@@ -978,11 +967,13 @@ function Step4({ setting }) {
             name: 'step4',
             value: '模型上傳',
             check: modals.length > 0,
+            icon: faCubes,
           },
           {
             label: '實驗檔案管理',
             name: 'step4',
             value: '模型驅動',
+            icon: faFlaskVial,
           },
         ].map((s) => (
           <Col xs={3} className="d-flex" key={s.value}>
@@ -993,20 +984,20 @@ function Step4({ setting }) {
               }}
             >
               <Card
-                className="h-75 w-100 d-flex bg-revo-light"
+                className="h-75 w-100 d-flex bg-revo-light fs-5 fw-bold text-revo"
+                style={{ cursor: 'pointer' }}
+                title={s.label}
                 onClick={() =>
                   handleToolChange({
                     target: { name: 'step4', value: s.value },
                   })
                 }
               >
-                <span
-                  className="fs-5 fw-bold text-revo my-auto"
-                  style={{ cursor: 'pointer' }}
-                  title={s.label}
-                >
-                  {s.label}
-                </span>
+                <FontAwesomeIcon
+                  icon={s.icon}
+                  className="fs-2 text-revo mx-auto mt-auto pb-3"
+                />
+                <div className="mx-auto mb-auto">{s.label}</div>
               </Card>
               <FontAwesomeIcon
                 className={`h5 mt-2 ${

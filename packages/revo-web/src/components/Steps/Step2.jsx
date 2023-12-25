@@ -61,8 +61,9 @@ function WarnModal({ setting }) {
             icon={faCircleExclamation}
           />
         </Row>
-        <Row>
-          <h4 className="text-center py-3 text-revo">{content}</h4>
+        <Row className="text-center p-3 text-revo lh-sm">
+          <h4>注意!</h4>
+          <h5>{content}</h5>
         </Row>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-center">
@@ -79,7 +80,7 @@ function WarnModal({ setting }) {
         <Button
           className={hasCancel ? 'me-auto' : 'mx-auto'}
           style={{ boxShadow: 'none' }}
-          variant="outline-revo2"
+          variant="revo3"
           onClick={() => handleClose(true)}
         >
           確 認
@@ -1233,9 +1234,8 @@ function Road({ setting }) {
                                 setshowWarn({
                                   ...showWarn,
                                   show: true,
-                                  content: `此影片已經標記成[路段] ，
-                                  更改會造成標記結果喪失，請
-                                  ”問是否要更改？`,
+                                  content: `此影片已被標記為"路段"，
+                                  更改選項會造成標記結果喪失，確定要修改嗎 ?`,
                                   handleClose: (value) => {
                                     if (value) {
                                       onDataChange({
@@ -1256,9 +1256,8 @@ function Road({ setting }) {
                                 setshowWarn({
                                   ...showWarn,
                                   show: true,
-                                  content: `此影片已經標記成[路口] ，
-                                  更改會造成標記結果喪失，請
-                                  ”問是否要更改？`,
+                                  content: `此影片已被標記為"路口"，
+                                  更改選項會造成標記結果喪失，確定要修改嗎 ?`,
                                   handleClose: (value) => {
                                     if (value) {
                                       onDataChange({
