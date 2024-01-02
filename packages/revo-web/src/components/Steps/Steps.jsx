@@ -79,41 +79,38 @@ function Steps() {
         },
         { label: '請選擇交維階段' },
       ]
-    if (step === 'step2')
-      return [
-        {
-          label: `${draft.setting.id}-${draft.setting.name}`,
-          onClick: () => setDraftId(''),
-        },
-        {
-          label: `${range.setting.id}-${range.setting.name}`,
-          onClick: () => setRangeId(''),
-        },
-        {
-          label: `${time.setting.date} - ${time.setting.name}`,
-          onClick: () => setTimeId(''),
-        },
-        {
-          label:
-            toolState.step2 === '路口＆路段標記'
-              ? '路口＆路段標記'
-              : '影片上傳',
-        },
-      ]
-    return [
-      {
-        label: `${draft.setting.id}-${draft.setting.name}`,
-        onClick: () => setDraftId(''),
-      },
-      {
-        label: `${range.setting.id}-${range.setting.name}`,
-        onClick: () => setRangeId(''),
-      },
-      {
-        label: `${time.setting.date} - ${time.setting.name}`,
-        onClick: () => setTimeId(''),
-      },
-    ]
+    return toolState[step] === 'selector'
+      ? [
+          {
+            label: `${draft.setting.id}-${draft.setting.name}`,
+            onClick: () => setDraftId(''),
+          },
+          {
+            label: `${range.setting.id}-${range.setting.name}`,
+            onClick: () => setRangeId(''),
+          },
+          {
+            label: `${time.setting.date} - ${time.setting.name}`,
+            onClick: () => setTimeId(''),
+          },
+        ]
+      : [
+          {
+            label: `${draft.setting.id}-${draft.setting.name}`,
+            onClick: () => setDraftId(''),
+          },
+          {
+            label: `${range.setting.id}-${range.setting.name}`,
+            onClick: () => setRangeId(''),
+          },
+          {
+            label: `${time.setting.date} - ${time.setting.name}`,
+            onClick: () => setTimeId(''),
+          },
+          {
+            label: toolState[step],
+          },
+        ]
   }, [draft, range, time, step, toolState])
 
   return (
