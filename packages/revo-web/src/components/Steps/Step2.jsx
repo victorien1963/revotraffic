@@ -874,6 +874,8 @@ function Preview({ setting }) {
     handleClose,
     thumbnail,
     data,
+    fixed,
+    roadLine = [],
     hasDraggable = false,
     hasRoadName = true,
   } = setting
@@ -931,44 +933,46 @@ function Preview({ setting }) {
         預覽
       </Modal.Header>
       <Modal.Body className="d-flex">
-        <div className="position-relative w-50">
+        <div className="position-relative w-50 px-3">
           <h5 className="text-revo">方向與出入口標記</h5>
           <Image
-            className="mx-auto w-100 h-100"
+            className="mx-auto w-100"
             src={`/api/draft/video/${thumbnail.name}`}
             fluid
           />
           {hasDraggable &&
-            draggables.map((d) => (
-              <RoadTag
-                key={d.id}
-                setting={{
-                  ...d,
-                  style: {
-                    ...d.style,
-                    width: hasRoadName ? '200px' : '35px',
-                  },
-                  content: (
-                    <>
-                      <FormLabel
-                        className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
-                        style={{ pointerEvents: 'none' }}
-                      >
-                        {d.label}
-                      </FormLabel>
-                      <Form.Control
-                        value={d.name}
-                        name={d.id}
-                        onChange={() => {}}
-                      />
-                    </>
-                  ),
-                  draging: 0,
-                  setdraging: () => {},
-                  draggable: false,
-                }}
-              />
-            ))}
+            draggables
+              .filter((d) => d.style && d.style.left && d.style.left !== '110%')
+              .map((d) => (
+                <RoadTag
+                  key={d.id}
+                  setting={{
+                    ...d,
+                    style: {
+                      ...d.style,
+                      width: hasRoadName ? '200px' : '35px',
+                    },
+                    content: (
+                      <>
+                        <FormLabel
+                          className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
+                          style={{ pointerEvents: 'none' }}
+                        >
+                          {d.label}
+                        </FormLabel>
+                        <Form.Control
+                          value={d.name}
+                          name={d.id}
+                          onChange={() => {}}
+                        />
+                      </>
+                    ),
+                    draging: 0,
+                    setdraging: () => {},
+                    draggable: false,
+                  }}
+                />
+              ))}
           {clicks.entry.map((e) => (
             <NumberTag
               key={e.id}
@@ -994,6 +998,69 @@ function Preview({ setting }) {
               }}
             />
           ))}
+        </div>
+        <div className="d-flex flex-column position-relative w-50 mx-auto px-3">
+          <h5 className="text-revo">投影轉換結果與距離標記</h5>
+          {fixed ? (
+            <Image
+              // ref={imageRef}
+              style={{ cursor: 'pointer' }}
+              className="w-100"
+              height="auto"
+              src={`/api/draft/video/${fixed}`}
+              fluid
+            />
+          ) : (
+            <div className="d-flex w-100 h-100 border">
+              <h5 className="m-auto text-revo-light text-center">校正後路段</h5>
+            </div>
+          )}
+          {roadLine.map((point) => (
+            <PointTag
+              key={point.id}
+              setting={{
+                ...point,
+                handleRemovePoint: () => {},
+                draging: 1,
+                setdraging: () => {},
+              }}
+            />
+          ))}
+          {roadLine.length === 2 && (
+            <hr
+              className="position-absolute text-warning"
+              style={{
+                border: '2px dashed #ffc107',
+                opacity: '1',
+                top: (roadLine[0].style.top + roadLine[1].style.top) / 2 + 5,
+                left:
+                  (roadLine[0].style.left + roadLine[1].style.left) / 2 -
+                  Math.sqrt(
+                    Math.abs(roadLine[0].style.top - roadLine[1].style.top) **
+                      2 +
+                      Math.abs(
+                        roadLine[0].style.left - roadLine[1].style.left
+                      ) **
+                        2
+                  ) /
+                    2 +
+                  5,
+                width: Math.sqrt(
+                  Math.abs(roadLine[0].style.top - roadLine[1].style.top) ** 2 +
+                    Math.abs(roadLine[0].style.left - roadLine[1].style.left) **
+                      2
+                ),
+                rotate: `${
+                  90 -
+                  (180 / Math.PI) *
+                    Math.atan2(
+                      roadLine[0].style.left - roadLine[1].style.left,
+                      roadLine[0].style.top - roadLine[1].style.top
+                    )
+                }deg`,
+              }}
+            />
+          )}
         </div>
         {/* <div className="w-25 ms-auto d-flex flex-column">
         </div> */}
@@ -1569,6 +1636,8 @@ function Road({ setting }) {
             setting={{
               show: showPreview,
               data: roads,
+              roadLine,
+              fixed,
               thumbnail,
               handleClose: () => setshowPreview(false),
               hasDraggable: data.type === '路口',
