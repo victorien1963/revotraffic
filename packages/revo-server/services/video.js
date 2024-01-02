@@ -118,7 +118,8 @@ const getResultTrackMaps = async (task_id, start = 0, get_nums = 10) => {
             start,
             get_nums,
         },
-      })
+        // responseType: 'arraybuffer'
+    })
     return res
 }
 

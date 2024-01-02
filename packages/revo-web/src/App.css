@@ -229,6 +229,18 @@ img {
   border-color: #bde570 !important;
 }
 
+.btn-revo3 {
+  color: #fff !important;
+  background-color: #115c52 !important;
+  border-color: #115c52 !important;
+}
+
+.btn-revo3:hover, .btn-revo2:active {
+  color: #093731 !important;
+  background-color: #88d7b6 !important;
+  border-color: #88d7b6 !important;
+}
+
 .btn-outline-revo2 {
   color: #286a65 !important;
   background-color: transparent !important;
