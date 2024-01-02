@@ -337,9 +337,9 @@ function AccuracyTable({ setting }) {
               ))}
             </Col>
           ))}
-          {Object.keys(trueValue[0]).map((key) => (
+          {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {Object.keys(trueValue[0][key]).map((way) =>
+              {['左轉', '直行', '右轉'].map((way) =>
                 trueValue[0][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
@@ -391,9 +391,9 @@ function AccuracyTable({ setting }) {
               ))}
             </Col>
           ))}
-          {Object.keys(trueValue[1]).map((key) => (
+          {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {Object.keys(trueValue[1][key]).map((way) =>
+              {['左轉', '直行', '右轉'].map((way) =>
                 trueValue[1][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
@@ -445,9 +445,9 @@ function AccuracyTable({ setting }) {
               ))}
             </Col>
           ))}
-          {Object.keys(trueValue[2]).map((key) => (
+          {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {Object.keys(trueValue[2][key]).map((way) =>
+              {['左轉', '直行', '右轉'].map((way) =>
                 trueValue[2][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
@@ -499,9 +499,9 @@ function AccuracyTable({ setting }) {
               ))}
             </Col>
           ))}
-          {Object.keys(trueValue[0]).map((key) => (
+          {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {Object.keys(trueValue[3][key]).map((way) =>
+              {['左轉', '直行', '右轉'].map((way) =>
                 trueValue[3][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
                     <Col xs={4} className="px-0">
@@ -1158,9 +1158,9 @@ function Step3({ setting }) {
                 <Row>直行</Row>
                 <Row>右轉</Row>
               </Col>
-              {Object.keys(trueValue[0]).map((key) => (
+              {['機車', '小客車', '大客車'].map((key) => (
                 <Col key={key}>
-                  {Object.keys(trueValue[0][key]).map((way) => (
+                  {['左轉', '直行', '右轉'].map((way) => (
                     <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[0][key][way]}
@@ -1204,9 +1204,9 @@ function Step3({ setting }) {
                 <Row>直行</Row>
                 <Row>右轉</Row>
               </Col>
-              {Object.keys(trueValue[1]).map((key) => (
+              {['機車', '小客車', '大客車'].map((key) => (
                 <Col key={key}>
-                  {Object.keys(trueValue[1][key]).map((way) => (
+                  {['左轉', '直行', '右轉'].map((way) => (
                     <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[1][key][way]}
@@ -1250,9 +1250,9 @@ function Step3({ setting }) {
                 <Row>直行</Row>
                 <Row>右轉</Row>
               </Col>
-              {Object.keys(trueValue[2]).map((key) => (
+              {['機車', '小客車', '大客車'].map((key) => (
                 <Col key={key}>
-                  {Object.keys(trueValue[2][key]).map((way) => (
+                  {['左轉', '直行', '右轉'].map((way) => (
                     <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[2][key][way]}
@@ -1296,9 +1296,9 @@ function Step3({ setting }) {
                 <Row>直行</Row>
                 <Row>右轉</Row>
               </Col>
-              {Object.keys(trueValue[3]).map((key) => (
+              {['機車', '小客車', '大客車'].map((key) => (
                 <Col key={key}>
-                  {Object.keys(trueValue[3][key]).map((way) => (
+                  {['左轉', '直行', '右轉'].map((way) => (
                     <Row key={way} className="px-3">
                       <Form.Control
                         value={trueValue[3][key][way]}
