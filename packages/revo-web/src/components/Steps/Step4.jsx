@@ -965,14 +965,14 @@ function Step4({ setting }) {
           {
             label: '模型檔案管理',
             name: 'step4',
-            value: '模型上傳',
+            value: '模型檔案管理',
             check: modals.length > 0,
             icon: faCubes,
           },
           {
             label: '實驗檔案管理',
             name: 'step4',
-            value: '模型驅動',
+            value: '實驗檔案管理',
             icon: faFlaskVial,
           },
         ].map((s) => (
@@ -1010,7 +1010,7 @@ function Step4({ setting }) {
         ))}
       </Row>
     ),
-    模型上傳: (
+    模型檔案管理: (
       <Files
         setting={{
           handleDataChange,
@@ -1018,7 +1018,7 @@ function Step4({ setting }) {
         }}
       />
     ),
-    模型驅動: (
+    實驗檔案管理: (
       <Results
         setting={{
           handleDataChange,
