@@ -1052,8 +1052,16 @@ function Step3({ setting }) {
                     case '每15分鐘各方向交通量':
                     case '每小時各方向交通量':
                       if (videoData && videoData.result) {
-                        const { buffer } = new Uint8Array(videoData.result.data)
-                        const blob = new Blob([buffer], {
+                        const workbook = new ExcelJS.Workbook()
+                        const book = await workbook.xlsx.load(
+                          videoData.result.data || videoData.result
+                        )
+                        const sheet = book.worksheets[0]
+                        sheet.spliceColumns(15, 6)
+                        const file = await workbook.xlsx.writeBuffer({
+                          base64: true,
+                        })
+                        const blob = new Blob([file], {
                           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                         })
                         const objectUrl = URL.createObjectURL(blob)
