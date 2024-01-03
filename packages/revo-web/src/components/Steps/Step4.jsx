@@ -259,10 +259,18 @@ function Results({ setting }) {
       方法比較影片: ['model/file/1/1/1/04.mp4', 'model/file/1/1/1/04_rl.mp4'],
     }
     urls[selected].map(async (url) => {
-      const res = await apiServices.data({
-        path: url,
-        method: 'get',
-      })
+      const res = await apiServices.data(
+        selected === '方法比較影片'
+          ? {
+              path: url,
+              method: 'get',
+              responseType: 'arraybuffer',
+            }
+          : {
+              path: url,
+              method: 'get',
+            }
+      )
       const blob = new Blob([res])
       const link = document.createElement('a')
       link.setAttribute('href', URL.createObjectURL(blob))
