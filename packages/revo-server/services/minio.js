@@ -96,6 +96,55 @@ const download = async ({ Key }) => {
   }
 }
 
+const getSize = async ({ Key }) => {
+  try {
+    const download_bucket_params = {
+      Bucket: bucket_name,
+      Key,
+    }
+    const data = await client.send(new GetObjectCommand(download_bucket_params))
+    return data.ContentLength
+  } catch (e) {
+    console.log(`encount error while download file ${Key}`)
+    return { error: `encount error while download file ${Key}` }
+  }
+}
+
+const partial = async ({ Key, Range }) => {
+  try {
+    const download_bucket_params = {
+      Bucket: bucket_name,
+      Key,
+      Range
+    }
+    console.log(
+      '\nDownloading ' +
+          Key +
+          ' from' +
+          bucket_name +
+          ' ...\n'
+    )
+    // Create a helper function to convert a ReadableStream into a string.
+    // const streamToString = (stream) =>
+    //   new Promise((resolve, reject) => {
+    //     const chunks = [];
+    //     stream.on('data', (chunk) => chunks.push(chunk));
+    //     stream.on('error', reject);
+    //     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    //   });
+
+    // Get the object from the Amazon S3 bucket. It is returned as a ReadableStream.
+    const data = await client.send(new GetObjectCommand(download_bucket_params))
+    // Convert the ReadableStream to a string.
+    // const bodyContents = await streamToString(data.Body)
+    // console.log(bodyContents)
+    return data.Body
+  } catch (e) {
+    console.log(`encount error while download file ${Key}`)
+    return { error: `encount error while download file ${Key}` }
+  }
+}
+
 const remove = async ({ Key }) => {
   console.log('\nDeleting ' + Key + ' from' + bucket_name);
   const delete_object_from_bucket_params = {
@@ -136,7 +185,9 @@ module.exports = {
   //   const file = await client.putObject('luca', fileName, Buffer.from(data))
   //   return { fileName, file }
   // }
+  getSize,
   upload,
   download,
+  partial,
   remove
 }
