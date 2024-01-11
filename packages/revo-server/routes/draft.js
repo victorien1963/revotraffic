@@ -39,6 +39,11 @@ router.delete('/:draft_id', async (req, res) => {
 router.get('/video/:name', async (req, res) => {
     const size = await getSize({ Key: req.params.name })
     const rangeHeader = req.headers.range
+    if (!rangeHeader) {
+        const file = await download({ Key: req.params.name })
+        if (!file.error) file.pipe(res)
+        else return res.send(file)
+    }
     const splittedRange = rangeHeader.replace(/bytes=/, '').split('-')
     const start = parseInt(splittedRange[0])
     const end = Math.min(splittedRange[1] ? parseInt(splittedRange[1], 10) : start + 10 ** 6, size - 1)
