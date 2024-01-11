@@ -43,24 +43,25 @@ router.get('/video/:name', async (req, res) => {
         const file = await download({ Key: req.params.name })
         if (!file.error) file.pipe(res)
         else return res.send(file)
-    }
-    const splittedRange = rangeHeader.replace(/bytes=/, '').split('-')
-    const start = parseInt(splittedRange[0])
-    const end = Math.min(splittedRange[1] ? parseInt(splittedRange[1], 10) : start + 10 ** 6, size - 1)
-    const contentLength = end - start + 1
-    console.log(start)
-    console.log(end)
+    } else {
+        const splittedRange = rangeHeader.replace(/bytes=/, '').split('-')
+        const start = parseInt(splittedRange[0])
+        const end = Math.min(splittedRange[1] ? parseInt(splittedRange[1], 10) : start + 10 ** 6, size - 1)
+        const contentLength = end - start + 1
+        console.log(start)
+        console.log(end)
 
-    // create and set response headers
-    const headers = {
-        "Content-Range": `bytes ${start}-${end}/${size}`,
-        "Accept-Ranges": "bytes",
-        "Content-Length": contentLength,
-        "Content-Type": "video/mp4",
+        // create and set response headers
+        const headers = {
+            "Content-Range": `bytes ${start}-${end}/${size}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": contentLength,
+            "Content-Type": "video/mp4",
+        }
+        const file = await partial({ Key: req.params.name, Range: `bytes=${start}-${end}` })
+        res.writeHead(206, headers)
+        file.pipe(res)
     }
-    const file = await partial({ Key: req.params.name, Range: `bytes=${start}-${end}` })
-    res.writeHead(206, headers)
-    file.pipe(res)
 })
 
 router.post('/video/:draft_id', async (req, res) => {
