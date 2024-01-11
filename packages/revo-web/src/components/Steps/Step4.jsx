@@ -269,6 +269,7 @@ function Results({ setting }) {
           : {
               path: url,
               method: 'get',
+              responseType: 'blob',
             }
       )
       const blob = new Blob([res])
