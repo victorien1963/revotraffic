@@ -252,10 +252,10 @@ function Results({ setting }) {
 
   const handleDownload = async () => {
     const urls = {
-      路口延滯時間: ['model/file/1/1/1/a.csv'],
-      停等車隊長度: ['model/file/1/1/1/b.csv'],
-      路段旅行速率: ['model/file/1/1/1/c.csv'],
-      成效比較總表: ['model/file/1/1/1/d.csv'],
+      路口延滯時間: ['model/file/1/1/1/a.xlsx'],
+      停等車隊長度: ['model/file/1/1/1/b.xlsx'],
+      路段旅行速率: ['model/file/1/1/1/c.xlsx'],
+      成效比較總表: ['model/file/1/1/1/d.xlsx'],
       方法比較影片: ['model/file/1/1/1/04.mp4', 'model/file/1/1/1/04_rl.mp4'],
     }
     urls[selected].map(async (url) => {
