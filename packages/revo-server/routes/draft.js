@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { upload, partial, getSize } = require('../services/minio')
+const { upload, partial, download, getSize } = require('../services/minio')
 
 const pg = require('../services/pgService')
 
