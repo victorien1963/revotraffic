@@ -46,7 +46,11 @@ router.get('/video/:name', async (req, res) => {
     } else {
         const splittedRange = rangeHeader.replace(/bytes=/, '').split('-')
         const start = parseInt(splittedRange[0])
+        console.log('it there spliited range [1] ?')
+        console.log(splittedRange[0])
+        console.log('whats the end?')
         const end = Math.min(splittedRange[1] ? parseInt(splittedRange[1], 10) : start + 10 ** 6, size - 1)
+        console.log(end)
         const contentLength = end - start + 1
         console.log(start)
         console.log(end)
