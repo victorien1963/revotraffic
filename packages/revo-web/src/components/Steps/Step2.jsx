@@ -547,6 +547,7 @@ function NumberTag({ setting }) {
     handleDelete,
     draging,
     setdraging,
+    setshowNL,
     draggable = true,
   } = setting
   const numbers = {
@@ -561,14 +562,23 @@ function NumberTag({ setting }) {
   }
   return (
     <h1
-      className="position-absolute d-flex h1 textShadow"
+      className="position-absolute d-flex h1 textShadow justify-content-center mb-0"
       onDragStart={() => {
-        if (draging !== id) setdraging(id)
+        if (draging !== id) {
+          setdraging(id)
+        }
+        setshowNL(true)
       }}
       onDrag={() => {}}
       onDoubleClick={handleDelete}
       draggable={draggable}
-      style={{ ...style, cursor: draggable ? 'grab' : 'auto' }}
+      style={{
+        ...style,
+        left: style.left - 25,
+        top: style.top - 25,
+        cursor: draggable ? 'grab' : 'auto',
+        zIndex: 1,
+      }}
     >
       {numbers[id]}
     </h1>
@@ -576,17 +586,32 @@ function NumberTag({ setting }) {
 }
 
 function RoadTag({ setting }) {
-  const { id, style, content, draging, setdraging, draggable = true } = setting
+  const {
+    id,
+    style,
+    content,
+    draging,
+    setdraging,
+    setshowNL,
+    draggable = true,
+  } = setting
   return (
     <div
       id={id}
       onDragStart={() => {
         if (draging !== id) setdraging(id)
+        setshowNL(true)
       }}
       onDrag={() => {}}
       className="position-absolute d-flex"
       draggable={draggable}
-      style={{ ...style, cursor: draggable ? 'grab' : 'auto' }}
+      style={{
+        ...style,
+        left: style.left - 20,
+        top: style.top - 20,
+        cursor: draggable ? 'grab' : 'auto',
+        zIndex: 1,
+      }}
     >
       {content}
     </div>
@@ -654,6 +679,12 @@ function RoadModal({ setting }) {
       setclicks(data ? data.clicks : initClicks)
     }
   }, [show])
+
+  const [showNL, setshowNL] = useState(false)
+  const [NL, setNL] = useState({
+    left: 0,
+    top: 0,
+  })
   return (
     <Modal
       style={{ zIndex: '1501' }}
@@ -667,6 +698,56 @@ function RoadModal({ setting }) {
       </Modal.Header>
       <Modal.Body className="d-flex">
         <div className="position-relative w-50">
+          <div
+            className="position-absolute"
+            style={{
+              // height: '100%',
+              // width: '1px',
+              top: '-25px',
+              left: NL.left - 10,
+              display: showNL ? 'block' : 'none',
+              pointerEvents: 'none',
+            }}
+          >
+            {NL.left}
+          </div>
+          <div
+            className="position-absolute"
+            style={{
+              right: '-30px',
+              top: NL.top - 10,
+              display: showNL ? 'block' : 'none',
+              pointerEvents: 'none',
+            }}
+          >
+            {NL.top}
+          </div>
+          <div
+            className="position-absolute"
+            style={{
+              height: '100%',
+              width: '1px',
+              top: 0,
+              left: NL.left,
+              borderStyle: 'dashed',
+              borderColor: 'white',
+              display: showNL ? 'block' : 'none',
+              pointerEvents: 'none',
+            }}
+          />
+          <div
+            className="position-absolute"
+            style={{
+              height: '1px',
+              width: '100%',
+              top: NL.top,
+              left: 0,
+              borderStyle: 'dashed',
+              borderColor: 'white',
+              display: showNL ? 'block' : 'none',
+              pointerEvents: 'none',
+            }}
+          />
           <Image
             className="mx-auto w-100 h-100"
             src={`/api/draft/video/${thumbnail.name}`}
@@ -675,8 +756,8 @@ function RoadModal({ setting }) {
               if (!clicking) return
               if (clicks[clicking].length >= 4) return
               const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x - 20
-              const top = e.clientY - target.y - 25
+              const left = e.clientX - target.x
+              const top = e.clientY - target.y
               setclicks((prevState) => ({
                 ...prevState,
                 [clicking]: [
@@ -695,6 +776,7 @@ function RoadModal({ setting }) {
               }))
             }}
             onDrop={(e) => {
+              setshowNL(false)
               const target = e.target.getBoundingClientRect()
               const left = e.clientX - target.x
               const top = e.clientY - target.y
@@ -741,6 +823,10 @@ function RoadModal({ setting }) {
               }
             }}
             onDragOver={(e) => {
+              setNL({
+                left: e.nativeEvent.offsetX,
+                top: e.nativeEvent.offsetY,
+              })
               e.stopPropagation()
               e.preventDefault()
             }}
@@ -785,6 +871,7 @@ function RoadModal({ setting }) {
                   draging,
                   setdraging,
                   hasRoadName,
+                  setshowNL,
                 }}
               />
             ))}
@@ -800,6 +887,7 @@ function RoadModal({ setting }) {
                   })),
                 draging,
                 setdraging,
+                setshowNL,
               }}
             />
           ))}
@@ -816,6 +904,7 @@ function RoadModal({ setting }) {
                 setclicks,
                 draging,
                 setdraging,
+                setshowNL,
               }}
             />
           ))}
