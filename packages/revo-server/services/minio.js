@@ -5,7 +5,9 @@ const {
   // CopyObjectCommand,
   DeleteObjectCommand,
   // DeleteBucketCommand,
-  GetObjectCommand
+  GetObjectCommand,
+  HeadObjectCommand,
+  GetO
 } = require('@aws-sdk/client-s3')
 
 const { S3Client } = require('@aws-sdk/client-s3')
@@ -102,7 +104,7 @@ const getSize = async ({ Key }) => {
       Bucket: bucket_name,
       Key,
     }
-    const data = await client.send(new GetObjectCommand(download_bucket_params))
+    const data = await client.send(new HeadObjectCommand(download_bucket_params))
     return data.ContentLength
   } catch (e) {
     console.log(`encount error while download file ${Key}`)
