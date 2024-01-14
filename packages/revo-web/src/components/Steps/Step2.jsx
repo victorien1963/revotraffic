@@ -607,8 +607,8 @@ function RoadTag({ setting }) {
       draggable={draggable}
       style={{
         ...style,
-        left: style.left - 20,
-        top: style.top - 20,
+        left: style.left - 20 || style.left,
+        top: style.top - 20 || style.top,
         cursor: draggable ? 'grab' : 'auto',
         zIndex: 1,
       }}
