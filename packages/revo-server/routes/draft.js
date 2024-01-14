@@ -37,13 +37,19 @@ router.delete('/:draft_id', async (req, res) => {
 })
 
 router.get('/video/:name', async (req, res) => {
+    console.log('did this hit?')
     const size = await getSize({ Key: req.params.name })
+    console.log('got size?')
     const rangeHeader = req.headers.range
+    console.log('got range?')
     if (!rangeHeader) {
+        console.log('no range? this may be a pic')
         const file = await download({ Key: req.params.name })
+        console.log('got file, piping')
         if (!file.error) file.pipe(res)
         else return res.send(file)
     } else {
+        console.log('success got range')
         const splittedRange = rangeHeader.replace(/bytes=/, '').split('-')
         const start = parseInt(splittedRange[0])
         console.log('it there spliited range [1] ?')
