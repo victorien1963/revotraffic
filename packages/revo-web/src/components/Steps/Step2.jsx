@@ -965,7 +965,7 @@ function Preview({ setting }) {
     thumbnail,
     data,
     fixed,
-    roadLine = [],
+    // roadLine = [],
     hasDraggable = false,
     hasRoadName = true,
   } = setting
@@ -1011,6 +1011,18 @@ function Preview({ setting }) {
       setclicks(data ? data.clicks : initClicks)
     }
   }, [show])
+
+  const roadLine = useMemo(() => {
+    if (!setting.roadLine) return []
+    return setting.roadLine.map((r) => ({
+      ...r,
+      style: {
+        ...r.style,
+        left: (r.style.left / 3) * 2,
+        top: (r.style.top / 3) * 2,
+      },
+    }))
+  }, [setting.roadLine])
   return (
     <Modal
       style={{ zIndex: '1501' }}
