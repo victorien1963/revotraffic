@@ -96,18 +96,22 @@ function ToolBar({ setting }) {
     {
       label: 'AI影像辨識',
       name: 'step3',
-      dropdowns: [
-        {
-          label: '影像辨識',
-          name: 'step3',
-          value: '影像辨識',
-        },
-        {
-          label: '交通量檢核',
-          name: 'step3',
-          value: '交通量檢核',
-        },
-      ],
+      click: {
+        name: 'step3',
+        value: '影像辨識',
+      },
+      // dropdowns: [
+      //   {
+      //     label: '影像辨識',
+      //     name: 'step3',
+      //     value: '影像辨識',
+      //   },
+      // {
+      //   label: '交通量檢核',
+      //   name: 'step3',
+      //   value: '交通量檢核',
+      // },
+      // ],
     },
     {
       label: 'AI號控調校',

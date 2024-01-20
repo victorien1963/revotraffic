@@ -339,26 +339,36 @@ function AccuracyTable({ setting }) {
           ))}
           {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {['左轉', '直行', '右轉'].map((way) =>
-                trueValue[0][key][way] ? (
+              {['左轉', '直行', '右轉'].map((way) => {
+                const dif = trueValue[0][key][way]
+                  ? (result[0][key][way] - trueValue[0][key][way]).toFixed(2)
+                  : ''
+                const pdif = result[0][key][way]
+                  ? (dif / result[0][key][way]) * 100
+                  : 0
+                return trueValue[0][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
-                    <Col xs={4} className="px-0">
-                      {(result[0][key][way] - trueValue[0][key][way]).toFixed(
-                        2
-                      )}
+                    <Col
+                      xs={4}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {dif}
                     </Col>
-                    <Col xs={8} className="px-0">
-                      {`${(
-                        ((result[0][key][way] - trueValue[0][key][way]) /
-                          result[0][key][way]) *
-                        100
-                      ).toFixed(2)}%`}
+                    <Col
+                      xs={8}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {`${pdif.toFixed(2)}%`}
                     </Col>
                   </Row>
                 ) : (
                   <Row key={way} />
                 )
-              )}
+              })}
             </Col>
           ))}
         </Row>
@@ -393,26 +403,36 @@ function AccuracyTable({ setting }) {
           ))}
           {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {['左轉', '直行', '右轉'].map((way) =>
-                trueValue[1][key][way] ? (
+              {['左轉', '直行', '右轉'].map((way) => {
+                const dif = trueValue[1][key][way]
+                  ? (result[1][key][way] - trueValue[1][key][way]).toFixed(2)
+                  : ''
+                const pdif = result[1][key][way]
+                  ? (dif / result[1][key][way]) * 100
+                  : 0
+                return trueValue[1][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
-                    <Col xs={4} className="px-0">
-                      {(result[1][key][way] - trueValue[1][key][way]).toFixed(
-                        2
-                      )}
+                    <Col
+                      xs={4}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {dif}
                     </Col>
-                    <Col xs={8} className="px-0">
-                      {`${(
-                        ((result[1][key][way] - trueValue[1][key][way]) /
-                          result[1][key][way]) *
-                        100
-                      ).toFixed(2)}%`}
+                    <Col
+                      xs={8}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {`${pdif.toFixed(2)}%`}
                     </Col>
                   </Row>
                 ) : (
                   <Row key={way} />
                 )
-              )}
+              })}
             </Col>
           ))}
         </Row>
@@ -447,26 +467,36 @@ function AccuracyTable({ setting }) {
           ))}
           {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {['左轉', '直行', '右轉'].map((way) =>
-                trueValue[2][key][way] ? (
+              {['左轉', '直行', '右轉'].map((way) => {
+                const dif = trueValue[2][key][way]
+                  ? (result[2][key][way] - trueValue[2][key][way]).toFixed(2)
+                  : ''
+                const pdif = result[2][key][way]
+                  ? (dif / result[2][key][way]) * 100
+                  : 0
+                return trueValue[2][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
-                    <Col xs={4} className="px-0">
-                      {(result[2][key][way] - trueValue[2][key][way]).toFixed(
-                        2
-                      )}
+                    <Col
+                      xs={4}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {dif}
                     </Col>
-                    <Col xs={8} className="px-0">
-                      {`${(
-                        ((result[2][key][way] - trueValue[2][key][way]) /
-                          result[2][key][way]) *
-                        100
-                      ).toFixed(2)}%`}
+                    <Col
+                      xs={8}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {`${pdif.toFixed(2)}%`}
                     </Col>
                   </Row>
                 ) : (
                   <Row key={way} />
                 )
-              )}
+              })}
             </Col>
           ))}
         </Row>
@@ -501,26 +531,36 @@ function AccuracyTable({ setting }) {
           ))}
           {['機車', '小客車', '大客車'].map((key) => (
             <Col key={key} xs={1} className="flex-grow-1">
-              {['左轉', '直行', '右轉'].map((way) =>
-                trueValue[3][key][way] ? (
+              {['左轉', '直行', '右轉'].map((way) => {
+                const dif = trueValue[3][key][way]
+                  ? (result[3][key][way] - trueValue[0][key][way]).toFixed(2)
+                  : ''
+                const pdif = result[3][key][way]
+                  ? (dif / result[3][key][way]) * 100
+                  : 0
+                return trueValue[3][key][way] ? (
                   <Row key={way} className="w-100 flex-nowrap ms-0">
-                    <Col xs={4} className="px-0">
-                      {(result[3][key][way] - trueValue[3][key][way]).toFixed(
-                        2
-                      )}
+                    <Col
+                      xs={4}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {dif}
                     </Col>
-                    <Col xs={8} className="px-0">
-                      {`${(
-                        ((result[3][key][way] - trueValue[3][key][way]) /
-                          result[3][key][way]) *
-                        100
-                      ).toFixed(2)}%`}
+                    <Col
+                      xs={8}
+                      className={`px-0 text-nowrap ${
+                        Math.abs(pdif) > 10 ? 'text-danger' : ''
+                      }`}
+                    >
+                      {`${pdif.toFixed(2)}%`}
                     </Col>
                   </Row>
                 ) : (
                   <Row key={way} />
                 )
-              )}
+              })}
             </Col>
           ))}
         </Row>
@@ -1083,7 +1123,7 @@ function Step3({ setting }) {
               >
                 匯出
               </Button>
-              <Button
+              {/* <Button
                 variant="revo"
                 className="text-nowrap ms-2"
                 onClick={() =>
@@ -1096,7 +1136,7 @@ function Step3({ setting }) {
                 }
               >
                 {selected === '每小時各方向交通量' ? '交通量檢核' : '確認'}
-              </Button>
+              </Button> */}
             </div>
           </div>
         </Col>
