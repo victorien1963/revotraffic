@@ -331,7 +331,7 @@ function ProjectedModal({ setting }) {
     loading: false,
     show: false,
   }
-  const [project, setproject] = useState(data.projects || initProject)
+  const [project, setproject] = useState(data.project || initProject)
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
   const generatePic = () => {
     setproject({ loading: true, show: false })
@@ -965,7 +965,7 @@ function Preview({ setting }) {
     thumbnail,
     data,
     fixed,
-    roadLine = [],
+    // roadLine = [],
     hasDraggable = false,
     hasRoadName = true,
   } = setting
@@ -1011,6 +1011,18 @@ function Preview({ setting }) {
       setclicks(data ? data.clicks : initClicks)
     }
   }, [show])
+
+  const roadLine = useMemo(() => {
+    if (!setting.roadLine) return []
+    return setting.roadLine.map((r) => ({
+      ...r,
+      style: {
+        ...r.style,
+        left: (r.style.left / 3) * 2,
+        top: (r.style.top / 3) * 2,
+      },
+    }))
+  }, [setting.roadLine])
   return (
     <Modal
       style={{ zIndex: '1501' }}
@@ -1023,7 +1035,7 @@ function Preview({ setting }) {
         預覽
       </Modal.Header>
       <Modal.Body className="d-flex">
-        <div className="position-relative w-50 px-3">
+        <div className="position-relative w-50 px-3 mx-auto">
           <h5 className="text-revo">方向與出入口標記</h5>
           <Image
             className="mx-auto w-100"
@@ -1089,71 +1101,76 @@ function Preview({ setting }) {
             />
           ))}
         </div>
-        <div className="d-flex flex-column position-relative w-50 mx-auto px-3">
-          <h5 className="text-revo">投影轉換結果與距離標記</h5>
-          {fixed ? (
-            <Image
-              // ref={imageRef}
-              style={{ cursor: 'pointer' }}
-              className="w-100"
-              height="auto"
-              src={`/api/draft/video/${fixed}`}
-              fluid
-            />
-          ) : (
-            <div className="d-flex w-100 h-100 border">
-              <h5 className="m-auto text-revo-light text-center">校正後路段</h5>
-            </div>
-          )}
-          {roadLine.map((point) => (
-            <PointTag
-              key={point.id}
-              setting={{
-                ...point,
-                handleRemovePoint: () => {},
-                draging: 1,
-                setdraging: () => {},
-              }}
-            />
-          ))}
-          {roadLine.length === 2 && (
-            <hr
-              className="position-absolute text-warning"
-              style={{
-                border: '2px dashed #ffc107',
-                opacity: '1',
-                top: (roadLine[0].style.top + roadLine[1].style.top) / 2 + 5,
-                left:
-                  (roadLine[0].style.left + roadLine[1].style.left) / 2 -
-                  Math.sqrt(
+        {!hasDraggable && (
+          <div className="d-flex flex-column position-relative w-50 mx-auto px-3">
+            <h5 className="text-revo">投影轉換結果與距離標記</h5>
+            {fixed ? (
+              <Image
+                // ref={imageRef}
+                style={{ cursor: 'pointer' }}
+                className="w-100"
+                height="auto"
+                src={`/api/draft/video/${fixed}`}
+                fluid
+              />
+            ) : (
+              <div className="d-flex w-100 h-100 border">
+                <h5 className="m-auto text-revo-light text-center">
+                  校正後路段
+                </h5>
+              </div>
+            )}
+            {roadLine.map((point) => (
+              <PointTag
+                key={point.id}
+                setting={{
+                  ...point,
+                  handleRemovePoint: () => {},
+                  draging: 1,
+                  setdraging: () => {},
+                }}
+              />
+            ))}
+            {roadLine.length === 2 && (
+              <hr
+                className="position-absolute text-warning"
+                style={{
+                  border: '2px dashed #ffc107',
+                  opacity: '1',
+                  top: (roadLine[0].style.top + roadLine[1].style.top) / 2 + 5,
+                  left:
+                    (roadLine[0].style.left + roadLine[1].style.left) / 2 -
+                    Math.sqrt(
+                      Math.abs(roadLine[0].style.top - roadLine[1].style.top) **
+                        2 +
+                        Math.abs(
+                          roadLine[0].style.left - roadLine[1].style.left
+                        ) **
+                          2
+                    ) /
+                      2 +
+                    5,
+                  width: Math.sqrt(
                     Math.abs(roadLine[0].style.top - roadLine[1].style.top) **
                       2 +
                       Math.abs(
                         roadLine[0].style.left - roadLine[1].style.left
                       ) **
                         2
-                  ) /
-                    2 +
-                  5,
-                width: Math.sqrt(
-                  Math.abs(roadLine[0].style.top - roadLine[1].style.top) ** 2 +
-                    Math.abs(roadLine[0].style.left - roadLine[1].style.left) **
-                      2
-                ),
-                rotate: `${
-                  90 -
-                  (180 / Math.PI) *
-                    Math.atan2(
-                      roadLine[0].style.left - roadLine[1].style.left,
-                      roadLine[0].style.top - roadLine[1].style.top
-                    )
-                }deg`,
-              }}
-            />
-          )}
-        </div>
-        {/* <div className="w-25 ms-auto d-flex flex-column">
-        </div> */}
+                  ),
+                  rotate: `${
+                    90 -
+                    (180 / Math.PI) *
+                      Math.atan2(
+                        roadLine[0].style.left - roadLine[1].style.left,
+                        roadLine[0].style.top - roadLine[1].style.top
+                      )
+                  }deg`,
+                }}
+              />
+            )}
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-end">
         <Button
