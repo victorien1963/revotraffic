@@ -1018,8 +1018,8 @@ function Preview({ setting }) {
       ...r,
       style: {
         ...r.style,
-        left: (r.style.left / 3) * 2,
-        top: (r.style.top / 3) * 2,
+        left: (r.style.left / 75) * 49,
+        top: (r.style.top / 75) * 49,
       },
     }))
   }, [setting.roadLine])
@@ -1035,7 +1035,12 @@ function Preview({ setting }) {
         預覽
       </Modal.Header>
       <Modal.Body className="d-flex">
-        <div className="w-50 px-3 mx-auto">
+        <div
+          className="mx-auto"
+          style={{
+            width: '49%',
+          }}
+        >
           <h5 className="text-revo">方向與出入口標記</h5>
           <div className="position-relative w-100 flex-fill">
             <Image
@@ -1106,7 +1111,12 @@ function Preview({ setting }) {
           </div>
         </div>
         {!hasDraggable && (
-          <div className="d-flex flex-column w-50 mx-auto px-3">
+          <div
+            className="d-flex flex-column ms-auto"
+            style={{
+              width: '49%',
+            }}
+          >
             <h5 className="text-revo">投影轉換結果與距離標記</h5>
             <div className="position-relative w-100 flex-fill">
               {fixed ? (
