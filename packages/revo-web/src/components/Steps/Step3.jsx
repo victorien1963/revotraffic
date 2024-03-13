@@ -284,7 +284,6 @@ function AccuracyTable({ setting }) {
           },
         }
 
-  console.log(setting.result)
   const date =
     setting.result[1] && setting.result[1][1]
       ? setting.result[1][1]
@@ -320,9 +319,9 @@ function AccuracyTable({ setting }) {
             <Row />
           </Col>
           <Col xs={1}>
-            <Row />
             <Row>路口直向</Row>
             <Row>{setting.result[4][2]}</Row>
+            <Row>2</Row>
           </Col>
           <Col xs={1}>
             <Row />
@@ -381,7 +380,7 @@ function AccuracyTable({ setting }) {
           <Col xs={1}>
             <Row>路口橫向</Row>
             <Row>{setting.result[6][1]}</Row>
-            <Row />
+            <Row>1</Row>
           </Col>
           <Col xs={1}>
             <Row />
@@ -391,7 +390,7 @@ function AccuracyTable({ setting }) {
           <Col xs={1}>
             <Row />
             <Row>{setting.result[6][3]}</Row>
-            <Row />
+            <Row>3</Row>
           </Col>
           <Col xs={1}>{setting.result[6][4]}</Col>
           <Col xs={1}>
@@ -449,7 +448,7 @@ function AccuracyTable({ setting }) {
           </Col>
           <Col xs={1}>
             <Row>{setting.result[8][2]}</Row>
-            <Row />
+            <Row>4</Row>
             <Row />
           </Col>
           <Col xs={1}>
