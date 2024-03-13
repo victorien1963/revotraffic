@@ -284,11 +284,16 @@ function AccuracyTable({ setting }) {
           },
         }
 
+  console.log(setting.result)
+  const date =
+    setting.result[1] && setting.result[1][1]
+      ? setting.result[1][1]
+      : '17:01:00-18:01:00'
   return (
     <div className="w-100 h-100 d-flex px-3">
       <div className="border-table w-100 h-100 d-flex flex-column">
         <Row>
-          <Col xs={3}>17:01:00-18:01:00</Col>
+          <Col xs={3}>{date}</Col>
           <Col xs={2} />
           <Col xs={3}>辨識結果</Col>
           {/* <Col>真值結果</Col> */}
@@ -324,7 +329,7 @@ function AccuracyTable({ setting }) {
             <Row>N↓</Row>
             <Row />
           </Col>
-          <Col xs={1}>1</Col>
+          <Col xs={1}>{setting.result[4][4]}</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>
@@ -388,7 +393,7 @@ function AccuracyTable({ setting }) {
             <Row>{setting.result[6][3]}</Row>
             <Row />
           </Col>
-          <Col xs={1}>2</Col>
+          <Col xs={1}>{setting.result[6][4]}</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>
@@ -452,7 +457,7 @@ function AccuracyTable({ setting }) {
             <Row />
             <Row />
           </Col>
-          <Col xs={1}>3</Col>
+          <Col xs={1}>{setting.result[8][4]}</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>
@@ -507,8 +512,8 @@ function AccuracyTable({ setting }) {
             <Row />
           </Col>
           <Col xs={1}>
-            <Row>G10-3</Row>
-            <Row>攝影機</Row>
+            <Row />
+            <Row />
             <Row />
           </Col>
           <Col xs={1}>
@@ -516,7 +521,7 @@ function AccuracyTable({ setting }) {
             <Row />
             <Row />
           </Col>
-          <Col xs={1}>4</Col>
+          <Col xs={1}>{setting.result[10][4]}</Col>
           <Col xs={1}>
             <Row>左轉</Row>
             <Row>直行</Row>

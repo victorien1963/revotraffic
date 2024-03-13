@@ -7,6 +7,7 @@ import { Group } from '@visx/group'
 import { BarGroup } from '@visx/shape'
 import { AxisBottom, AxisLeft } from '@visx/axis'
 import { scaleBand, scaleLinear, scaleOrdinal } from '@visx/scale'
+import ExcelJS from 'exceljs'
 import { DraftContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
 // import { report } from '../../assets'
@@ -310,12 +311,37 @@ function Step5() {
   const [result, setresult] = useState('')
   useEffect(() => {
     const getData = async (name) => {
-      if (!name.includes('csv')) return
-      const res = await apiServices.data({
-        path: `model/file/${draftId}/${rangeId}/${timeId}/${name}`,
-        method: 'get',
-      })
-      setresult(res)
+      if (name.includes('csv')) {
+        const res = await apiServices.data({
+          path: `model/file/${draftId}/${rangeId}/${timeId}/${name}`,
+          method: 'get',
+        })
+        setresult(res)
+      } else if (name.includes('xlsx')) {
+        const res = await apiServices.data({
+          path: `model/file/${draftId}/${rangeId}/${timeId}/${name}`,
+          method: 'get',
+          responseType: 'arraybuffer',
+        })
+        const workbook = new ExcelJS.Workbook()
+        try {
+          const resultArray = []
+          workbook.xlsx.load(res).then((sheets) => {
+            const sheet = sheets.getWorksheet(1)
+            sheet.eachRow((r, i) => {
+              if (!i) return
+              const sa = []
+              r.eachCell((c) => {
+                sa.push(c.value)
+              })
+              resultArray.push(sa.join())
+            })
+            setresult(resultArray.slice(1).join('\r\n'))
+          })
+        } catch (e) {
+          console.log(e)
+        }
+      }
     }
     if (list[labels[selected]] && list[labels[selected]][0])
       getData(list[labels[selected]][0].path)
