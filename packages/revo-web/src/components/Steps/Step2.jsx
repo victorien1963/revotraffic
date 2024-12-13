@@ -1243,21 +1243,22 @@ function Road({ setting }) {
   const onDataChange = (e) =>
     setdata({ ...data, [e.target.name]: e.target.value })
   useEffect(() => {
-    if (!videos[selected]) return
-    setdata({
-      originName: videos[selected].originName || videos[selected].name || '',
-      date: videos[selected].date || '',
-      type: videos[selected].type || '路口',
-    })
-    setdate({
-      startDate: videos[selected].date
-        ? moment(videos[selected].date.split('-')[0]).toDate()
-        : Date.now(),
-      endDate: videos[selected].date
-        ? moment(videos[selected].date.split('-')[1]).toDate()
-        : Date.now(),
-      key: 'selection',
-    })
+    if (videos[selected]) {
+      setdata({
+        originName: videos[selected].originName || videos[selected].name || '',
+        date: videos[selected].date || '',
+        type: videos[selected].type || '路口',
+      })
+      setdate({
+        startDate: videos[selected].date
+          ? moment(videos[selected].date.split('-')[0]).toDate()
+          : Date.now(),
+        endDate: videos[selected].date
+          ? moment(videos[selected].date.split('-')[1]).toDate()
+          : Date.now(),
+        key: 'selection',
+      })
+    }
   }, [selected])
 
   const [show, setshow] = useState(false)
@@ -1790,7 +1791,9 @@ function Video({ setting }) {
     [tempFile]
   )
   const [fileName, setfileName] = useState('')
-  useEffect(() => setfileName(tempFile ? tempFile.name : ''), [tempFile])
+  useEffect(() => {
+    setfileName(tempFile ? tempFile.name : '')
+  }, [tempFile])
 
   const [uploading, setuploading] = useState(false)
   const handleUpload = async () => {
@@ -2076,7 +2079,9 @@ function Step2({ setting }) {
     })
     console.log(res)
   }
-  useEffect(() => getVissim(), [])
+  useEffect(() => {
+    getVissim()
+  }, [])
 
   return (
     <Container className="h-100 d-flex flex-column" fluid>
