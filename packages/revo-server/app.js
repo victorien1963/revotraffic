@@ -47,6 +47,7 @@ const draftRouter = require('./routes/draft')
 const rangeRouter = require('./routes/range')
 const timeRouter = require('./routes/time')
 const modelRouter = require('./routes/model')
+const vissimRouter = require('./routes/vissim')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -80,6 +81,7 @@ app.use('/draft', getUser, draftRouter)
 app.use('/range', getUser, rangeRouter)
 app.use('/time', getUser, timeRouter)
 app.use('/model', getUser, modelRouter)
+app.use('/vissim', getUser, vissimRouter)
 app.get('/me', getUser, async (req, res) => {
   return res.send({
     user: req.user,

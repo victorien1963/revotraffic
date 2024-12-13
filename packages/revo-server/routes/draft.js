@@ -69,8 +69,15 @@ router.get('/video/:name', async (req, res) => {
             "Content-Type": "video/mp4",
         }
         const file = await partial({ Key: req.params.name, Range: `bytes=${start}-${end}` })
-        res.writeHead(206, headers)
-        file.pipe(res)
+        if (!file.error) {
+            res.writeHead(206, headers)
+            file.pipe(res)
+        } else return res.send(file)
+        // if (!file.pipe) {
+        //     return res.send('')
+        // } else {
+        //     file.pipe(res)
+        // }
     }
 })
 

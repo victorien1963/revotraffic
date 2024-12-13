@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 const getConfig = ({
-  user, url, method, data = '', params, token = '', responseType
+  user = {}, url, method, data = '', params = {}, token = '', responseType
 }) => data ? {
   user,
   headers:

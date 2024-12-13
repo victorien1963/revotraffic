@@ -2069,6 +2069,15 @@ function Step2({ setting }) {
     ),
   }
 
+  const getVissim = async () => {
+    const res = await apiServices.data({
+      path: `vissim`,
+      method: 'get',
+    })
+    console.log(res)
+  }
+  useEffect(() => getVissim(), [])
+
   return (
     <Container className="h-100 d-flex flex-column" fluid>
       {components[toolState.step2]}
