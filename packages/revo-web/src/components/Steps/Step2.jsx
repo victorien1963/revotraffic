@@ -1204,6 +1204,35 @@ function Preview({ setting }) {
   )
 }
 
+function VISSIMModal({ setting }) {
+  const { show, handleClose } = setting
+  return (
+    <Modal
+      style={{ zIndex: '1501' }}
+      size="xl"
+      show={show}
+      onHide={() => handleClose()}
+      className="p-2"
+    >
+      <Modal.Header className="h5 text-revo" closeButton>
+        VISSIM RL
+      </Modal.Header>
+      <Modal.Body className="d-flex">
+        <iframe title="VISSIM" src="http://140.238.40.158/" />
+      </Modal.Body>
+      <Modal.Footer className="d-flex justify-content-end">
+        <Button
+          variant="revo2"
+          className="mt-auto ms-2"
+          onClick={() => handleClose()}
+        >
+          確認
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
+
 function Road({ setting }) {
   const { handleToolChange } = setting
 
@@ -1338,6 +1367,12 @@ function Road({ setting }) {
       show: data.type === '路段',
     },
   ]
+
+  const [showVISSIM, setshowVISSIM] = useState(false)
+  const handleVISSIM = async (value) => {
+    console.log(value)
+    setshowVISSIM(!showVISSIM)
+  }
 
   return (
     <>
@@ -1600,6 +1635,23 @@ function Road({ setting }) {
                   )
               }
             })}
+            <Row className="py-3">
+              <Col xs={1} />
+              <Col xs={2} className="text-start pt-1 text-revo fw-bold">
+                <Form.Label className="mb-0 text-nowrap">
+                  VISSIM RL
+                </Form.Label>
+              </Col>
+              <Col className="pe-4 d-flex">
+                <Button
+                  variant="revo2"
+                  className="m-auto"
+                  onClick={handleVISSIM}
+                >
+                  生成
+                </Button>
+              </Col>
+            </Row>
           </Col>
           <Col className="d-flex flex-column">
             <video className="my-auto" width="95%" height="auto" controls>
@@ -1771,6 +1823,12 @@ function Road({ setting }) {
           <WarnModal
             setting={{
               ...showWarn,
+            }}
+          />
+          <VISSIMModal
+            setting={{
+              show: showVISSIM,
+              handleClose: handleVISSIM,
             }}
           />
         </>
@@ -2135,6 +2193,10 @@ LabelTag.propTypes = {
 }
 
 WarnModal.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+VISSIMModal.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 
