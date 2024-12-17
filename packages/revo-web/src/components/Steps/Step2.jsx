@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-promise-executor-return */
@@ -1206,19 +1207,94 @@ function Preview({ setting }) {
 
 function VISSIMModal({ setting }) {
   const { show, handleClose } = setting
+  const [access, setAccess] = useState('')
+  const downloadFilePost = async (target, param) => {
+    const res = await apiServices.data({
+      path: `vissim`,
+      method: 'get',
+      params: {
+        target,
+        ...param,
+      },
+      responseType: 'arraybuffer',
+    })
+    console.log(res)
+    const blob = new Blob([res])
+    const link = document.createElement('a')
+    link.setAttribute('href', URL.createObjectURL(blob))
+    link.setAttribute('download', target)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
   return (
     <Modal
       style={{ zIndex: '1501' }}
-      size="xl"
+      size="lg"
       show={show}
       onHide={() => handleClose()}
       className="p-2"
     >
       <Modal.Header className="h5 text-revo" closeButton>
-        VISSIM RL
+        VISSIM_RL 程式碼生成器
       </Modal.Header>
-      <Modal.Body className="d-flex">
-        <iframe title="VISSIM" src="http://140.238.40.158/" />
+      <Modal.Body className="text-center">
+        <Row className="mb-3 d-flex">
+          <p>請輸入驗證碼</p>
+          <input
+            className="w-50 mx-auto"
+            type="text"
+            value={access}
+            onChange={setAccess}
+            defaultValue=""
+          />
+        </Row>
+        <Row className="mb-3 justify-content-center">
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('setting.json', {})}
+            >
+              下載設定檔範本
+            </Button>
+          </Col>
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('setting_explain.txt', {})}
+            >
+              下載設定檔說明文件
+            </Button>
+          </Col>
+        </Row>
+        <Row className="mb-3">
+          <p>上傳設定檔</p>
+          <input
+            className="mx-auto w-25"
+            type="file"
+            // onChange={setFileHandler}
+          />
+        </Row>
+        <Row className="mb-3 justify-content-center">
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('train.py', {})}
+            >
+              下載 train.py
+            </Button>
+          </Col>
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('test.py', {})}
+            >
+              下載 test.py
+            </Button>
+          </Col>
+        </Row>
+        <div id="container" />
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-end">
         <Button
@@ -1638,9 +1714,7 @@ function Road({ setting }) {
             <Row className="py-3">
               <Col xs={1} />
               <Col xs={2} className="text-start pt-1 text-revo fw-bold">
-                <Form.Label className="mb-0 text-nowrap">
-                  VISSIM RL
-                </Form.Label>
+                <Form.Label className="mb-0 text-nowrap">VISSIM RL</Form.Label>
               </Col>
               <Col className="pe-4 d-flex">
                 <Button
@@ -2129,17 +2203,6 @@ function Step2({ setting }) {
       />
     ),
   }
-
-  const getVissim = async () => {
-    const res = await apiServices.data({
-      path: `vissim`,
-      method: 'get',
-    })
-    console.log(res)
-  }
-  useEffect(() => {
-    getVissim()
-  }, [])
 
   return (
     <Container className="h-100 d-flex flex-column" fluid>
