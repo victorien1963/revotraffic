@@ -96,9 +96,12 @@ const convert = (jData) => {
 
 router.get('/', async (req, res) => {
     if (!req.user) return res.send([])
-    const { target } = req.query
+    const { target, access } = req.query
     const base64 = convert(defaultSetting)
     let data = ''
+    if (access !== 'vissim123') {
+      return res.send({ error: 'token not valid' })
+    }
     switch(target) {
       case 'setting.json':
         data = await apiService.send({

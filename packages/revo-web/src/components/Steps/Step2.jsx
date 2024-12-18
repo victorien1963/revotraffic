@@ -38,7 +38,7 @@ import VideoSnapshot from 'video-snapshot'
 import { remark1, remark2 } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
-import { DraftContext } from '../ContextProvider'
+import { DraftContext, ToastContext } from '../ContextProvider'
 
 function WarnModal({ setting }) {
   const { show, handleClose, content, hasCancel } = setting
@@ -1208,16 +1208,22 @@ function Preview({ setting }) {
 function VISSIMModal({ setting }) {
   const { show, handleClose } = setting
   const [access, setAccess] = useState('')
+  const { setToast } = useContext(ToastContext)
   const downloadFilePost = async (target, param) => {
     const res = await apiServices.data({
       path: `vissim`,
       method: 'get',
       params: {
+        access,
         target,
         ...param,
       },
       responseType: 'arraybuffer',
     })
+    if (res.error) {
+      setToast({ show: true, text: res.error })
+      return
+    }
     console.log(res)
     const blob = new Blob([res])
     const link = document.createElement('a')
@@ -1246,7 +1252,7 @@ function VISSIMModal({ setting }) {
             className="w-50 mx-auto"
             type="text"
             value={access}
-            onChange={setAccess}
+            onChange={(e) => setAccess(e.target.value)}
             defaultValue=""
           />
         </Row>
