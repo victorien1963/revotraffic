@@ -29,7 +29,7 @@ import {
   faCircleCheck,
   faCircleXmark,
 } from '@fortawesome/free-regular-svg-icons'
-import { AuthContext, DraftContext } from '../ContextProvider'
+import { AuthContext, DraftContext, ToastContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
 
 function WarnModal({ setting }) {
@@ -621,6 +621,117 @@ function Results({ setting }) {
   )
 }
 
+function VISSIM({ setting }) {
+  console.log(setting)
+  // const { show, handleClose } = setting
+  const [access, setAccess] = useState('')
+  const { setToast } = useContext(ToastContext)
+  const downloadFilePost = async (target, param) => {
+    const res = await apiServices.data({
+      path: `vissim`,
+      method: 'get',
+      params: {
+        access,
+        target,
+        ...param,
+      },
+      responseType: 'arraybuffer',
+    })
+    if (res.error) {
+      setToast({ show: true, text: res.error })
+      return
+    }
+    console.log(res)
+    const blob = new Blob([res])
+    const link = document.createElement('a')
+    link.setAttribute('href', URL.createObjectURL(blob))
+    link.setAttribute('download', target)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
+  return (
+    <div
+      style={{ zIndex: '1501' }}
+      size="lg"
+      // show={show}
+      // onHide={() => handleClose()}
+      className="p-2 d-flex flex-column"
+    >
+      <Modal.Header className="text-revo d-flex">
+        <h5 className="text-center mx-auto py-3">VISSIM_RL 程式碼生成器</h5>
+      </Modal.Header>
+      <Modal.Body className="text-center my-auto">
+        <Row className="mb-3 d-flex">
+          <p>請輸入驗證碼</p>
+          <input
+            className="w-50 mx-auto"
+            type="text"
+            value={access}
+            onChange={(e) => setAccess(e.target.value)}
+            defaultValue=""
+          />
+        </Row>
+        <Row className="mb-3 justify-content-center">
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('setting.json', {})}
+            >
+              下載設定檔範本
+            </Button>
+          </Col>
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('setting_explain.txt', {})}
+            >
+              下載設定檔說明文件
+            </Button>
+          </Col>
+        </Row>
+        <Row className="mb-3">
+          <p>上傳設定檔</p>
+          <input
+            className="mx-auto w-25"
+            type="file"
+            // onChange={setFileHandler}
+          />
+        </Row>
+        <Row className="mb-3 justify-content-center">
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('train.py', {})}
+            >
+              下載 train.py
+            </Button>
+          </Col>
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('test.py', {})}
+            >
+              下載 test.py
+            </Button>
+          </Col>
+        </Row>
+        <div id="container" />
+      </Modal.Body>
+      {/* <Modal.Footer className="d-flex justify-content-end">
+        <Button
+          variant="revo2"
+          className="mt-auto ms-2"
+          onClick={() => handleClose()}
+        >
+          確認
+        </Button>
+      </Modal.Footer> */}
+    </div>
+  )
+}
+
 function Files({ setting }) {
   const { handleToolChange } = setting
   const [uploading, setuploading] = useState(0)
@@ -972,6 +1083,13 @@ function Step4({ setting }) {
       <Row className="h-100 justify-content-center">
         {[
           {
+            label: '模型訓練檔案生成',
+            name: 'step4',
+            value: '模型訓練檔案生成',
+            check: modals.length > 0,
+            icon: faCubes,
+          },
+          {
             label: '模型檔案管理',
             name: 'step4',
             value: '模型檔案管理',
@@ -1019,6 +1137,14 @@ function Step4({ setting }) {
         ))}
       </Row>
     ),
+    模型訓練檔案生成: (
+      <VISSIM
+        setting={{
+          handleDataChange,
+          handleToolChange,
+        }}
+      />
+    ),
     模型檔案管理: (
       <Files
         setting={{
@@ -1065,6 +1191,10 @@ WarnModal.propTypes = {
 }
 
 CheckTable.propTypes = {
+  setting: PropTypes.shape().isRequired,
+}
+
+VISSIM.propTypes = {
   setting: PropTypes.shape().isRequired,
 }
 

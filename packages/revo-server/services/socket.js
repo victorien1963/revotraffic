@@ -118,10 +118,10 @@ socket.init = (server, setting) => {
           const { clicks, draggables } = roads
           const { entry, outry } = clicks
           if (entry) {
-            params.road_in_points = entry.map(({ style }) => `${style.left},${style.top}`).join()
+            params.road_in_points = entry.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
           }
           if (outry) {
-            params.road_out_points = entry.map(({ style }) => `${style.left},${style.top}`).join()
+            params.road_out_points = outry.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
           }
           if (draggables) {
             params.road_1_name = draggables[1].name ? `${draggables[1].name}（西）` : '西'
@@ -133,6 +133,7 @@ socket.init = (server, setting) => {
         console.log('---------calling api with these params--------')
         console.log(params)
         const started = await start(params)
+        console.log(started)
         const task_id = started.id
         console.log('---------------writing status-------------------')
         await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [timeId, {

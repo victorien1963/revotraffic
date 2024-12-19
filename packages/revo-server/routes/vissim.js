@@ -99,6 +99,8 @@ router.get('/', async (req, res) => {
     const { target, access } = req.query
     const base64 = convert(defaultSetting)
     let data = ''
+    console.log(`---downloading ${target}---`)
+    console.log(`---code: ${access}---`)
     if (access !== 'vissim123') {
       return res.send({ error: 'token not valid' })
     }

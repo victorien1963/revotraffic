@@ -1717,21 +1717,25 @@ function Road({ setting }) {
                   )
               }
             })}
-            <Row className="py-3">
-              <Col xs={1} />
-              <Col xs={2} className="text-start pt-1 text-revo fw-bold">
-                <Form.Label className="mb-0 text-nowrap">VISSIM RL</Form.Label>
-              </Col>
-              <Col className="pe-4 d-flex">
-                <Button
-                  variant="revo2"
-                  className="m-auto"
-                  onClick={handleVISSIM}
-                >
-                  生成
-                </Button>
-              </Col>
-            </Row>
+            {false && (
+              <Row className="py-3">
+                <Col xs={1} />
+                <Col xs={2} className="text-start pt-1 text-revo fw-bold">
+                  <Form.Label className="mb-0 text-nowrap">
+                    VISSIM RL
+                  </Form.Label>
+                </Col>
+                <Col className="pe-4 d-flex">
+                  <Button
+                    variant="revo2"
+                    className="m-auto"
+                    onClick={handleVISSIM}
+                  >
+                    生成
+                  </Button>
+                </Col>
+              </Row>
+            )}
           </Col>
           <Col className="d-flex flex-column">
             <video className="my-auto" width="95%" height="auto" controls>
@@ -2125,7 +2129,7 @@ function Step2({ setting }) {
   const { videos = [], roads, roadLine, roadAdjust } = time.setting || {}
   const components = {
     selector: (
-      <Row className="h-100 px-5">
+      <Row className="h-100 w-50 mx-auto px-5">
         {[
           {
             label: '影片上傳',
@@ -2142,22 +2146,27 @@ function Step2({ setting }) {
             check:
               videos &&
               videos.length &&
-              videos.every((v) => v.roads && v.roadAdjust && v.roadLine),
+              videos.every((v) => {
+                if (v.type === '路段') {
+                  return v.roads && v.roadAdjust && v.roadLine
+                }
+                return v.roads
+              }),
           },
-          {
-            label: '車種標記',
-            name: 'step2',
-            value: '車種標記',
-            icon: faCarRear,
-          },
-          {
-            label: '軌跡標記',
-            name: 'step2',
-            value: '軌跡標記',
-            icon: faArrowsToDot,
-          },
+          // {
+          //   label: '車種標記',
+          //   name: 'step2',
+          //   value: '車種標記',
+          //   icon: faCarRear,
+          // },
+          // {
+          //   label: '軌跡標記',
+          //   name: 'step2',
+          //   value: '軌跡標記',
+          //   icon: faArrowsToDot,
+          // },
         ].map((s) => (
-          <Col xs={3} className="d-flex px-3" key={s.value}>
+          <Col xs={6} className="d-flex px-3" key={s.value}>
             <div
               className="my-auto py-5 w-100"
               style={{
