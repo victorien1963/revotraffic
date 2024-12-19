@@ -140,4 +140,53 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.post('/', async (req, res) => {
+  if (!req.user) return res.send([])
+  const { target, access } = req.query
+  const { file } = req.body
+  console.log('uploading setting')
+  console.log(file)
+  const base64 = convert(file || defaultSetting)
+  let data = ''
+  console.log(`---downloading ${target}---`)
+  console.log(`---code: ${access}---`)
+  // if (access !== 'vissim123') {
+  //   return res.send({ error: 'token not valid' })
+  // }
+  switch(target) {
+    case 'setting.json':
+      data = await apiService.send({
+        url: 'http://140.238.40.158:8000/api/v1/download_setting',
+        method: 'POST',
+        token: 'vissim123',
+      })
+      return res.send(data)
+    case 'setting_explain.txt':
+      data = await apiService.send({
+        url: 'http://140.238.40.158:8000/api/v1/download_setting_explain',
+        method: 'POST',
+        token: 'vissim123',
+      })
+      return res.send(data)
+    case 'train.py':
+      data = await apiService.send({
+        url: 'http://140.238.40.158:8000/api/v1/download_train',
+        method: 'POST',
+        token: 'vissim123',
+        data: `data:application/json;base64,${base64}`
+      })
+      return res.send(data)
+    case 'test.py':
+      data = await apiService.send({
+        url: 'http://140.238.40.158:8000/api/v1/download_test',
+        method: 'POST',
+        token: 'vissim123',
+        data: `data:application/json;base64,${base64}`
+      })
+      return res.send(data)
+    default:
+      return res.send('')
+  }
+})
+
 module.exports = router

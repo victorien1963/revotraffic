@@ -624,16 +624,20 @@ function Results({ setting }) {
 function VISSIM({ setting }) {
   console.log(setting)
   // const { show, handleClose } = setting
-  const [access, setAccess] = useState('')
+  // const [access, setAccess] = useState('')
+  const [file, setfile] = useState(null)
   const { setToast } = useContext(ToastContext)
   const downloadFilePost = async (target, param) => {
     const res = await apiServices.data({
       path: `vissim`,
-      method: 'get',
+      method: 'post',
       params: {
-        access,
+        // access,
         target,
         ...param,
+      },
+      data: {
+        file,
       },
       responseType: 'arraybuffer',
     })
@@ -663,7 +667,7 @@ function VISSIM({ setting }) {
         <h5 className="text-center mx-auto py-3">VISSIM_RL 程式碼生成器</h5>
       </Modal.Header>
       <Modal.Body className="text-center my-auto">
-        <Row className="mb-3 d-flex">
+        {/* <Row className="mb-3 d-flex">
           <p>請輸入驗證碼</p>
           <input
             className="w-50 mx-auto"
@@ -672,7 +676,7 @@ function VISSIM({ setting }) {
             onChange={(e) => setAccess(e.target.value)}
             defaultValue=""
           />
-        </Row>
+        </Row> */}
         <Row className="mb-3 justify-content-center">
           <Col xs={3}>
             <Button
@@ -696,7 +700,8 @@ function VISSIM({ setting }) {
           <input
             className="mx-auto w-25"
             type="file"
-            // onChange={setFileHandler}
+            accept="application/JSON"
+            onChange={(e) => setfile(e.target.files[0])}
           />
         </Row>
         <Row className="mb-3 justify-content-center">
@@ -704,6 +709,7 @@ function VISSIM({ setting }) {
             <Button
               variant="revo2"
               onClick={() => downloadFilePost('train.py', {})}
+              disabled={!file}
             >
               下載 train.py
             </Button>
@@ -712,6 +718,7 @@ function VISSIM({ setting }) {
             <Button
               variant="revo2"
               onClick={() => downloadFilePost('test.py', {})}
+              disabled={!file}
             >
               下載 test.py
             </Button>
