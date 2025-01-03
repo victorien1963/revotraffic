@@ -625,7 +625,8 @@ function VISSIM({ setting }) {
   console.log(setting)
   // const { show, handleClose } = setting
   // const [access, setAccess] = useState('')
-  const [file, setfile] = useState(null)
+  const [file, setfile] = useState({})
+  console.log(file)
   const { setToast } = useContext(ToastContext)
   const downloadFilePost = async (target, param) => {
     const res = await apiServices.data({
@@ -701,7 +702,16 @@ function VISSIM({ setting }) {
             className="mx-auto w-25"
             type="file"
             accept="application/JSON"
-            onChange={(e) => setfile(e.target.files[0])}
+            onChange={(e) => {
+              const reader = new FileReader()
+              reader.onload = (d) => {
+                console.log(d.target.result)
+                const json = JSON.parse(d.target.result)
+                console.log(json)
+                setfile(json)
+              }
+              reader.readAsText(e.target.files[0])
+            }}
           />
         </Row>
         <Row className="mb-3 justify-content-center">
