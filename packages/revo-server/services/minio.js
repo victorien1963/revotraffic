@@ -7,8 +7,8 @@ const {
   // DeleteBucketCommand,
   GetObjectCommand,
   HeadObjectCommand,
-  GetO
 } = require('@aws-sdk/client-s3')
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
 
 const { S3Client } = require('@aws-sdk/client-s3')
 
@@ -44,6 +44,30 @@ const init = async () => {
   }
 }
 init()
+
+const getPresignedUrl = async (name, cb) => {
+  try {
+    const params = {
+      Key: name,
+      Bucket: bucket_name,
+      ServerSideEncryption: "aws:kms",
+      SSEKMSKeyId: "arn:aws:kms:us-west-2:0000:key/abcd-1234-abcd",
+    };
+    const command = new PutObjectCommand(params);
+    
+    const preSignedUrl = await getSignedUrl(client, command, {
+      hoistableHeaders: new Set(["x-amz-server-side-encryption", "x-amz-server-side-encryption-aws-kms-key-id"]),
+    })
+    cb(preSignedUrl)
+    // client.presignedPutObject('uploads', name, (err, url) => {
+    //   if (err) throw err
+    //   cb(url)
+    // })  
+  } catch (e) {
+    console.log(e)
+    cb('')
+  }
+}
 
 const upload = async ({ Key, Body, hasTimeStamp }) => {
   try {
@@ -191,5 +215,6 @@ module.exports = {
   upload,
   download,
   partial,
-  remove
+  remove,
+  getPresignedUrl
 }

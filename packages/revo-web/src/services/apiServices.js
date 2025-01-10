@@ -72,4 +72,9 @@ export default {
       .then((res) => res.data)
       .catch((error) => ({ error }))
   },
+  extenal(value) {
+    return axios({
+      ...value,
+    })
+  },
 }

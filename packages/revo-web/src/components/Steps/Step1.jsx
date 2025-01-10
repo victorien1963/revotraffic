@@ -343,11 +343,22 @@ function Projects() {
   const [show, setshow] = useState(false)
   const handleClose = (value) => {
     setshow(false)
-    if (!value) return
     if (selectedId) {
+      if (!value) {
+        setselectedId('')
+        return
+      }
       handleEdit(selectedId, value)
       setselectedId('')
-    } else handleAdd(value)
+    } else {
+      if (!value) return
+      handleAdd(value)
+    }
+    // if (!value) return
+    // if (selectedId) {
+    //   handleEdit(selectedId, value)
+    //   setselectedId('')
+    // } else handleAdd(value)
   }
 
   const [deleteShow, setdeleteShow] = useState(false)
@@ -374,7 +385,7 @@ function Projects() {
           </Button>
         </Col>
       </Row>
-      <Row className="flex-grow-1 pt-3 pb-5 px-5">
+      <Row className="flex-grow-1 pt-3 pb-5 px-5" style={{ overflowY: 'auto' }}>
         {list && list.length ? (
           <ListGroup className="pe-0">
             {list.map(
@@ -479,7 +490,10 @@ function Projects() {
 
 function FlowChart() {
   return (
-    <Row className="h-100 d-flex px-5 py-3">
+    <Row
+      className="h-100 d-flex px-5 py-3"
+      style={{ overflowX: 'auto', overflowY: 'auto' }}
+    >
       {/* <p
         className="text-center align-self-center fw-bolder pb-5"
         style={{ color: '#9fdd80', fontSize: '4rem' }}

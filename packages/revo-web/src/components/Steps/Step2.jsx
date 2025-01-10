@@ -33,6 +33,7 @@ import {
   Modal,
   Spinner,
   InputGroup,
+  ProgressBar,
 } from 'react-bootstrap'
 import VideoSnapshot from 'video-snapshot'
 import { remark1, remark2 } from '../../assets'
@@ -1938,15 +1939,53 @@ function Video({ setting }) {
   }, [tempFile])
 
   const [uploading, setuploading] = useState(false)
+  const [progress, setprogress] = useState(0)
   const handleUpload = async () => {
-    const formData = new FormData()
-    formData.append('file', tempFile)
-    const uploadedVideo = await apiServices.data({
-      path: `time/file/${timeId}`,
-      method: 'post',
-      data: formData,
-      contentType: 'multipart/form-data',
+    const timedName = `${Date.now()}_${fileName}`
+    const presigned = await apiServices.data({
+      path: `time/presigned`,
+      method: 'get',
+      params: {
+        name: timedName,
+      },
     })
+    console.log(presigned)
+    if (presigned.url) {
+      await apiServices.extenal({
+        url: presigned.url,
+        method: 'put',
+        data: tempFile,
+        contentType: tempFile.type,
+        files: [tempFile],
+        headers: {
+          contentType: tempFile.type,
+          'Content-Type': tempFile.type,
+        },
+        onUploadProgress: (e) => {
+          console.log('onProgress')
+          console.log(e)
+          setprogress(e.progress)
+          // setFiles((prevState) =>
+          //   prevState.map((ps) =>
+          //     ps.object_id === videoTask.data.object_id
+          //       ? {
+          //           ...ps,
+          //           progress: e.progress,
+          //         }
+          //       : ps
+          //   )
+          // )
+        },
+      })
+    }
+    // const formData = new FormData()
+    // formData.append('file', tempFile)
+    // const uploadedVideo = await apiServices.data({
+    //   path: `time/file/${timeId}`,
+    //   method: 'post',
+    //   data: formData,
+    //   contentType: 'multipart/form-data',
+    // })
 
     const snapshoter = new VideoSnapshot(tempFile)
     const previewSrc = await snapshoter.takeSnapshot()
@@ -1968,12 +2007,16 @@ function Video({ setting }) {
         ),
       },
     ]
+
     const res = await apiServices.data({
       path: `time/video/${timeId}`,
       method: 'post',
       data: {
         fileName,
-        video: uploadedVideo,
+        video: {
+          name: timedName,
+        },
+        // video: uploadedVideo,
         files: JSON.stringify(arrayed),
       },
     })
@@ -2046,6 +2089,27 @@ function Video({ setting }) {
 
             <Col xs={4} />
             <Col className="d-flex pb-1">
+              {progress && (
+                <ProgressBar
+                  className="rounded-pill fs-6 my-2 mx-auto w-100"
+                  style={{ height: '20px' }}
+                >
+                  <ProgressBar
+                    animated
+                    style={{
+                      backgroundColor: '#0a004f',
+                    }}
+                    now={progress * 100}
+                    label={`${parseInt(progress * 100, 10)}%`}
+                  />
+                  <ProgressBar
+                    now={100 - progress * 100}
+                    style={{
+                      backgroundColor: '#e2e4e8',
+                    }}
+                  />
+                </ProgressBar>
+              )}
               <LoadingButton
                 variant="revo2"
                 className="mt-auto ms-auto me-2"

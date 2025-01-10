@@ -1,9 +1,16 @@
 const express = require('express')
 const router = express.Router()
 const Multer = require('multer')
-const { upload, getSize, partial } = require('../services/minio')
+const { upload, getSize, partial, getPresignedUrl } = require('../services/minio')
 
 const pg = require('../services/pgService')
+
+router.get('/presigned', async (req, res) => {
+    if (!req.user) return res.send({})
+    getPresignedUrl(req.query.name, (url) => res.send({
+        url,
+    }))
+})
 
 router.get('/:range_id', async (req, res) => {
     if (!req.user) return res.send([])

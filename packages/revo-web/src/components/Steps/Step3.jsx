@@ -715,10 +715,10 @@ function Step3({ setting }) {
       }
     } else setresultSpeed(null)
     if (videoData.result_video) {
-      setsrc(`api/draft/video/${videoData.result_video.name}`)
+      setsrc(`/api/draft/video/${videoData.result_video.name}`)
     } else setsrc(null)
     if (videoData.result_video_warp) {
-      setvwSrc(`api/draft/video/${videoData.result_video_warp.name}`)
+      setvwSrc(`/api/draft/video/${videoData.result_video_warp.name}`)
     } else setvwSrc(null)
     if (videoData.result_track_maps && !videoData.result_track_maps.error) {
       settrackMap(videoData.result_track_maps)
