@@ -1235,9 +1235,7 @@ function Preview({ setting }) {
     },
   ]
   console.log(data)
-  const [ts, setts] = useState(
-    data ? data.tagSetting || tagSetting : tagSetting
-  )
+  const [ts] = useState(data ? data.tagSetting || tagSetting : tagSetting)
   const icons = ['Ⓐ', 'Ⓑ', 'Ⓒ', 'Ⓓ', 'Ⓔ']
   // const initDraggables = [
   //   {
@@ -1318,27 +1316,27 @@ function Preview({ setting }) {
               src={`/api/draft/video/${thumbnail.name}`}
               fluid
             />
+            {ts.map((tsi, i) =>
+              tsi.id === drtag ? (
+                <div />
+              ) : (
+                <h1
+                  className="position-absolute d-flex h1 textShadow justify-content-center mb-0"
+                  style={{
+                    // ...tsi.style,
+                    pointerEvents: 'none',
+                    color: 'white',
+                    left: tsi.style.left * 0.95,
+                    top: tsi.style.top * 0.95,
+                    zIndex: 1,
+                  }}
+                >
+                  {icons[i]}
+                </h1>
+              )
+            )}
           </div>
         </div>
-        {ts.map((tsi, i) =>
-          tsi.id === drtag ? (
-            <div />
-          ) : (
-            <h1
-              className="position-absolute d-flex h1 textShadow justify-content-center mb-0"
-              style={{
-                // ...tsi.style,
-                pointerEvents: 'none',
-                color: 'white',
-                left: tsi.style.left * 0.9,
-                top: tsi.style.top * 0.9,
-                zIndex: 1,
-              }}
-            >
-              {icons[i]}
-            </h1>
-          )
-        )}
         {!hasDraggable && (
           <div
             className="d-flex flex-column ms-auto"
