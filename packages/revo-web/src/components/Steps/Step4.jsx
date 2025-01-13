@@ -24,6 +24,7 @@ import {
   faFlaskVial,
   faPenToSquare,
   faTrashCan,
+  faDownload,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faCircleCheck,
@@ -250,37 +251,53 @@ function Results({ setting }) {
     方法比較影片: 3,
   }
 
-  const handleDownload = async () => {
-    const urls = {
-      路口延滯時間: ['model/file/1/1/1/a.xlsx'],
-      停等車隊長度: ['model/file/1/1/1/b.xlsx'],
-      路段旅行速率: ['model/file/1/1/1/c.xlsx'],
-      成效比較總表: ['model/file/1/1/1/d.xlsx'],
-      方法比較影片: ['model/file/1/1/1/04.mp4', 'model/file/1/1/1/04_rl.mp4'],
-    }
-    urls[selected].map(async (url) => {
-      const res = await apiServices.data(
-        selected === '方法比較影片'
-          ? {
-              path: url,
-              method: 'get',
-              responseType: 'arraybuffer',
-            }
-          : {
-              path: url,
-              method: 'get',
-              responseType: 'blob',
-            }
-      )
+  const handleDownload = async (name) => {
+    if (name) {
+      const res = await apiServices.data({
+        path: `model/file/${name}`,
+        method: 'get',
+        responseType: 'blob',
+      })
       const blob = new Blob([res])
       const link = document.createElement('a')
       link.setAttribute('href', URL.createObjectURL(blob))
-      link.setAttribute('download', url.split('/')[url.split('/').length - 1])
+      link.setAttribute('download', name.split('/')[name.split('/').length - 1])
       document.body.appendChild(link)
       link.click()
       link.remove()
-    })
+    } else {
+      const urls = {
+        路口延滯時間: ['model/file/1/1/1/a.xlsx'],
+        停等車隊長度: ['model/file/1/1/1/b.xlsx'],
+        路段旅行速率: ['model/file/1/1/1/c.xlsx'],
+        成效比較總表: ['model/file/1/1/1/d.xlsx'],
+        方法比較影片: ['model/file/1/1/1/04.mp4', 'model/file/1/1/1/04_rl.mp4'],
+      }
+      urls[selected].map(async (url) => {
+        const res = await apiServices.data(
+          selected === '方法比較影片'
+            ? {
+                path: url,
+                method: 'get',
+                responseType: 'arraybuffer',
+              }
+            : {
+                path: url,
+                method: 'get',
+                responseType: 'blob',
+              }
+        )
+        const blob = new Blob([res])
+        const link = document.createElement('a')
+        link.setAttribute('href', URL.createObjectURL(blob))
+        link.setAttribute('download', url.split('/')[url.split('/').length - 1])
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      })
+    }
   }
+
   return (
     <>
       <Row>
@@ -405,6 +422,15 @@ function Results({ setting }) {
                     <FontAwesomeIcon className="my-auto" icon={faPenToSquare} />
                   </Button>
                 )}
+                <Button
+                  className="me-2 d-flex flex-nowrap"
+                  style={{ boxShadow: 'none' }}
+                  variant="outline-revo me-2"
+                  onClick={() => handleDownload(name)}
+                >
+                  <p className="text-nowrap">下載&ensp;</p>
+                  <FontAwesomeIcon className="my-auto" icon={faDownload} />
+                </Button>
                 <Button
                   className="d-flex flex-nowrap"
                   style={{ boxShadow: 'none' }}
@@ -762,6 +788,21 @@ function Files({ setting }) {
   } = useContext(DraftContext)
   const { models = [] } = time.setting || {}
 
+  const handleDownload = async (name) => {
+    const res = await apiServices.data({
+      path: `model/file/${name}`,
+      method: 'get',
+      responseType: 'blob',
+    })
+    const blob = new Blob([res])
+    const link = document.createElement('a')
+    link.setAttribute('href', URL.createObjectURL(blob))
+    link.setAttribute('download', name.split('/')[name.split('/').length - 1])
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
   const [newFiles, setnewFiles] = useState([])
   const handleUpload = async () => {
     const formData = new FormData()
@@ -939,6 +980,15 @@ function Files({ setting }) {
                     <FontAwesomeIcon className="my-auto" icon={faPenToSquare} />
                   </Button>
                 )}
+                <Button
+                  className="me-2 d-flex flex-nowrap"
+                  style={{ boxShadow: 'none' }}
+                  variant="outline-revo me-2"
+                  onClick={() => handleDownload(name)}
+                >
+                  <p className="text-nowrap">下載&ensp;</p>
+                  <FontAwesomeIcon className="my-auto" icon={faDownload} />
+                </Button>
                 <Button
                   className="d-flex flex-nowrap"
                   style={{ boxShadow: 'none' }}

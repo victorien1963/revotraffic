@@ -50,4 +50,11 @@ router.get('/file/:draft_id/:range_id/:time_id/:name', async (req, res) => {
     else return res.send(list)
 })
 
+router.get('/file/:draft_id/:range_id/:time_id/:path/:name', async (req, res) => {
+    const { draft_id, range_id, time_id, path, name } = req.params
+    const list = await download({ Key: `${draft_id}/${range_id}/${time_id}/${path}/${name}` })
+    if (!list.error) list.pipe(res)
+    else return res.send(list)
+})
+
 module.exports = router

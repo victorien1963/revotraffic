@@ -388,74 +388,85 @@ function Projects() {
       <Row className="flex-grow-1 pt-3 pb-5 px-5" style={{ overflowY: 'auto' }}>
         {list && list.length ? (
           <ListGroup className="pe-0">
-            {list.map(
-              (
-                { time_id, range_id, draft_id, setting, created_on, user_name },
-                i
-              ) => (
-                <ListGroupItem className="d-flex" key={i}>
-                  <p
-                    className="w-40 my-auto text-start oneLineEllipsis"
-                    title={setting.name}
-                  >
-                    <span className="fw-regular text-revo">計畫名稱：</span>
-                    {setting.date || setting.id}-{setting.name}
-                  </p>
-                  <p className="w-15 my-auto text-start ps-2">
-                    <span className="fw-regular text-revo">建立者</span>：
-                    {user_name || draft.user_name}
-                  </p>
-                  <p className="w-15 my-auto text-start ps-2">
-                    <span className="fw-regular text-revo">建立時間：</span>
-                    {moment(created_on).format('yyyy-MM-DD')}
-                  </p>
-                  <Button
-                    className="ms-auto me-2"
-                    style={{ boxShadow: 'none' }}
-                    variant="outline-revo me-2"
-                    onClick={() => {
-                      setselectedId(time_id || range_id || draft_id)
-                      setshow(true)
-                    }}
-                    title="編 輯 編 號 ＆ 名 稱"
-                    size
-                  >
-                    編輯&ensp;
-                    <FontAwesomeIcon icon={faPenToSquare} />
-                  </Button>
-                  <Button
-                    style={{ boxShadow: 'none' }}
-                    variant="outline-red"
-                    onClick={() => {
-                      setselectedId(time_id || range_id || draft_id)
-                      setdeleteShow(true)
-                    }}
-                    title="刪 除 計 劃"
-                  >
-                    刪除&ensp;
-                    <FontAwesomeIcon icon={faTrashCan} />
-                  </Button>
-
-                  <h2
-                    className="my-auto text-grey"
-                    style={{ userSelect: 'none' }}
-                  >
-                    ｜
-                  </h2>
-
-                  <Button
-                    className="me-0"
-                    style={{ boxShadow: 'none' }}
-                    variant="revo"
-                    onClick={() => setId(time_id || range_id || draft_id)}
-                    title="選 擇 此 計 劃"
-                  >
-                    選擇&ensp;
-                    <FontAwesomeIcon icon={faRightToBracket} />
-                  </Button>
-                </ListGroupItem>
+            {list
+              .sort((a, b) =>
+                moment(b.created_on).isAfter(moment(a.created_on)) ? 1 : -1
               )
-            )}
+              .map(
+                (
+                  {
+                    time_id,
+                    range_id,
+                    draft_id,
+                    setting,
+                    created_on,
+                    user_name,
+                  },
+                  i
+                ) => (
+                  <ListGroupItem className="d-flex" key={i}>
+                    <p
+                      className="w-40 my-auto text-start oneLineEllipsis"
+                      title={setting.name}
+                    >
+                      <span className="fw-regular text-revo">計畫名稱：</span>
+                      {setting.date || setting.id}-{setting.name}
+                    </p>
+                    <p className="w-15 my-auto text-start ps-2">
+                      <span className="fw-regular text-revo">建立者</span>：
+                      {user_name || draft.user_name}
+                    </p>
+                    <p className="w-15 my-auto text-start ps-2">
+                      <span className="fw-regular text-revo">建立時間：</span>
+                      {moment(created_on).format('yyyy-MM-DD')}
+                    </p>
+                    <Button
+                      className="ms-auto me-2"
+                      style={{ boxShadow: 'none' }}
+                      variant="outline-revo me-2"
+                      onClick={() => {
+                        setselectedId(time_id || range_id || draft_id)
+                        setshow(true)
+                      }}
+                      title="編 輯 編 號 ＆ 名 稱"
+                      size
+                    >
+                      編輯&ensp;
+                      <FontAwesomeIcon icon={faPenToSquare} />
+                    </Button>
+                    <Button
+                      style={{ boxShadow: 'none' }}
+                      variant="outline-red"
+                      onClick={() => {
+                        setselectedId(time_id || range_id || draft_id)
+                        setdeleteShow(true)
+                      }}
+                      title="刪 除 計 劃"
+                    >
+                      刪除&ensp;
+                      <FontAwesomeIcon icon={faTrashCan} />
+                    </Button>
+
+                    <h2
+                      className="my-auto text-grey"
+                      style={{ userSelect: 'none' }}
+                    >
+                      ｜
+                    </h2>
+
+                    <Button
+                      className="me-0"
+                      style={{ boxShadow: 'none' }}
+                      variant="revo"
+                      onClick={() => setId(time_id || range_id || draft_id)}
+                      title="選 擇 此 計 劃"
+                    >
+                      選擇&ensp;
+                      <FontAwesomeIcon icon={faRightToBracket} />
+                    </Button>
+                  </ListGroupItem>
+                )
+              )}
           </ListGroup>
         ) : (
           <div className="d-flex ps-3 border">
