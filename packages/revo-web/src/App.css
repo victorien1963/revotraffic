@@ -431,3 +431,9 @@ img {
   max-width: 400px !important;
   min-width: 400px !important;
 }
+
+.wideModal > .modal-dialog {
+  width: 90vw !important;
+  max-width: 90vw !important;
+  min-width: 90vw !important;
+}

@@ -628,61 +628,62 @@ function RoadModal({ setting }) {
     handleClose,
     thumbnail,
     data,
-    hasDraggable = false,
-    hasRoadName = true,
+    // hasDraggable = false,
+    // hasRoadName = true,
   } = setting
-  const initDraggables = [
-    {
-      id: 1,
-      style: { width: '200px', top: '2%', left: '110%' },
-      label: '東',
-      name: '',
-    },
-    {
-      id: 2,
-      style: { width: '200px', top: '16%', left: '110%' },
-      label: '西',
-      name: '',
-    },
-    {
-      id: 3,
-      style: { width: '200px', top: '30%', left: '110%' },
-      label: '南',
-      name: '',
-    },
-    {
-      id: 4,
-      style: { width: '200px', top: '44%', left: '110%' },
-      label: '北',
-      name: '',
-    },
-  ]
-  const [draggables, setdraggables] = useState(
-    data ? data.draggables : initDraggables
-  )
-  const [draging, setdraging] = useState(0)
+  // const initDraggables = [
+  //   {
+  //     id: 1,
+  //     style: { width: '200px', top: '2%', left: '110%' },
+  //     label: '東',
+  //     name: '',
+  //   },
+  //   {
+  //     id: 2,
+  //     style: { width: '200px', top: '16%', left: '110%' },
+  //     label: '西',
+  //     name: '',
+  //   },
+  //   {
+  //     id: 3,
+  //     style: { width: '200px', top: '30%', left: '110%' },
+  //     label: '南',
+  //     name: '',
+  //   },
+  //   {
+  //     id: 4,
+  //     style: { width: '200px', top: '44%', left: '110%' },
+  //     label: '北',
+  //     name: '',
+  //   },
+  // ]
+  // const [draggables, setdraggables] = useState(
+  //   data ? data.draggables : initDraggables
+  // )
+  // const [draging, setdraging] = useState(0)
 
-  const initClicks = {
-    entry: [],
-    outry: [],
-  }
-  const [clicks, setclicks] = useState(data ? data.clicks : initClicks)
-  const [clicking, setclicking] = useState('entry')
-  const getId = (t, l) => {
-    const start = t === 'entry' ? 5 : 10
-    const ids = l.map(({ id }) => id)
-    if (!ids.includes(start)) return start
-    if (!ids.includes(start + 1)) return start + 1
-    if (!ids.includes(start + 2)) return start + 2
-    return start + 3
-  }
+  // old version
+  // const initClicks = {
+  //   entry: [],
+  //   outry: [],
+  // }
+  // const [clicks, setclicks] = useState(data ? data.clicks : initClicks)
+  // const [clicking, setclicking] = useState('entry')
+  // const getId = (t, l) => {
+  //   const start = t === 'entry' ? 5 : 10
+  //   const ids = l.map(({ id }) => id)
+  //   if (!ids.includes(start)) return start
+  //   if (!ids.includes(start + 1)) return start + 1
+  //   if (!ids.includes(start + 2)) return start + 2
+  //   return start + 3
+  // }
 
-  useEffect(() => {
-    if (show) {
-      setdraggables(data ? data.draggables : initDraggables)
-      setclicks(data ? data.clicks : initClicks)
-    }
-  }, [show])
+  // useEffect(() => {
+  //   if (show) {
+  //     setdraggables(data ? data.draggables : initDraggables)
+  // setclicks(data ? data.clicks : initClicks)
+  //   }
+  // }, [show])
 
   const [showNL, setshowNL] = useState(false)
   const [NL, setNL] = useState({
@@ -717,23 +718,29 @@ function RoadModal({ setting }) {
       label: 'D',
       name: '',
     },
+    {
+      id: 5,
+      style: { top: '-500%', left: '-500%' },
+      label: 'E',
+      name: '',
+    },
   ]
   console.log(data)
   const [ts, setts] = useState(
     data ? data.tagSetting || tagSetting : tagSetting
   )
-  const icons = ['Ⓐ', 'Ⓑ', 'Ⓒ', 'Ⓓ']
+  const icons = ['Ⓐ', 'Ⓑ', 'Ⓒ', 'Ⓓ', 'Ⓔ']
 
   return (
     <Modal
       style={{ zIndex: '1501' }}
-      size="xl"
+      // size="xl"
       show={show}
       onHide={() => handleClose()}
-      className="p-2"
+      className="p-2 wideModal"
     >
       <Modal.Header className="h5 text-revo" closeButton>
-        方向與出入口標記
+        道路名稱及位置
       </Modal.Header>
       <Modal.Body className="d-flex">
         <div className="position-relative w-50">
@@ -811,76 +818,76 @@ function RoadModal({ setting }) {
                   )
                 )
                 setdrtag(0)
-                return
               }
-              if (!clicking) return
-              if (clicks[clicking].length >= 4) return
-              const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x
-              const top = e.clientY - target.y
-              setclicks((prevState) => ({
-                ...prevState,
-                [clicking]: [
-                  ...prevState[clicking],
-                  {
-                    id: getId(clicking, prevState[clicking]),
-                    style: {
-                      top,
-                      left,
-                      width: '50px',
-                      height: '50px',
-                      color: clicking === 'entry' ? 'white' : 'black',
-                    },
-                  },
-                ],
-              }))
+              // if (!clicking) return
+              // if (clicks[clicking].length >= 4) return
+              // const target = e.target.getBoundingClientRect()
+              // const left = e.clientX - target.x
+              // const top = e.clientY - target.y
+              // setclicks((prevState) => ({
+              //   ...prevState,
+              //   [clicking]: [
+              //     ...prevState[clicking],
+              //     {
+              //       id: getId(clicking, prevState[clicking]),
+              //       style: {
+              //         top,
+              //         left,
+              //         width: '50px',
+              //         height: '50px',
+              //         color: clicking === 'entry' ? 'white' : 'black',
+              //       },
+              //     },
+              //   ],
+              // }))
             }}
             onDrop={(e) => {
               setshowNL(false)
-              const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x
-              const top = e.clientY - target.y
-              if (draging < 5) {
-                setdraggables(
-                  draggables.map((d) =>
-                    parseInt(d.id, 10) === parseInt(draging, 10)
-                      ? { ...d, style: { ...d.style, top, left } }
-                      : d
-                  )
-                )
-              } else if (draging < 10) {
-                setclicks((prevState) => ({
-                  ...prevState,
-                  entry: prevState.entry.map((ps) =>
-                    ps.id === draging
-                      ? {
-                          ...ps,
-                          style: {
-                            ...ps.style,
-                            top,
-                            left,
-                          },
-                        }
-                      : ps
-                  ),
-                }))
-              } else {
-                setclicks((prevState) => ({
-                  ...prevState,
-                  outry: prevState.outry.map((ps) =>
-                    ps.id === draging
-                      ? {
-                          ...ps,
-                          style: {
-                            ...ps.style,
-                            top,
-                            left,
-                          },
-                        }
-                      : ps
-                  ),
-                }))
-              }
+              // const target = e.target.getBoundingClientRect()
+              // const left = e.clientX - target.x
+              // const top = e.clientY - target.y
+              // if (draging < 5) {
+              //   setdraggables(
+              //     draggables.map((d) =>
+              //       parseInt(d.id, 10) === parseInt(draging, 10)
+              //         ? { ...d, style: { ...d.style, top, left } }
+              //         : d
+              //     )
+              //   )
+              // }
+              // else if (draging < 10) {
+              //   setclicks((prevState) => ({
+              //     ...prevState,
+              //     entry: prevState.entry.map((ps) =>
+              //       ps.id === draging
+              //         ? {
+              //             ...ps,
+              //             style: {
+              //               ...ps.style,
+              //               top,
+              //               left,
+              //             },
+              //           }
+              //         : ps
+              //     ),
+              //   }))
+              // } else {
+              //   setclicks((prevState) => ({
+              //     ...prevState,
+              //     outry: prevState.outry.map((ps) =>
+              //       ps.id === draging
+              //         ? {
+              //             ...ps,
+              //             style: {
+              //               ...ps.style,
+              //               top,
+              //               left,
+              //             },
+              //           }
+              //         : ps
+              //     ),
+              //   }))
+              // }
             }}
             onDragOver={(e) => {
               setNL({
@@ -910,7 +917,7 @@ function RoadModal({ setting }) {
               </h1>
             )
           )}
-          {hasDraggable &&
+          {/* {hasDraggable &&
             draggables.map((d) => (
               <RoadTag
                 key={d.id}
@@ -953,8 +960,8 @@ function RoadModal({ setting }) {
                   setshowNL,
                 }}
               />
-            ))}
-          {clicks.entry.map((e) => (
+            ))} */}
+          {/* {clicks.entry.map((e) => (
             <NumberTag
               key={e.id}
               setting={{
@@ -986,9 +993,9 @@ function RoadModal({ setting }) {
                 setshowNL,
               }}
             />
-          ))}
+          ))} */}
         </div>
-        {hasDraggable ? (
+        {/* {hasDraggable ? (
           <div className="w-25 ms-auto d-flex flex-column">
             <ButtonGroup>
               <Button
@@ -1014,89 +1021,106 @@ function RoadModal({ setting }) {
             </h6>
             <Image className="mx-auto" height="auto" src={remark1} fluid />
           </div>
-        ) : (
-          <div className="w-50 ps-3 d-flex flex-column position-relative">
-            <OverlayTrigger
-              placement="right"
-              delay={{ show: 150, hide: 400 }}
-              overlay={
-                <Tooltip
-                  className="description"
-                  style={{
-                    zIndex: '9999',
-                    width: '200px',
-                  }}
-                >
-                  <div className="w-100">
-                    <Image
-                      className="mx-auto w-100"
-                      height="auto"
-                      src={description}
-                      fluid
-                    />
-                  </div>
-                </Tooltip>
-              }
+        ) : ( */}
+        <div className="ps-3 d-flex flex-column position-relative">
+          <div className="d-flex px-1">
+            <h5 className="w-50 text-nowrap my-auto">路名與標記</h5>
+            <Form.Select
+              value={ts.length}
+              onChange={(e) => {
+                setts(tagSetting.slice(0, e.target.value))
+              }}
+              className="w-50 px-3"
             >
-              <FontAwesomeIcon
-                className="fs-7 btn-lucaIcon"
-                style={{ width: '50px' }}
-                icon={faCircleInfo}
-              />
-            </OverlayTrigger>
-            {['A', 'B', 'C', 'D'].map((key, i) => (
-              <div
-                key={key}
-                className="d-flex w-100 py-2 px-4 rounded"
+              <option value={1}>1個路段</option>
+              <option value={2}>2個路段</option>
+              <option value={3}>3個路段</option>
+              <option value={4}>4個路段</option>
+              <option value={5}>5個路段</option>
+            </Form.Select>
+          </div>
+          {/* <OverlayTrigger
+            placement="right"
+            delay={{ show: 150, hide: 400 }}
+            overlay={
+              <Tooltip
+                className="description"
                 style={{
-                  backgroundColor: drtag === i + 1 ? 'gray' : '',
+                  zIndex: '9999',
+                  width: '200px',
                 }}
               >
-                <FormLabel
-                  className="align-self-center d-flex h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
-                  style={{ pointerEvents: 'none' }}
-                >
-                  <p className="m-auto">{key}</p>
-                </FormLabel>
-                <Form.Control
-                  className="w-50"
-                  value={ts[i].name}
-                  name={key}
-                  onChange={(e) => {
-                    setts(
-                      ts.map((tsi) =>
-                        tsi.id === i + 1
-                          ? {
-                              ...tsi,
-                              name: e.target.value,
-                            }
-                          : tsi
-                      )
+                <div className="w-100">
+                  <Image
+                    className="mx-auto w-100"
+                    height="auto"
+                    src={description}
+                    fluid
+                  />
+                </div>
+              </Tooltip>
+            }
+          >
+            <FontAwesomeIcon
+              className="fs-7 btn-lucaIcon"
+              style={{ width: '50px' }}
+              icon={faCircleInfo}
+            />
+          </OverlayTrigger> */}
+
+          {ts.map(({ label, name }, i) => (
+            <div
+              key={label}
+              className="d-flex w-100 py-2 ps-1 pe-4 rounded"
+              style={{
+                backgroundColor: drtag === i + 1 ? 'gray' : '',
+              }}
+            >
+              <FormLabel
+                className="align-self-center d-flex h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
+                style={{ pointerEvents: 'none' }}
+              >
+                <p className="m-auto">{label}</p>
+              </FormLabel>
+              <Form.Control
+                className="w-50"
+                value={name}
+                name={label}
+                onChange={(e) => {
+                  setts(
+                    ts.map((tsi) =>
+                      tsi.id === i + 1
+                        ? {
+                            ...tsi,
+                            name: e.target.value,
+                          }
+                        : tsi
                     )
-                  }}
-                />
-                <Button
-                  variant="outline-dark ms-auto"
-                  onClick={() => {
-                    setts(
-                      ts.map((tsi) =>
-                        tsi.id === i + 1
-                          ? {
-                              ...tsi,
-                              show: true,
-                            }
-                          : tsi
-                      )
+                  )
+                }}
+              />
+              <Button
+                variant="outline-dark ms-auto"
+                onClick={() => {
+                  setts(
+                    ts.map((tsi) =>
+                      tsi.id === i + 1
+                        ? {
+                            ...tsi,
+                            show: true,
+                          }
+                        : tsi
                     )
-                    setdrtag(i + 1)
-                  }}
-                >
-                  設定
-                </Button>
-              </div>
-            ))}
-            {drtag ? <p>點擊圖片中路口中央來放置標記</p> : <div />}
-            {/* <ButtonGroup>
+                  )
+                  setdrtag(i + 1)
+                }}
+              >
+                設定
+              </Button>
+            </div>
+          ))}
+          {drtag ? <p>點擊圖片中路口中央來放置標記</p> : <div />}
+          {/* <ButtonGroup>
               <Button
                 className="my-2"
                 variant="outline-dark"
@@ -1114,20 +1138,39 @@ function RoadModal({ setting }) {
                 出口車道
               </Button>
             </ButtonGroup> */}
-            {/* <h6 style={{ top: '0' }} className="text-secondary pt-2">
+          {/* <h6 style={{ top: '0' }} className="text-secondary pt-2">
               <FontAwesomeIcon icon={faCircleInfo} title="說明" />
               &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。
             </h6> */}
-          </div>
-        )}
+        </div>
+        <div className="w-25 ms-auto d-flex flex-column">
+          <h6 style={{ top: '0' }} className="text-secondary pt-2">
+            <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+            &ensp;使用方法
+          </h6>
+          <h6 style={{ top: '0' }} className="text-secondary pt-2">
+            1.
+            請先按B的”設定”，並將圓形標誌拖曳至”最靠近北方”之路段上，並盡量將標誌的中間定位在路段之中央。
+          </h6>
+          <h6 style={{ top: '0' }} className="text-secondary pt-2">
+            {`2. 自B路口逆時針方向的路口為C -> D -> ... ->
+            A。請按照上決定對應路口圓形標誌的位置。`}
+          </h6>
+          <h6 style={{ top: '0' }} className="text-secondary pt-2">
+            3. 分別在對應的路口編號後的方框中輸入路名。
+          </h6>
+          <Image className="mx-auto" height="auto" src={description} fluid />
+        </div>
+        {/* )} */}
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-end">
         <Button
           variant="secondary"
           className="mx-2"
           onClick={() => {
-            setdraggables(initDraggables)
-            setclicks(initClicks)
+            // setdraggables(initDraggables)
+            // setclicks(initClicks)
+            setts(tagSetting)
           }}
         >
           清除
@@ -1135,7 +1178,8 @@ function RoadModal({ setting }) {
         <Button
           variant="revo2"
           className="mt-auto ms-2"
-          onClick={() => handleClose({ draggables, clicks, tagSetting: ts })}
+          // onClick={() => handleClose({ draggables, clicks: {}, tagSetting: ts })}
+          onClick={() => handleClose({ tagSetting: ts })}
         >
           確認
         </Button>
@@ -1155,48 +1199,88 @@ function Preview({ setting }) {
     hasDraggable = false,
     hasRoadName = true,
   } = setting
-  const initDraggables = [
+
+  // for new version tag
+  const [drtag, setdrtag] = useState(0)
+  const tagSetting = [
     {
       id: 1,
-      style: { width: '200px', top: '2%', left: '110%' },
-      label: '東',
+      style: { top: '-500%', left: '-500%' },
+      label: 'A',
       name: '',
     },
     {
       id: 2,
-      style: { width: '200px', top: '16%', left: '110%' },
-      label: '西',
+      style: { top: '-500%', left: '-500%' },
+      label: 'B',
       name: '',
     },
     {
       id: 3,
-      style: { width: '200px', top: '30%', left: '110%' },
-      label: '南',
+      style: { top: '-500%', left: '-500%' },
+      label: 'C',
       name: '',
     },
     {
       id: 4,
-      style: { width: '200px', top: '44%', left: '110%' },
-      label: '北',
+      style: { top: '-500%', left: '-500%' },
+      label: 'D',
+      name: '',
+    },
+    {
+      id: 5,
+      style: { top: '-500%', left: '-500%' },
+      label: 'E',
       name: '',
     },
   ]
-  const [draggables, setdraggables] = useState(
-    data ? data.draggables : initDraggables
+  console.log(data)
+  const [ts, setts] = useState(
+    data ? data.tagSetting || tagSetting : tagSetting
   )
+  const icons = ['Ⓐ', 'Ⓑ', 'Ⓒ', 'Ⓓ', 'Ⓔ']
+  // const initDraggables = [
+  //   {
+  //     id: 1,
+  //     style: { width: '200px', top: '2%', left: '110%' },
+  //     label: '東',
+  //     name: '',
+  //   },
+  //   {
+  //     id: 2,
+  //     style: { width: '200px', top: '16%', left: '110%' },
+  //     label: '西',
+  //     name: '',
+  //   },
+  //   {
+  //     id: 3,
+  //     style: { width: '200px', top: '30%', left: '110%' },
+  //     label: '南',
+  //     name: '',
+  //   },
+  //   {
+  //     id: 4,
+  //     style: { width: '200px', top: '44%', left: '110%' },
+  //     label: '北',
+  //     name: '',
+  //   },
+  // ]
+  // const [draggables, setdraggables] = useState(
+  //   data ? data.draggables : initDraggables
+  // )
 
-  const initClicks = {
-    entry: [],
-    outry: [],
-  }
-  const [clicks, setclicks] = useState(data ? data.clicks : initClicks)
+  // const initClicks = {
+  //   entry: [],
+  //   outry: [],
+  // }
+  // const [clicks, setclicks] = useState(data ? data.clicks : initClicks)
 
-  useEffect(() => {
-    if (show) {
-      setdraggables(data ? data.draggables : initDraggables)
-      setclicks(data ? data.clicks : initClicks)
-    }
-  }, [show])
+  // useEffect(() => {
+  //   if (show) {
+  //     setdraggables(data ? data.draggables : initDraggables)
+  //     setclicks(data ? data.clicks : initClicks)
+  //   }
+  // }, [show])
 
   const roadLine = useMemo(() => {
     if (!setting.roadLine) return []
@@ -1234,68 +1318,27 @@ function Preview({ setting }) {
               src={`/api/draft/video/${thumbnail.name}`}
               fluid
             />
-            {hasDraggable &&
-              draggables
-                .filter(
-                  (d) => d.style && d.style.left && d.style.left !== '110%'
-                )
-                .map((d) => (
-                  <RoadTag
-                    key={d.id}
-                    setting={{
-                      ...d,
-                      style: {
-                        ...d.style,
-                        width: hasRoadName ? '200px' : '35px',
-                      },
-                      content: (
-                        <>
-                          <FormLabel
-                            className="align-self-center h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
-                            style={{ pointerEvents: 'none' }}
-                          >
-                            {d.label}
-                          </FormLabel>
-                          <Form.Control
-                            value={d.name}
-                            name={d.id}
-                            onChange={() => {}}
-                          />
-                        </>
-                      ),
-                      draging: 0,
-                      setdraging: () => {},
-                      draggable: false,
-                    }}
-                  />
-                ))}
-            {clicks.entry.map((e) => (
-              <NumberTag
-                key={e.id}
-                setting={{
-                  ...e,
-                  handleDelete: () => {},
-                  draging: 0,
-                  setdraging: () => {},
-                  draggable: false,
-                }}
-              />
-            ))}
-            {clicks.outry.map((o) => (
-              <NumberTag
-                key={o.id}
-                setting={{
-                  ...o,
-                  handleDelete: () => {},
-                  setclicks: () => {},
-                  draging: 0,
-                  setdraging: () => {},
-                  draggable: false,
-                }}
-              />
-            ))}
           </div>
         </div>
+        {ts.map((tsi, i) =>
+          tsi.id === drtag ? (
+            <div />
+          ) : (
+            <h1
+              className="position-absolute d-flex h1 textShadow justify-content-center mb-0"
+              style={{
+                // ...tsi.style,
+                pointerEvents: 'none',
+                color: 'white',
+                left: tsi.style.left * 0.9,
+                top: tsi.style.top * 0.9,
+                zIndex: 1,
+              }}
+            >
+              {icons[i]}
+            </h1>
+          )
+        )}
         {!hasDraggable && (
           <div
             className="d-flex flex-column ms-auto"
@@ -1652,7 +1695,7 @@ function Road({ setting }) {
   return (
     <>
       {selected !== '' ? (
-        <Row className="flex-grow-1 pt-3 pb-5 px-4">
+        <Row className="flex-grow-1 pt-3 pb-5 px-4 h-100">
           <Col>
             {form.map((f, i) => {
               switch (f.type) {
@@ -1930,7 +1973,7 @@ function Road({ setting }) {
               </Row>
             )}
           </Col>
-          <Col className="d-flex flex-column">
+          <Col className="d-flex flex-column overflow-auto h-100">
             <video className="my-auto" width="95%" height="auto" controls>
               <track kind="captions" />
               <source src={`/api/time/video/${videos[selected]?.name}`} />
@@ -2055,7 +2098,10 @@ function Road({ setting }) {
                 handleClose: (value) => {
                   if (value)
                     handleDataChange({
-                      roads: value,
+                      roads: {
+                        ...roads,
+                        ...value,
+                      },
                     })
                   setshow(false)
                 },
@@ -2088,17 +2134,19 @@ function Road({ setting }) {
               },
             }}
           />
-          <Preview
-            setting={{
-              show: showPreview,
-              data: roads,
-              roadLine,
-              fixed,
-              thumbnail,
-              handleClose: () => setshowPreview(false),
-              hasDraggable: data.type === '路口',
-            }}
-          />
+          {showPreview && (
+            <Preview
+              setting={{
+                show: showPreview,
+                data: roads,
+                roadLine,
+                fixed,
+                thumbnail,
+                handleClose: () => setshowPreview(false),
+                hasDraggable: data.type === '路口',
+              }}
+            />
+          )}
           <WarnModal
             setting={{
               ...showWarn,
