@@ -708,6 +708,14 @@ function VISSIM({ setting }) {
           <Col xs={3}>
             <Button
               variant="revo2"
+              onClick={() => downloadFilePost('requirement.txt', {})}
+            >
+              下載requirement.txt
+            </Button>
+          </Col>
+          <Col xs={3}>
+            <Button
+              variant="revo2"
               onClick={() => downloadFilePost('setting.json', {})}
             >
               下載設定檔範本

@@ -34,9 +34,11 @@ import {
   Spinner,
   InputGroup,
   ProgressBar,
+  OverlayTrigger,
+  Tooltip,
 } from 'react-bootstrap'
 import VideoSnapshot from 'video-snapshot'
-import { remark1, remark2 } from '../../assets'
+import { description, remark1, remark2 } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext, ToastContext } from '../ContextProvider'
@@ -687,6 +689,41 @@ function RoadModal({ setting }) {
     left: 0,
     top: 0,
   })
+
+  // for new version tag
+  const [drtag, setdrtag] = useState(0)
+  const tagSetting = [
+    {
+      id: 1,
+      style: { top: '-500%', left: '-500%' },
+      label: 'A',
+      name: '',
+    },
+    {
+      id: 2,
+      style: { top: '-500%', left: '-500%' },
+      label: 'B',
+      name: '',
+    },
+    {
+      id: 3,
+      style: { top: '-500%', left: '-500%' },
+      label: 'C',
+      name: '',
+    },
+    {
+      id: 4,
+      style: { top: '-500%', left: '-500%' },
+      label: 'D',
+      name: '',
+    },
+  ]
+  console.log(data)
+  const [ts, setts] = useState(
+    data ? data.tagSetting || tagSetting : tagSetting
+  )
+  const icons = ['Ⓐ', 'Ⓑ', 'Ⓒ', 'Ⓓ']
+
   return (
     <Modal
       style={{ zIndex: '1501' }}
@@ -755,6 +792,27 @@ function RoadModal({ setting }) {
             src={`/api/draft/video/${thumbnail.name}`}
             fluid
             onClick={(e) => {
+              console.log(drtag)
+              if (drtag) {
+                const target = e.target.getBoundingClientRect()
+                const left = e.clientX - target.x
+                const top = e.clientY - target.y
+                setts(
+                  ts.map((tsi) =>
+                    tsi.id === drtag
+                      ? {
+                          ...tsi,
+                          style: {
+                            top: Math.max(top - 25, 0),
+                            left: Math.max(left - 25, 0),
+                          },
+                        }
+                      : tsi
+                  )
+                )
+                setdrtag(0)
+                return
+              }
               if (!clicking) return
               if (clicks[clicking].length >= 4) return
               const target = e.target.getBoundingClientRect()
@@ -833,6 +891,25 @@ function RoadModal({ setting }) {
               e.preventDefault()
             }}
           />
+          {ts.map((tsi, i) =>
+            tsi.id === drtag ? (
+              <div />
+            ) : (
+              <h1
+                className="position-absolute d-flex h1 textShadow justify-content-center mb-0"
+                style={{
+                  ...tsi.style,
+                  pointerEvents: 'none',
+                  color: 'white',
+                  // left: tsi.style.left - 25,
+                  // top: tsi.style.top - 25,
+                  zIndex: 1,
+                }}
+              >
+                {icons[i]}
+              </h1>
+            )
+          )}
           {hasDraggable &&
             draggables.map((d) => (
               <RoadTag
@@ -911,31 +988,138 @@ function RoadModal({ setting }) {
             />
           ))}
         </div>
-        <div className="w-25 ms-auto d-flex flex-column">
-          <ButtonGroup>
-            <Button
-              className="my-2"
-              variant="outline-dark"
-              active={clicking === 'entry'}
-              onClick={() => setclicking('entry')}
+        {hasDraggable ? (
+          <div className="w-25 ms-auto d-flex flex-column">
+            <ButtonGroup>
+              <Button
+                className="my-2"
+                variant="outline-dark"
+                active={clicking === 'entry'}
+                onClick={() => setclicking('entry')}
+              >
+                入口車道
+              </Button>
+              <Button
+                className="my-2"
+                variant="outline-dark"
+                active={clicking === 'outry'}
+                onClick={() => setclicking('outry')}
+              >
+                出口車道
+              </Button>
+            </ButtonGroup>
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+              &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。
+            </h6>
+            <Image className="mx-auto" height="auto" src={remark1} fluid />
+          </div>
+        ) : (
+          <div className="w-50 ps-3 d-flex flex-column position-relative">
+            <OverlayTrigger
+              placement="right"
+              delay={{ show: 150, hide: 400 }}
+              overlay={
+                <Tooltip
+                  className="description"
+                  style={{
+                    zIndex: '9999',
+                    width: '200px',
+                  }}
+                >
+                  <div className="w-100">
+                    <Image
+                      className="mx-auto w-100"
+                      height="auto"
+                      src={description}
+                      fluid
+                    />
+                  </div>
+                </Tooltip>
+              }
             >
-              入口車道
-            </Button>
-            <Button
-              className="my-2"
-              variant="outline-dark"
-              active={clicking === 'outry'}
-              onClick={() => setclicking('outry')}
-            >
-              出口車道
-            </Button>
-          </ButtonGroup>
-          <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            <FontAwesomeIcon icon={faCircleInfo} title="說明" />
-            &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。
-          </h6>
-          <Image className="mx-auto" height="auto" src={remark1} fluid />
-        </div>
+              <FontAwesomeIcon
+                className="fs-7 btn-lucaIcon"
+                style={{ width: '50px' }}
+                icon={faCircleInfo}
+              />
+            </OverlayTrigger>
+            {['A', 'B', 'C', 'D'].map((key, i) => (
+              <div
+                key={key}
+                className="d-flex w-100 py-2 px-4 rounded"
+                style={{
+                  backgroundColor: drtag === i + 1 ? 'gray' : '',
+                }}
+              >
+                <FormLabel
+                  className="align-self-center d-flex h-100 px-2 mb-0 text-light bg-revo rounded boxShadow"
+                  style={{ pointerEvents: 'none' }}
+                >
+                  <p className="m-auto">{key}</p>
+                </FormLabel>
+                <Form.Control
+                  className="w-50"
+                  value={ts[i].name}
+                  name={key}
+                  onChange={(e) => {
+                    setts(
+                      ts.map((tsi) =>
+                        tsi.id === i + 1
+                          ? {
+                              ...tsi,
+                              name: e.target.value,
+                            }
+                          : tsi
+                      )
+                    )
+                  }}
+                />
+                <Button
+                  variant="outline-dark ms-auto"
+                  onClick={() => {
+                    setts(
+                      ts.map((tsi) =>
+                        tsi.id === i + 1
+                          ? {
+                              ...tsi,
+                              show: true,
+                            }
+                          : tsi
+                      )
+                    )
+                    setdrtag(i + 1)
+                  }}
+                >
+                  設定
+                </Button>
+              </div>
+            ))}
+            {drtag ? <p>點擊圖片中路口中央來放置標記</p> : <div />}
+            {/* <ButtonGroup>
+              <Button
+                className="my-2"
+                variant="outline-dark"
+                active={clicking === 'entry'}
+                onClick={() => setclicking('entry')}
+              >
+                入口車道
+              </Button>
+              <Button
+                className="my-2"
+                variant="outline-dark"
+                active={clicking === 'outry'}
+                onClick={() => setclicking('outry')}
+              >
+                出口車道
+              </Button>
+            </ButtonGroup> */}
+            {/* <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+              &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。
+            </h6> */}
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-end">
         <Button
@@ -951,7 +1135,7 @@ function RoadModal({ setting }) {
         <Button
           variant="revo2"
           className="mt-auto ms-2"
-          onClick={() => handleClose({ draggables, clicks })}
+          onClick={() => handleClose({ draggables, clicks, tagSetting: ts })}
         >
           確認
         </Button>
@@ -1258,6 +1442,14 @@ function VISSIMModal({ setting }) {
           />
         </Row>
         <Row className="mb-3 justify-content-center">
+          <Col xs={3}>
+            <Button
+              variant="revo2"
+              onClick={() => downloadFilePost('requirement.txt', {})}
+            >
+              下載requirement.txt
+            </Button>
+          </Col>
           <Col xs={3}>
             <Button
               variant="revo2"
@@ -1854,21 +2046,23 @@ function Road({ setting }) {
       )}
       {videos[selected] && (
         <>
-          <RoadModal
-            setting={{
-              show,
-              data: roads,
-              thumbnail,
-              handleClose: (value) => {
-                if (value)
-                  handleDataChange({
-                    roads: value,
-                  })
-                setshow(false)
-              },
-              hasDraggable: data.type === '路口',
-            }}
-          />
+          {show && (
+            <RoadModal
+              setting={{
+                show,
+                data: roads,
+                thumbnail,
+                handleClose: (value) => {
+                  if (value)
+                    handleDataChange({
+                      roads: value,
+                    })
+                  setshow(false)
+                },
+                hasDraggable: data.type === '路口',
+              }}
+            />
+          )}
           <ProjectedModal
             setting={{
               data: roadAdjust,
