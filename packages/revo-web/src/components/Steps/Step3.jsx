@@ -788,6 +788,14 @@ function Step3({ setting }) {
         }}
       />
     ),
+    各方向交通量: (
+      <AccuracyTable
+        setting={{
+          result,
+          trueValue,
+        }}
+      />
+    ),
     '軌跡辨識與轉向 (視覺化)': (
       <Row className="position-relative h-100">
         <Image
@@ -993,19 +1001,22 @@ function Step3({ setting }) {
                   下拉檢視辨識結果
                 </option>
                 {[
+                  // {
+                  //   label:
+                  //     videoData.type === '路口'
+                  //       ? '每15分鐘各方向交通量'
+                  //       : '每15分鐘各方向交通量（路段影像不適用）',
+                  //   disabled: videoData.type === '路段',
+                  // },
+                  // {
+                  //   label:
+                  //     videoData.type === '路口'
+                  //       ? '每小時各方向交通量'
+                  //       : '每小時各方向交通量（路段影像不適用）',
+                  //   disabled: videoData.type === '路段',
+                  // },
                   {
-                    label:
-                      videoData.type === '路口'
-                        ? '每15分鐘各方向交通量'
-                        : '每15分鐘各方向交通量（路段影像不適用）',
-                    disabled: videoData.type === '路段',
-                  },
-                  {
-                    label:
-                      videoData.type === '路口'
-                        ? '每小時各方向交通量'
-                        : '每小時各方向交通量（路段影像不適用）',
-                    disabled: videoData.type === '路段',
+                    label: '各方向交通量',
                   },
                   {
                     label:
@@ -1095,6 +1106,7 @@ function Step3({ setting }) {
                       break
                     case '每15分鐘各方向交通量':
                     case '每小時各方向交通量':
+                    case '各方向交通量':
                       if (videoData && videoData.result) {
                         const workbook = new ExcelJS.Workbook()
                         const book = await workbook.xlsx.load(

@@ -116,7 +116,7 @@ socket.init = (server, setting) => {
         if (warpPixelRate) params.warpPixelRate = warpPixelRate
         if (roads) {
           const { clicks, draggables, tagSetting } = roads
-          const { entry, outry } = clicks
+          const { entry, outry } = clicks || {}
           if (entry) {
             params.road_in_points = entry.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
           }

@@ -38,7 +38,7 @@ import {
   Tooltip,
 } from 'react-bootstrap'
 import VideoSnapshot from 'video-snapshot'
-import { description, remark1, remark2 } from '../../assets'
+import { description, description2, remark2 } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext, ToastContext } from '../ContextProvider'
@@ -434,11 +434,44 @@ function ProjectedModal({ setting }) {
         <div className="d-flex">
           <h6 className="w-50 position-relative py-3 ps-3 text-left text-secondary">
             <FontAwesomeIcon icon={faCircleInfo} title="說明" />
-            &ensp;在影片截圖上按下路段 4 個角， 並按下校正進行投影視角轉換。
+            &ensp;在影片截圖上按下路段 4 個角，
+            並按下校正進行投影視角轉換。依序設定：LU(左上) → LD(左下) → RU(右上)
+            → RD(右下)。設定錯誤請按”清除”重新設定。&ensp;
+            <OverlayTrigger
+              placement="right"
+              delay={{ show: 150, hide: 400 }}
+              overlay={
+                <Tooltip
+                  className="description"
+                  style={{
+                    zIndex: '9999',
+                    width: '200px',
+                  }}
+                >
+                  <div className="w-100">
+                    <Image
+                      className="mx-auto w-100"
+                      height="auto"
+                      src={description2}
+                      fluid
+                    />
+                  </div>
+                </Tooltip>
+              }
+            >
+              <span
+                style={{
+                  textDecoration: 'underline',
+                }}
+              >
+                範例圖示
+              </span>
+            </OverlayTrigger>
           </h6>
-          <h6 className="w-50 position-relative py-3 text-center text-secondary">
-            &ensp;校正後
-          </h6>
+          {/* <Image className="mx-auto" height="auto" src={description2} fluid /> */}
+          <h4 className="w-50 position-relative py-3 text-center text-secondary">
+            校正後
+          </h4>
         </div>
         <div className="d-flex">
           <div
@@ -1146,18 +1179,16 @@ function RoadModal({ setting }) {
         <div className="w-25 ms-auto d-flex flex-column">
           <h6 style={{ top: '0' }} className="text-secondary pt-2">
             <FontAwesomeIcon icon={faCircleInfo} title="說明" />
-            &ensp;使用方法
+            &ensp;使用說明：
           </h6>
           <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            1.
-            請先按B的”設定”，並將圓形標誌拖曳至”最靠近北方”之路段上，並盡量將標誌的中間定位在路段之中央。
+            1. 請選擇路段數
           </h6>
           <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            {`2. 自B路口逆時針方向的路口為C -> D -> ... ->
-            A。請按照上決定對應路口圓形標誌的位置。`}
+            2. 按設定並將放置路段上
           </h6>
           <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            3. 分別在對應的路口編號後的方框中輸入路名。
+            3. 輸入該路段名稱
           </h6>
           <Image className="mx-auto" height="auto" src={description} fluid />
         </div>
