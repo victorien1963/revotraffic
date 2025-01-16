@@ -11,8 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faFileVideo,
   faLocationDot,
-  faCarRear,
-  faArrowsToDot,
   faCheckCircle,
   faCircle,
   faCircleInfo,
@@ -28,7 +26,6 @@ import {
   Form,
   FormLabel,
   Button,
-  ButtonGroup,
   Image,
   Modal,
   Spinner,
@@ -38,7 +35,7 @@ import {
   Tooltip,
 } from 'react-bootstrap'
 import VideoSnapshot from 'video-snapshot'
-import { description, description2, remark2 } from '../../assets'
+import { description, description2, description3, remark2 } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext, ToastContext } from '../ContextProvider'
@@ -661,7 +658,7 @@ function RoadModal({ setting }) {
     handleClose,
     thumbnail,
     data,
-    // hasDraggable = false,
+    hasDraggable = false,
     // hasRoadName = true,
   } = setting
   // const initDraggables = [
@@ -1176,23 +1173,41 @@ function RoadModal({ setting }) {
               &ensp;請先選擇車道別，並拖曳東西南北輸入框至圖片上方；單擊滑鼠以數字標記，雙擊已標記之數字即可取消，或按「清除」重設全部。
             </h6> */}
         </div>
-        <div className="w-25 ms-auto d-flex flex-column">
-          <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            <FontAwesomeIcon icon={faCircleInfo} title="說明" />
-            &ensp;使用說明：
-          </h6>
-          <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            1. 請選擇路段數
-          </h6>
-          <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            2. 按設定並將放置路段上
-          </h6>
-          <h6 style={{ top: '0' }} className="text-secondary pt-2">
-            3. 輸入該路段名稱
-          </h6>
-          <Image className="mx-auto" height="auto" src={description} fluid />
-        </div>
-        {/* )} */}
+        {hasDraggable ? (
+          <div className="w-25 ms-auto d-flex flex-column">
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+              &ensp;使用說明：
+            </h6>
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              1. 請選擇路段數
+            </h6>
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              2. 按設定並將放置路段上
+            </h6>
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              3. 輸入該路段名稱
+            </h6>
+            <Image className="mx-auto" height="auto" src={description3} fluid />
+          </div>
+        ) : (
+          <div className="w-25 ms-auto d-flex flex-column">
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              <FontAwesomeIcon icon={faCircleInfo} title="說明" />
+              &ensp;使用說明：
+            </h6>
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              1. 請選擇路段數
+            </h6>
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              2. 按設定並將放置路段上
+            </h6>
+            <h6 style={{ top: '0' }} className="text-secondary pt-2">
+              3. 輸入該路段名稱
+            </h6>
+            <Image className="mx-auto" height="auto" src={description} fluid />
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-end">
         <Button
