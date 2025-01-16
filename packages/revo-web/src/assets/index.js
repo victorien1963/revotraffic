@@ -32,6 +32,8 @@ import v04 from './images/04.mp4'
 import v04Rl from './images/04_rl.mp4'
 import remark1 from './images/remark1.png'
 import remark2 from './images/remark2.png'
+import description from './images/description.png'
+import description2 from './images/description2.png'
 
 export {
   // image
@@ -65,6 +67,8 @@ export {
   turning,
   remark1,
   remark2,
+  description,
+  description2,
   // video
   camera14,
   camera7projection,

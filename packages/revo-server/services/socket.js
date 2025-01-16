@@ -115,13 +115,16 @@ socket.init = (server, setting) => {
         if (tarH) params.tarH = parseInt(tarH, 10)
         if (warpPixelRate) params.warpPixelRate = warpPixelRate
         if (roads) {
-          const { clicks, draggables } = roads
-          const { entry, outry } = clicks
+          const { clicks, draggables, tagSetting } = roads
+          const { entry, outry } = clicks || {}
           if (entry) {
             params.road_in_points = entry.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
           }
           if (outry) {
             params.road_out_points = outry.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
+          }
+          if (tagSetting) {
+            params.road_in_points = tagSetting.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
           }
           if (draggables) {
             params.road_1_name = draggables[1].name ? `${draggables[1].name}（西）` : '西'
