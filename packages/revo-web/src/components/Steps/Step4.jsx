@@ -490,7 +490,7 @@ function Results({ setting }) {
           <Button
             variant="revo"
             size="sm h-100 w-20 mx-2 my-auto"
-            onClick={handleDownload}
+            onClick={() => handleDownload()}
             disabled={!selected}
           >
             下載範本
