@@ -1343,7 +1343,7 @@ function Preview({ setting }) {
       size="xl"
       show={show}
       onHide={() => handleClose()}
-      className="p-2"
+      className="p-2 wideModal"
     >
       <Modal.Header className="h5 text-revo" closeButton>
         預覽
@@ -1372,8 +1372,8 @@ function Preview({ setting }) {
                     // ...tsi.style,
                     pointerEvents: 'none',
                     color: 'white',
-                    left: tsi.style.left * 0.95,
-                    top: tsi.style.top * 0.95,
+                    left: tsi.style.left,
+                    top: tsi.style.top * 0.8,
                     zIndex: 1,
                   }}
                 >
