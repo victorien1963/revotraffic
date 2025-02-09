@@ -935,11 +935,11 @@ function RoadModal({ setting }) {
               <h1
                 className="position-absolute d-flex h1 textShadow justify-content-center mb-0"
                 style={{
-                  ...tsi.style,
+                  // ...tsi.style,
                   pointerEvents: 'none',
                   color: 'white',
-                  // left: tsi.style.left - 25,
-                  // top: tsi.style.top - 25,
+                  left: `${tsi.style.left}px`,
+                  top: tsi.style.top,
                   zIndex: 1,
                 }}
               >
@@ -1548,7 +1548,7 @@ function VISSIMModal({ setting }) {
           <Col xs={3}>
             <Button
               variant="revo2"
-              onClick={() => downloadFilePost('setting_explain.txt', {})}
+              onClick={() => downloadFilePost('setting_explain.pdf', {})}
             >
               下載設定檔說明文件
             </Button>
@@ -1614,10 +1614,11 @@ function Road({ setting }) {
     thumbnail = {},
   } = videos[selected] || {}
 
-  const handleDataChange = (data) => {
-    handleTimeEdit(timeId, {
+  const handleDataChange = async (data) => {
+    await handleTimeEdit(timeId, {
       videos: videos.map((v, i) => (i === selected ? { ...v, ...data } : v)),
     })
+    return 'updated'
   }
 
   const [showDate, setshowDate] = useState(false)
@@ -1952,18 +1953,6 @@ function Road({ setting }) {
                           </InputGroup>
                         </Col>
                       </Row>
-                      <div
-                        className="lh-sm me-auto small ps-5 text-secondary"
-                        style={{ textAlign: 'start' }}
-                      >
-                        <div className="ps-5 ms-5">
-                          <div className="ps-5">
-                            路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
-                            <br />
-                            路段名稱格式：路名＋路，Ex.中正路
-                          </div>
-                        </div>
-                      </div>
                     </React.Fragment>
                   )
                 default:
@@ -1993,6 +1982,18 @@ function Road({ setting }) {
                           />
                         </Col>
                       </Row>
+                      <div
+                        className="lh-sm me-auto small ps-5 text-secondary"
+                        style={{ textAlign: 'start' }}
+                      >
+                        <div className="ps-5 ms-5">
+                          <div className="ps-5">
+                            路口名稱格式：南北向路名＋東西向路名+路口，Ex.中正南平路口
+                            <br />
+                            路段名稱格式：路名＋路，Ex.中正路
+                          </div>
+                        </div>
+                      </div>
                     </React.Fragment>
                   )
               }
@@ -2139,14 +2140,21 @@ function Road({ setting }) {
                 show,
                 data: roads,
                 thumbnail,
-                handleClose: (value) => {
-                  if (value)
-                    handleDataChange({
+                handleClose: async (value) => {
+                  if (value) {
+                    console.log({
                       roads: {
                         ...roads,
                         ...value,
                       },
                     })
+                    await handleDataChange({
+                      roads: {
+                        ...roads,
+                        ...value,
+                      },
+                    })
+                  }
                   setshow(false)
                 },
                 hasDraggable: data.type === '路口',
@@ -2158,8 +2166,8 @@ function Road({ setting }) {
               data: roadAdjust,
               show: showProject,
               thumbnail,
-              handleClose: (value) => {
-                if (value) handleDataChange(value)
+              handleClose: async (value) => {
+                if (value) await handleDataChange(value)
                 setshowProject(false)
               },
             }}
@@ -2170,9 +2178,9 @@ function Road({ setting }) {
               show: showLine,
               fixed,
               thumbnail,
-              handleClose: (value) => {
+              handleClose: async (value) => {
                 if (value) {
-                  handleDataChange(value)
+                  await handleDataChange(value)
                 }
                 setshowLine(false)
               },

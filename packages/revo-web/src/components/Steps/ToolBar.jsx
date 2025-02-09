@@ -81,16 +81,16 @@ function ToolBar({ setting }) {
           name: 'step2',
           value: '路口＆路段標記',
         },
-        {
-          label: '車種標記',
-          name: 'step2',
-          value: '車種標記',
-        },
-        {
-          label: '軌跡標記',
-          name: 'step2',
-          value: '軌跡標記',
-        },
+        // {
+        //   label: '車種標記',
+        //   name: 'step2',
+        //   value: '車種標記',
+        // },
+        // {
+        //   label: '軌跡標記',
+        //   name: 'step2',
+        //   value: '軌跡標記',
+        // },
       ],
     },
     {
