@@ -105,6 +105,13 @@ router.get('/', async (req, res) => {
       return res.send({ error: 'token not valid' })
     }
     switch(target) {
+      case 'requirements.txt':
+        data = await apiService.send({
+          url: 'http://140.238.40.158:8000/api/v1/download_requirements',
+          method: 'POST',
+          token: 'vissim123',
+        })
+        return res.send(data)
       case 'setting.json':
         data = await apiService.send({
           url: 'http://140.238.40.158:8000/api/v1/download_setting',
@@ -112,12 +119,14 @@ router.get('/', async (req, res) => {
           token: 'vissim123',
         })
         return res.send(data)
-      case 'setting_explain.txt':
+      case 'setting_explain.pdf':
         data = await apiService.send({
           url: 'http://140.238.40.158:8000/api/v1/download_setting_explain',
           method: 'POST',
           token: 'vissim123',
+          responseType: 'arraybuffer',
         })
+        console.log(data)
         return res.send(data)
       case 'train.py':
         data = await apiService.send({
@@ -154,6 +163,13 @@ router.post('/', async (req, res) => {
   //   return res.send({ error: 'token not valid' })
   // }
   switch(target) {
+    case 'requirements.txt':
+        data = await apiService.send({
+          url: 'http://140.238.40.158:8000/api/v1/download_requirements',
+          method: 'POST',
+          token: 'vissim123',
+        })
+        return res.send(data)
     case 'setting.json':
       data = await apiService.send({
         url: 'http://140.238.40.158:8000/api/v1/download_setting',
@@ -161,12 +177,14 @@ router.post('/', async (req, res) => {
         token: 'vissim123',
       })
       return res.send(data)
-    case 'setting_explain.txt':
+    case 'setting_explain.pdf':
       data = await apiService.send({
         url: 'http://140.238.40.158:8000/api/v1/download_setting_explain',
         method: 'POST',
         token: 'vissim123',
+        responseType: 'arraybuffer',
       })
+      console.log(data)
       return res.send(data)
     case 'train.py':
       data = await apiService.send({

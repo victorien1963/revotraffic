@@ -16,7 +16,7 @@ import {
 } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCheckCircle,
+  // faCheckCircle,
   faCircleExclamation,
   faCirclePlus,
   faCloudArrowUp,
@@ -490,7 +490,7 @@ function Results({ setting }) {
           <Button
             variant="revo"
             size="sm h-100 w-20 mx-2 my-auto"
-            onClick={handleDownload}
+            onClick={() => handleDownload()}
             disabled={!selected}
           >
             下載範本
@@ -724,7 +724,7 @@ function VISSIM({ setting }) {
           <Col xs={3}>
             <Button
               variant="revo2"
-              onClick={() => downloadFilePost('setting_explain.txt', {})}
+              onClick={() => downloadFilePost('setting_explain.pdf', {})}
             >
               下載設定檔說明文件
             </Button>
@@ -1201,12 +1201,12 @@ function Step4({ setting }) {
                 />
                 <div className="mx-auto mb-auto">{s.label}</div>
               </Card>
-              <FontAwesomeIcon
+              {/* <FontAwesomeIcon
                 className={`h5 mt-2 ${
                   s.check ? 'check-revo' : 'text-secondary'
                 }`}
                 icon={faCheckCircle}
-              />
+              /> */}
             </div>
           </Col>
         ))}
