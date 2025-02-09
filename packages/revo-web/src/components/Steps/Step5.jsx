@@ -148,9 +148,9 @@ function BarGroups({ setting }) {
           width="15px"
           height="15px"
           x={xMax - margin.right - 80}
-          y={margin.top - 36}
+          y={margin.top - 60}
         />
-        <text stroke={blue} x={xMax - margin.right - 60} y={margin.top - 24}>
+        <text stroke={blue} x={xMax - margin.right - 60} y={margin.top - 48}>
           固定
         </text>
         <rect
@@ -158,9 +158,9 @@ function BarGroups({ setting }) {
           width="15px"
           height="15px"
           x={xMax - margin.right - 20}
-          y={margin.top - 36}
+          y={margin.top - 60}
         />
-        <text stroke={green} x={xMax - margin.right} y={margin.top - 24}>
+        <text stroke={green} x={xMax - margin.right} y={margin.top - 48}>
           RL
         </text>
         <BarGroup
@@ -347,6 +347,24 @@ function Step5() {
       getData(list[labels[selected]][0].path)
   }, [selected])
 
+  const handleDownload = async () => {
+    const url = `model/file/${draftId}/${rangeId}/${timeId}/${
+      list[labels[selected]][0].path
+    }`
+    const res = await apiServices.data({
+      path: url,
+      method: 'get',
+      responseType: 'blob',
+    })
+    const blob = new Blob([res])
+    const link = document.createElement('a')
+    link.setAttribute('href', URL.createObjectURL(blob))
+    link.setAttribute('download', url.split('/')[url.split('/').length - 1])
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
   const reports = [
     {
       label: '路口延滯時間',
@@ -523,7 +541,8 @@ function Step5() {
                 <Button
                   variant="revo2"
                   className="text-nowrap"
-                  onClick={() => {}}
+                  onClick={handleDownload}
+                  disabled={!selected}
                 >
                   匯出
                 </Button>
