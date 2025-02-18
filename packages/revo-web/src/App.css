@@ -363,10 +363,37 @@ img {
   width: 40rem !important;
 }
 
+.border-table-high {
+  overflow: auto;
+}
+
+.border-table-high > .row {
+  flex-wrap: nowrap;
+  font-size: xx-small;
+  text-align: center;
+  height: 40px;
+}
+
+.border-table-high > .row > .col {
+  text-align: center;
+  padding: 0;
+}
+
+.border-table-high > .row > div > .row {
+  text-align: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.border-table {
+  overflow: auto;
+}
+
 .border-table > .row {
   flex-wrap: nowrap;
   font-size: xx-small;
   text-align: center;
+  height: 20px;
 }
 
 .border-table > .row > .col {
@@ -380,13 +407,13 @@ img {
   padding: 0;
 }
 
-.border-table > .row > * {
+/* .border-table > .row > * {
   border-top: 1px solid;
   border-bottom: 1px solid;
   border-left: 1px solid;
   border-right: 1px solid;
   padding: 0;
-}
+} */
 
 .no-border-top {
   border-top: 0px solid;
