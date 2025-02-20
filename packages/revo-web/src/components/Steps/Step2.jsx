@@ -825,9 +825,9 @@ function RoadModal({ setting }) {
             }}
           />
           <Image
-            className="mx-auto w-100 h-100"
+            // className="mx-auto w-100 h-100"
             src={`/api/draft/video/${thumbnail.name}`}
-            fluid
+            // fluid
             onClick={(e) => {
               console.log(drtag)
               if (drtag) {

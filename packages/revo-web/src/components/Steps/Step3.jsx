@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState, useContext, useMemo, useRef } from 'react'
@@ -22,6 +23,7 @@ import {
   faCaretRight,
   faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
+import { path3, path4, path5 } from '../../assets'
 import { DraftContext, SocketContext, ToastContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
 
@@ -70,10 +72,26 @@ function WarnModal({ setting }) {
 function AccuracyTable({ setting }) {
   const { trueValue } = setting
   console.log(trueValue)
-
+  const imgs = {
+    3: path3,
+    4: path4,
+    5: path5,
+  }
+  const roadNum =
+    setting.result.length - 7 === 6
+      ? 3
+      : setting.result.length - 7 === 12
+      ? 4
+      : 5
   return (
     <div className="w-100 h-100 d-flex px-3">
-      <div className="border-table w-100 h-100 d-flex flex-column">
+      <div className="border-table w-100 h-100 d-flex flex-column position-relative">
+        <Image
+          className="position-absolute"
+          width="30%"
+          style={{ left: '14%', top: '20%' }}
+          src={imgs[roadNum]}
+        />
         {(setting.result || []).map((sr, i) => (
           <Row key={i}>
             {sr.slice(1, 15).map((r, j) => {
@@ -81,17 +99,19 @@ function AccuracyTable({ setting }) {
               const before = j > 1 && r === sr[j - 1] && notnumber
               const after = sr[j + 1] && r === sr[j + 1] && notnumber
               const isControl = j > 10 && i > 2
+
+              const className =
+                j > 2 || i < 3
+                  ? `border-top border-bottom ${before ? '' : 'border-start'} ${
+                      after ? '' : 'border-end'
+                    }`
+                  : ``
+              const empty = !(j > 2 || i < 3)
+
               return (
-                <Col
-                  xs={2}
-                  className={`border-top border-bottom ${
-                    before ? '' : 'border-start'
-                  } ${after ? '' : 'border-end'}`}
-                  key={j}
-                >
+                <Col xs={2} className={className} key={j}>
                   {isControl ? (
                     <Row className="flex-nowrap">
-                      {/* <Col xs={4}>{trueValue[i] ? trueValue[i][j] : ''}</Col> */}
                       <Col xs={6}>
                         {trueValue[i] && trueValue[i][j]
                           ? parseFloat(sr[j - 3]) - parseFloat(trueValue[i][j])
@@ -109,7 +129,7 @@ function AccuracyTable({ setting }) {
                       </Col>
                     </Row>
                   ) : (
-                    <p className="text-nowrap">{before ? '' : r}</p>
+                    <p className="text-nowrap">{before || empty ? '' : r}</p>
                   )}
                 </Col>
               )

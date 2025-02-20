@@ -35,6 +35,9 @@ import remark2 from './images/remark2.png'
 import description from './images/description.png'
 import description2 from './images/description2.png'
 import description3 from './images/description3.png'
+import path3 from './images/path3.png'
+import path4 from './images/path4.png'
+import path5 from './images/path5.png'
 
 export {
   // image
@@ -71,6 +74,9 @@ export {
   description,
   description2,
   description3,
+  path3,
+  path4,
+  path5,
   // video
   camera14,
   camera7projection,

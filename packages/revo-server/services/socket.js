@@ -125,13 +125,17 @@ socket.init = (server, setting) => {
           }
           if (tagSetting) {
             params.road_in_points = tagSetting.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
+            tagSetting.forEach((ts, i) => {
+              params[`road_${i + 1}_name`] = ts.name || ''
+            })
+            params.road_nums = tagSetting.length
           }
-          if (draggables) {
-            params.road_1_name = draggables[1].name ? `${draggables[1].name}（西）` : '西'
-            params.road_2_name = draggables[3].name ? `${draggables[3].name}（北）` : '北'
-            params.road_3_name = draggables[0].name ? `${draggables[0].name}（東）` : '東'
-            params.road_4_name = draggables[2].name ? `${draggables[2].name}（南）` : '南'
-          }
+          // if (draggables) {
+          //   params.road_1_name = draggables[1].name ? `${draggables[1].name}（西）` : '西'
+          //   params.road_2_name = draggables[3].name ? `${draggables[3].name}（北）` : '北'
+          //   params.road_3_name = draggables[0].name ? `${draggables[0].name}（東）` : '東'
+          //   params.road_4_name = draggables[2].name ? `${draggables[2].name}（南）` : '南'
+          // }
         }
         console.log('---------calling api with these params--------')
         console.log(params)
