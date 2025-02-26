@@ -685,7 +685,7 @@ function Step3({ setting }) {
                           videoData.result.data || videoData.result
                         )
                         const sheet = book.worksheets[0]
-                        sheet.spliceColumns(15, 6)
+                        sheet.spliceColumns(16, 6)
                         const file = await workbook.xlsx.writeBuffer({
                           base64: true,
                         })
