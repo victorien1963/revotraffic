@@ -661,6 +661,40 @@ function RoadModal({ setting }) {
     hasDraggable = false,
     // hasRoadName = true,
   } = setting
+  const [svgSize, setsvgSize] = useState({
+    scale: 1,
+  })
+  const ref = useRef(null)
+  const getSize = () => {
+    if (ref.current) {
+      const style = getComputedStyle(ref.current)
+      const height =
+        ref.current.clientHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom)
+      const width = ref.current.clientWidth
+      const originHeight = ref.current.naturalHeight
+      const originWidth = ref.current.naturalWidth
+      return {
+        width,
+        height,
+        originHeight,
+        originWidth,
+        scale: width / originWidth,
+      }
+    }
+    return false
+  }
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      const size = getSize()
+      if (size.width !== svgSize.width || size.height !== svgSize.height)
+        setsvgSize(size)
+    })
+    observer.observe(ref.current)
+    return () => ref.current && observer.unobserve(ref.current)
+  }, [])
+  console.log(svgSize)
   // const initDraggables = [
   //   {
   //     id: 1,
@@ -825,9 +859,10 @@ function RoadModal({ setting }) {
             }}
           />
           <Image
+            ref={ref}
             // className="mx-auto w-100 h-100"
             src={`/api/draft/video/${thumbnail.name}`}
-            // fluid
+            fluid
             onClick={(e) => {
               console.log(drtag)
               if (drtag) {
@@ -840,8 +875,8 @@ function RoadModal({ setting }) {
                       ? {
                           ...tsi,
                           style: {
-                            top: Math.max(top - 25, 0),
-                            left: Math.max(left - 25, 0),
+                            top: Math.max(top - 25, 0) / svgSize.scale,
+                            left: Math.max(left - 25, 0) / svgSize.scale,
                           },
                         }
                       : tsi
@@ -938,8 +973,8 @@ function RoadModal({ setting }) {
                   // ...tsi.style,
                   pointerEvents: 'none',
                   color: 'white',
-                  left: `${tsi.style.left}px`,
-                  top: tsi.style.top,
+                  left: `${tsi.style.left * svgSize.scale}px`,
+                  top: `${tsi.style.top * svgSize.scale}px`,
                   zIndex: 1,
                 }}
               >
@@ -1246,6 +1281,41 @@ function Preview({ setting }) {
     hasRoadName = true,
   } = setting
 
+  const [svgSize, setsvgSize] = useState({
+    scale: 1,
+  })
+  const ref = useRef(null)
+  const getSize = () => {
+    if (ref.current) {
+      const style = getComputedStyle(ref.current)
+      const height =
+        ref.current.clientHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom)
+      const width = ref.current.clientWidth
+      const originHeight = ref.current.naturalHeight
+      const originWidth = ref.current.naturalWidth
+      return {
+        width,
+        height,
+        originHeight,
+        originWidth,
+        scale: width / originWidth,
+      }
+    }
+    return false
+  }
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      const size = getSize()
+      if (size.width !== svgSize.width || size.height !== svgSize.height)
+        setsvgSize(size)
+    })
+    observer.observe(ref.current)
+    return () => ref.current && observer.unobserve(ref.current)
+  }, [])
+  console.log(svgSize)
+
   // for new version tag
   const [drtag, setdrtag] = useState(0)
   const tagSetting = [
@@ -1360,6 +1430,7 @@ function Preview({ setting }) {
             <Image
               className="mx-auto w-100"
               src={`/api/draft/video/${thumbnail.name}`}
+              ref={ref}
               fluid
             />
             {ts.map((tsi, i) =>
@@ -1372,8 +1443,8 @@ function Preview({ setting }) {
                     // ...tsi.style,
                     pointerEvents: 'none',
                     color: 'white',
-                    left: tsi.style.left,
-                    top: tsi.style.top * 0.8,
+                    left: tsi.style.left * svgSize.scale,
+                    top: tsi.style.top * svgSize.scale,
                     zIndex: 1,
                   }}
                 >
