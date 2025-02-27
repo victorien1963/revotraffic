@@ -2130,7 +2130,7 @@ function Road({ setting }) {
             </Col>
           </Row>
           <Row
-            className="pt-2 pb-5 px-4 border rounded mx-5"
+            className="pt-2 pb-5 px-4 border rounded mx-5 overflow-scroll"
             style={{ minHeight: '82%' }}
           >
             {videos && videos.length ? (
