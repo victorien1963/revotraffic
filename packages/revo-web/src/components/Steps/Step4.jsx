@@ -708,7 +708,7 @@ function VISSIM({ setting }) {
           <Col xs={3}>
             <Button
               variant="revo2"
-              onClick={() => downloadFilePost('requirement.txt', {})}
+              onClick={() => downloadFilePost('requirements.txt', {})}
             >
               下載requirement.txt
             </Button>
@@ -912,14 +912,12 @@ function Files({ setting }) {
                 {editing === i ? (
                   <Form.Control
                     className="w-30 my-auto text-start"
-                    value={
-                      modelName.split('_')[modelName.split('_').length - 1]
-                    }
+                    value={modelName.split('_').slice(1).join('_')}
                     onChange={(e) =>
                       setmodelName(
                         modelName
                           .split('_')
-                          .slice(0, modelName.split('_').length - 1)
+                          .slice(0, 1)
                           .concat(e.target.value)
                           .join('_')
                       )
@@ -927,7 +925,7 @@ function Files({ setting }) {
                   />
                 ) : (
                   <p className="w-30 my-auto text-start">
-                    {name.split('_')[name.split('_').length - 1]}
+                    {name.split('_').slice(1).join('_')}
                   </p>
                 )}
                 <p className="w-25 my-auto text-start">建立者：{user}</p>
@@ -1004,7 +1002,7 @@ function Files({ setting }) {
                   onClick={() => {
                     setdeleting({
                       show: true,
-                      name: name.split('_')[name.split('_').length - 1],
+                      name: name.split('_').slice(1).join('_'),
                       handleClose: (value) => {
                         if (value) handleEdit(models.filter((m, j) => i !== j))
                         setdeleting({ ...deleting, show: false })

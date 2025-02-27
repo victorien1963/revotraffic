@@ -1603,7 +1603,7 @@ function VISSIMModal({ setting }) {
           <Col xs={3}>
             <Button
               variant="revo2"
-              onClick={() => downloadFilePost('requirement.txt', {})}
+              onClick={() => downloadFilePost('requirements.txt', {})}
             >
               下載requirement.txt
             </Button>
