@@ -2440,7 +2440,7 @@ function Video({ setting }) {
         </Col>
       </Row>
       <Row
-        className="py-3 px-3 overflow-hidden border rounded mx-5"
+        className="py-3 px-3 overflow-scroll border rounded mx-5"
         style={{ height: '82%' }}
       >
         {uploading ? (
