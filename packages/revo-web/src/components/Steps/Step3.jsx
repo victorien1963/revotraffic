@@ -703,9 +703,10 @@ function Step3({ setting }) {
                                 trueValue[rowNumber - 2][cellNumber + 1]
                               ) {
                                 const dif =
+                                  parseFloat(cell.value) -
                                   parseFloat(
                                     trueValue[rowNumber - 2][cellNumber + 1]
-                                  ) - parseFloat(cell.value)
+                                  )
                                 const percent = (
                                   (dif /
                                     parseFloat(
