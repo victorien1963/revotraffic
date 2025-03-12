@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -96,8 +97,8 @@ function AccuracyTable({ setting }) {
           <Row key={i}>
             {sr.slice(1, 15).map((r, j) => {
               const notnumber = Number.isNaN(parseFloat(r))
-              const before = j > 1 && r === sr[j - 1] && notnumber
-              const after = sr[j + 1] && r === sr[j + 1] && notnumber
+              const before = j > 1 && r === sr[j] && notnumber
+              const after = sr[j + 2] && r === sr[j + 2] && notnumber
               const isControl = j > 10 && i > 2
 
               const className =
@@ -114,13 +115,13 @@ function AccuracyTable({ setting }) {
                     <Row className="flex-nowrap">
                       <Col xs={6}>
                         {trueValue[i] && trueValue[i][j]
-                          ? parseFloat(sr[j - 3]) - parseFloat(trueValue[i][j])
+                          ? parseFloat(sr[j - 2]) - parseFloat(trueValue[i][j])
                           : ''}
                       </Col>
                       <Col xs={6}>
                         {trueValue[i] && trueValue[i][j]
                           ? `${(
-                              ((parseFloat(sr[j - 3]) -
+                              ((parseFloat(sr[j - 2]) -
                                 parseFloat(trueValue[i][j])) /
                                 parseFloat(trueValue[i][j])) *
                               100
@@ -129,7 +130,15 @@ function AccuracyTable({ setting }) {
                       </Col>
                     </Row>
                   ) : (
-                    <p className="text-nowrap">{before || empty ? '' : r}</p>
+                    <p className="text-nowrap">
+                      {before || empty
+                        ? ''
+                        : r === '請綠線協助填寫'
+                        ? '真值'
+                        : r && r.replace
+                        ? r.replace('每小時', '')
+                        : r}
+                    </p>
                   )}
                 </Col>
               )
@@ -571,20 +580,6 @@ function Step3({ setting }) {
                   下拉檢視辨識結果
                 </option>
                 {[
-                  // {
-                  //   label:
-                  //     videoData.type === '路口'
-                  //       ? '每15分鐘各方向交通量'
-                  //       : '每15分鐘各方向交通量（路段影像不適用）',
-                  //   disabled: videoData.type === '路段',
-                  // },
-                  // {
-                  //   label:
-                  //     videoData.type === '路口'
-                  //       ? '每小時各方向交通量'
-                  //       : '每小時各方向交通量（路段影像不適用）',
-                  //   disabled: videoData.type === '路段',
-                  // },
                   {
                     label: '各方向交通量',
                   },
@@ -686,6 +681,46 @@ function Step3({ setting }) {
                         )
                         const sheet = book.worksheets[0]
                         sheet.spliceColumns(16, 6)
+                        sheet.eachRow((row, rowNumber) => {
+                          console.log(
+                            `Row ${rowNumber} = ${JSON.stringify(row.values)}`
+                          )
+                          row.eachCell((cell, cellNumber) => {
+                            if (cell.value === '請綠線協助填寫') {
+                              cell.value = '真值'
+                            } else if (
+                              cell.value === '每小時於路口前停等的時間(秒)' ||
+                              cell.value === '每小時通過路口的數量'
+                            ) {
+                              cell.value = cell.value.replace('每小時', '')
+                            } else if (
+                              cellNumber >= 10 &&
+                              cellNumber < 13 &&
+                              rowNumber >= 5
+                            ) {
+                              if (
+                                trueValue[rowNumber - 2] &&
+                                trueValue[rowNumber - 2][cellNumber + 1]
+                              ) {
+                                const dif =
+                                  parseFloat(
+                                    trueValue[rowNumber - 2][cellNumber + 1]
+                                  ) - parseFloat(cell.value)
+                                const percent = (
+                                  (dif /
+                                    parseFloat(
+                                      trueValue[rowNumber - 2][cellNumber + 1]
+                                    )) *
+                                  100
+                                ).toFixed(0)
+                                row.getCell(
+                                  cellNumber + 3
+                                ).value = `${dif} ${percent}%`
+                              }
+                            }
+                          })
+                          console.log(row.getCell(10).value)
+                        })
                         const file = await workbook.xlsx.writeBuffer({
                           base64: true,
                         })
@@ -711,20 +746,6 @@ function Step3({ setting }) {
               >
                 匯出
               </Button>
-              {/* <Button
-                variant="revo"
-                className="text-nowrap ms-2"
-                onClick={() =>
-                  handleToolChange({
-                    target: {
-                      name: 'step4',
-                      value: 'selector',
-                    },
-                  })
-                }
-              >
-                {selected === '每小時各方向交通量' ? '交通量檢核' : '確認'}
-              </Button> */}
             </div>
           </div>
         </Col>
@@ -801,205 +822,6 @@ function Step3({ setting }) {
               </Row>
             ))}
           </div>
-          {/* <div className="border-table h-100 d-flex flex-column">
-            <Row>
-              <Col xs={3}>17:01:00-18:01:00</Col>
-              <Col xs={2} />
-              <Col>真值結果</Col>
-            </Row>
-            <Row>
-              <Col xs={3}>交叉路口</Col>
-              <Col xs={1}>路口編號</Col>
-              <Col xs={1}>方向</Col>
-              <Col>機車</Col>
-              <Col>小客車</Col>
-              <Col>大客車</Col>
-            </Row>
-            <Row className="flex-fill">
-              <Col xs={1}>
-                <Row />
-                <Row />
-                <Row />
-              </Col>
-              <Col xs={1}>
-                <Row />
-                <Row>路口直向</Row>
-                <Row>{result && result[4] ? result[4][2] : ''}</Row>
-              </Col>
-              <Col xs={1}>
-                <Row />
-                <Row>N↓</Row>
-                <Row />
-              </Col>
-              <Col xs={1}>1</Col>
-              <Col xs={1}>
-                <Row>左轉</Row>
-                <Row>直行</Row>
-                <Row>右轉</Row>
-              </Col>
-              {['機車', '小客車', '大客車'].map((key) => (
-                <Col key={key}>
-                  {['左轉', '直行', '右轉'].map((way) => (
-                    <Row key={way} className="px-3">
-                      <Form.Control
-                        value={trueValue[0][key][way]}
-                        onChange={(e) =>
-                          settrueValue((prevState) => ({
-                            ...prevState,
-                            0: {
-                              ...prevState[0],
-                              [key]: {
-                                ...prevState[0][key],
-                                [way]: e.target.value,
-                              },
-                            },
-                          }))
-                        }
-                      />
-                    </Row>
-                  ))}
-                </Col>
-              ))}
-            </Row>
-            <Row className="flex-fill">
-              <Col xs={1}>
-                <Row>路口橫向</Row>
-                <Row>{result && result[6] ? result[6][1] : ''}</Row>
-                <Row />
-              </Col>
-              <Col xs={1}>
-                <Row />
-                <Row />
-                <Row />
-              </Col>
-              <Col xs={1}>
-                <Row />
-                <Row>{result && result[6] ? result[6][3] : ''}</Row>
-                <Row />
-              </Col>
-              <Col xs={1}>2</Col>
-              <Col xs={1}>
-                <Row>左轉</Row>
-                <Row>直行</Row>
-                <Row>右轉</Row>
-              </Col>
-              {['機車', '小客車', '大客車'].map((key) => (
-                <Col key={key}>
-                  {['左轉', '直行', '右轉'].map((way) => (
-                    <Row key={way} className="px-3">
-                      <Form.Control
-                        value={trueValue[1][key][way]}
-                        onChange={(e) =>
-                          settrueValue((prevState) => ({
-                            ...prevState,
-                            1: {
-                              ...prevState[1],
-                              [key]: {
-                                ...prevState[1][key],
-                                [way]: e.target.value,
-                              },
-                            },
-                          }))
-                        }
-                      />
-                    </Row>
-                  ))}
-                </Col>
-              ))}
-            </Row>
-            <Row className="flex-fill">
-              <Col xs={1}>
-                <Row />
-                <Row />
-                <Row />
-              </Col>
-              <Col xs={1}>
-                <Row>{result && result[8] ? result[8][2] : ''}</Row>
-                <Row />
-                <Row />
-              </Col>
-              <Col xs={1}>
-                <Row />
-                <Row />
-                <Row />
-              </Col>
-              <Col xs={1}>3</Col>
-              <Col xs={1}>
-                <Row>左轉</Row>
-                <Row>直行</Row>
-                <Row>右轉</Row>
-              </Col>
-              {['機車', '小客車', '大客車'].map((key) => (
-                <Col key={key}>
-                  {['左轉', '直行', '右轉'].map((way) => (
-                    <Row key={way} className="px-3">
-                      <Form.Control
-                        value={trueValue[2][key][way]}
-                        onChange={(e) =>
-                          settrueValue((prevState) => ({
-                            ...prevState,
-                            2: {
-                              ...prevState[2],
-                              [key]: {
-                                ...prevState[2][key],
-                                [way]: e.target.value,
-                              },
-                            },
-                          }))
-                        }
-                      />
-                    </Row>
-                  ))}
-                </Col>
-              ))}
-            </Row>
-            <Row className="flex-fill">
-              <Col xs={1}>
-                <Row />
-                <Row />
-                <Row />
-              </Col>
-              <Col xs={1}>
-                <Row>G10-3</Row>
-                <Row>攝影機</Row>
-                <Row />
-              </Col>
-              <Col xs={1}>
-                <Row />
-                <Row />
-                <Row />
-              </Col>
-              <Col xs={1}>4</Col>
-              <Col xs={1}>
-                <Row>左轉</Row>
-                <Row>直行</Row>
-                <Row>右轉</Row>
-              </Col>
-              {['機車', '小客車', '大客車'].map((key) => (
-                <Col key={key}>
-                  {['左轉', '直行', '右轉'].map((way) => (
-                    <Row key={way} className="px-3">
-                      <Form.Control
-                        value={trueValue[3][key][way]}
-                        onChange={(e) =>
-                          settrueValue((prevState) => ({
-                            ...prevState,
-                            3: {
-                              ...prevState[3],
-                              [key]: {
-                                ...prevState[3][key],
-                                [way]: e.target.value,
-                              },
-                            },
-                          }))
-                        }
-                      />
-                    </Row>
-                  ))}
-                </Col>
-              ))}
-            </Row>
-          </div> */}
         </Modal.Body>
         <Modal.Footer>
           <Button
