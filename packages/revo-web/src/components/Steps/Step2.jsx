@@ -338,7 +338,43 @@ function ProjectedModal({ setting }) {
     setproject({ loading: true, show: false })
   }
 
+  const [svgSize, setsvgSize] = useState({
+    scale: 1,
+  })
+  const { scale } = svgSize
   const imageRef = useRef(null)
+  const getSize = () => {
+    if (imageRef.current) {
+      const style = getComputedStyle(imageRef.current)
+      const height =
+        imageRef.current.clientHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom)
+      const width = imageRef.current.clientWidth
+      const originHeight = imageRef.current.naturalHeight
+      const originWidth = imageRef.current.naturalWidth
+      return {
+        width,
+        height,
+        originHeight,
+        originWidth,
+        scale: width / originWidth,
+      }
+    }
+    return false
+  }
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      const size = getSize()
+      if (size.width !== svgSize.width || size.height !== svgSize.height)
+        setsvgSize(size)
+    })
+    observer.observe(imageRef.current)
+    return () => imageRef.current && observer.unobserve(imageRef.current)
+  }, [])
+  console.log(svgSize)
+
+  // const imageRef = useRef(null)
   const handleClose = (value) => {
     try {
       const params = {
@@ -378,29 +414,15 @@ function ProjectedModal({ setting }) {
   useEffect(() => {
     const generate = async () => {
       await delay(1000)
-      let wScale = 1
-      let hScale = 1
-      if (imageRef.current) {
-        wScale = imageRef.current.naturalWidth / imageRef.current.clientWidth
-        hScale = imageRef.current.naturalHeight / imageRef.current.clientHeight
-      }
 
       const res = await apiServices.data({
         path: `warp_image`,
         method: 'post',
         params: {
-          lu: `${points[0].style.left * wScale},${
-            points[0].style.top * hScale
-          }`,
-          ld: `${points[1].style.left * wScale},${
-            points[1].style.top * hScale
-          }`,
-          ru: `${points[2].style.left * wScale},${
-            points[2].style.top * hScale
-          }`,
-          rd: `${points[3].style.left * wScale},${
-            points[3].style.top * hScale
-          }`,
+          lu: `${points[0].style.left},${points[0].style.top}`,
+          ld: `${points[1].style.left},${points[1].style.top}`,
+          ru: `${points[2].style.left},${points[2].style.top}`,
+          rd: `${points[3].style.left},${points[3].style.top}`,
           Key: thumbnail.name,
         },
       })
@@ -486,15 +508,19 @@ function ProjectedModal({ setting }) {
               onClick={(e) => {
                 if (points.length > 3) return
                 const target = e.target.getBoundingClientRect()
-                const left = e.clientX - target.x - 15
-                const top = e.clientY - target.y - 20
+                console.log(target)
+                const left = e.clientX - target.x
+                const top = e.clientY - target.y
+                console.log(left)
+                console.log(top)
+                console.log()
                 setpoints([
                   ...points,
                   {
                     id: points.length + 1,
                     style: {
-                      top,
-                      left,
+                      top: top / scale,
+                      left: left / scale,
                       width: '10px',
                       height: '10px',
                       color: 'red',
@@ -506,7 +532,16 @@ function ProjectedModal({ setting }) {
             {points.map((point, i) => (
               <LabelTag
                 key={point.id}
-                setting={{ ...point, label: labels[i], handleRemovePoint }}
+                setting={{
+                  ...point,
+                  style: {
+                    ...point.style,
+                    top: point.style.top * scale - 15,
+                    left: point.style.left * scale - 15,
+                  },
+                  label: labels[i],
+                  handleRemovePoint,
+                }}
               />
             ))}
           </div>
@@ -2232,31 +2267,35 @@ function Road({ setting }) {
               }}
             />
           )}
-          <ProjectedModal
-            setting={{
-              data: roadAdjust,
-              show: showProject,
-              thumbnail,
-              handleClose: async (value) => {
-                if (value) await handleDataChange(value)
-                setshowProject(false)
-              },
-            }}
-          />
-          <LineModal
-            setting={{
-              data: roadLine,
-              show: showLine,
-              fixed,
-              thumbnail,
-              handleClose: async (value) => {
-                if (value) {
-                  await handleDataChange(value)
-                }
-                setshowLine(false)
-              },
-            }}
-          />
+          {showProject && (
+            <ProjectedModal
+              setting={{
+                data: roadAdjust,
+                show: showProject,
+                thumbnail,
+                handleClose: async (value) => {
+                  if (value) await handleDataChange(value)
+                  setshowProject(false)
+                },
+              }}
+            />
+          )}
+          {showLine && (
+            <LineModal
+              setting={{
+                data: roadLine,
+                show: showLine,
+                fixed,
+                thumbnail,
+                handleClose: async (value) => {
+                  if (value) {
+                    await handleDataChange(value)
+                  }
+                  setshowLine(false)
+                },
+              }}
+            />
+          )}
           {showPreview && (
             <Preview
               setting={{
