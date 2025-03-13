@@ -1211,13 +1211,16 @@ function Step4({ setting }) {
       </Row>
     ),
     模型訓練檔案生成: (
-      <VISSIM
-        setting={{
-          handleDataChange,
-          handleToolChange,
-        }}
-      />
+      <iframe title="vissim" height="100%" src="https://vissim.punwave.com/" />
     ),
+    // 模型訓練檔案生成: (
+    //   <VISSIM
+    //     setting={{
+    //       handleDataChange,
+    //       handleToolChange,
+    //     }}
+    //   />
+    // ),
     模型檔案管理: (
       <Files
         setting={{
