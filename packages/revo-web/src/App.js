@@ -9,6 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-date-range/dist/styles.css'
 import 'react-date-range/dist/theme/default.css'
 import { AppWrapper, ContextProvider } from './components'
+import UserManagement from './pages/UserManagement'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Routes className="px-0">
                 <Route path="/" element={<Welcome />} />
                 <Route path="/Home" element={<Home />} />
+                <Route path="/User" element={<UserManagement />} />
                 <Route path="/*" element={<Home />} />
               </Routes>
             </Row>

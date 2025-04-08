@@ -27,6 +27,7 @@ import {
 import { path3, path4, path5 } from '../../assets'
 import { DraftContext, SocketContext, ToastContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
+import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
 
 function WarnModal({ setting }) {
   const { show, handleClose } = setting
@@ -228,6 +229,7 @@ function Step3({ setting }) {
     handleTimeEdit = () => {},
   } = useContext(DraftContext)
   const { setToast } = useContext(ToastContext)
+  const { checkPermission } = useRoleAndPermission()
 
   const { videos = [] } = time.setting || {}
   const [selectedVideo, setselectedVideo] = useState(null)
@@ -525,6 +527,9 @@ function Step3({ setting }) {
                 aria-label="Default select example"
                 onChange={(e) => setselectedVideo(e.target.value)}
                 value={selectedVideo}
+                disabled={
+                  !checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])
+                }
               >
                 <option value="" className="d-none">
                   選擇影片
@@ -539,7 +544,10 @@ function Step3({ setting }) {
                 variant="revo"
                 className="my-auto ms-2 w-30 text-nowrap"
                 onClick={startProgress}
-                disabled={!selectedVideo}
+                disabled={
+                  !selectedVideo ||
+                  !checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])
+                }
               >
                 {videoStatus.status &&
                 !['success', 'error'].includes(videoStatus.status) ? (
@@ -574,7 +582,12 @@ function Step3({ setting }) {
                 aria-label="Default select example"
                 onChange={(e) => setselected(e.target.value)}
                 value={selected}
-                disabled={!selectedVideo || !videoData || !result}
+                disabled={
+                  !selectedVideo ||
+                  !videoData ||
+                  !result ||
+                  !checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])
+                }
               >
                 <option value="" className="d-none">
                   下拉檢視辨識結果
@@ -744,6 +757,9 @@ function Step3({ setting }) {
                       break
                   }
                 }}
+                disabled={
+                  !checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])
+                }
               >
                 匯出
               </Button>

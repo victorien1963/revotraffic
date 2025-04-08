@@ -1,17 +1,17 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useContext } from 'react'
-import PropTypes from 'prop-types'
-import { Container, Row, Modal, Button } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
-import { DraftContext } from '../ContextProvider'
+import React, { useState, useContext } from "react";
+import PropTypes from "prop-types";
+import { Container, Row, Modal, Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { DraftContext } from "../ContextProvider";
 
 function WarnModal({ setting }) {
-  const { show, handleClose } = setting
+  const { show, handleClose } = setting;
 
   return (
     <Modal
-      style={{ zIndex: '1501' }}
+      style={{ zIndex: "1501" }}
       show={show}
       onHide={() => handleClose()}
       className="py-2 px-4"
@@ -20,7 +20,7 @@ function WarnModal({ setting }) {
       <Modal.Body className="p-4 h-100">
         <Row
           style={{
-            height: '100px',
+            height: "100px",
           }}
         >
           <FontAwesomeIcon
@@ -35,7 +35,7 @@ function WarnModal({ setting }) {
       <Modal.Footer className="d-flex justify-content-center">
         <Button
           className="mx-auto"
-          style={{ boxShadow: 'none' }}
+          style={{ boxShadow: "none" }}
           variant="outline-revo2"
           onClick={handleClose}
         >
@@ -43,43 +43,43 @@ function WarnModal({ setting }) {
         </Button>
       </Modal.Footer>
     </Modal>
-  )
+  );
 }
 
 function ToolBar({ setting }) {
-  const { step, handleToolChange } = setting
-  const { timeId } = useContext(DraftContext)
+  const { step, handleToolChange } = setting;
+  const { timeId } = useContext(DraftContext);
 
   const tools = [
     {
-      label: '首頁',
-      name: 'step1',
+      label: "首頁",
+      name: "step1",
       dropdowns: [
         {
-          label: '操作流程圖',
-          name: 'step1',
-          value: '操作流程圖',
+          label: "操作流程圖",
+          name: "step1",
+          value: "操作流程圖",
         },
         {
-          label: '計畫一覽表',
-          name: 'step1',
-          value: '計畫一覽表',
+          label: "計畫一覽表",
+          name: "step1",
+          value: "計畫一覽表",
         },
       ],
     },
     {
-      label: '影片上傳標記',
-      name: 'step2',
+      label: "影片上傳標記",
+      name: "step2",
       dropdowns: [
         {
-          label: '影片上傳',
-          name: 'step2',
-          value: '影片上傳',
+          label: "影片上傳",
+          name: "step2",
+          value: "影片上傳",
         },
         {
-          label: '路口＆路段標記',
-          name: 'step2',
-          value: '路口＆路段標記',
+          label: "路口＆路段標記",
+          name: "step2",
+          value: "路口＆路段標記",
         },
         // {
         //   label: '車種標記',
@@ -94,11 +94,11 @@ function ToolBar({ setting }) {
       ],
     },
     {
-      label: 'AI影像辨識',
-      name: 'step3',
+      label: "AI影像辨識",
+      name: "step3",
       click: {
-        name: 'step3',
-        value: '影像辨識',
+        name: "step3",
+        value: "影像辨識",
       },
       // dropdowns: [
       //   {
@@ -114,24 +114,24 @@ function ToolBar({ setting }) {
       // ],
     },
     {
-      label: 'AI號控調校',
-      name: 'step4',
+      label: "AI號控調校",
+      name: "step4",
       click: {
-        name: 'step4',
-        value: 'selector',
+        name: "step4",
+        value: "selector",
       },
     },
     {
-      label: '結果報表',
-      name: 'step5',
+      label: "結果報表",
+      name: "step5",
       click: {
-        name: 'step5',
-        value: '結果報表',
+        name: "step5",
+        value: "結果報表",
       },
     },
-  ]
+  ];
 
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
 
   return (
     <Container fluid>
@@ -141,28 +141,28 @@ function ToolBar({ setting }) {
             <li
               key={i}
               className={`bread${i + 1} ${
-                tool.dropdowns ? 'dropdown' : ''
+                tool.dropdowns ? "dropdown" : ""
               } position-relative`}
             >
               <a
-                className={`${tool.dropdowns ? 'dropdown-toggle' : ''}`}
+                className={`${tool.dropdowns ? "dropdown-toggle" : ""}`}
                 href="#"
                 role="button"
-                data-bs-toggle={`${tool.dropdowns ? 'dropdown' : ''}`}
+                data-bs-toggle={`${tool.dropdowns ? "dropdown" : ""}`}
                 aria-expanded="false"
                 onClick={() => {
-                  if (!timeId && tool.click && tool.name !== 'step1') {
-                    setShow(true)
+                  if (!timeId && tool.click && tool.name !== "step1") {
+                    setShow(true);
                   } else if (tool.click)
                     handleToolChange({
                       target: {
                         ...tool.click,
                       },
-                    })
+                    });
                 }}
               >
                 <span>
-                  <strong>{`${tool.name === step ? '➤ ' : ''}${
+                  <strong>{`${tool.name === step ? "➤ " : ""}${
                     tool.label
                   }`}</strong>
                 </span>
@@ -174,15 +174,15 @@ function ToolBar({ setting }) {
                       <a
                         className="dropdown-item"
                         onClick={() => {
-                          if (!timeId && d.name !== 'step1') {
-                            setShow(true)
+                          if (!timeId && d.name !== "step1") {
+                            setShow(true);
                           } else {
                             handleToolChange({
                               target: {
                                 name: d.name,
                                 value: d.value,
                               },
-                            })
+                            });
                           }
                         }}
                         aria-hidden
@@ -208,26 +208,26 @@ function ToolBar({ setting }) {
         setting={{
           show,
           handleClose: () => {
-            setShow(false)
+            setShow(false);
             handleToolChange({
               target: {
-                name: 'step1',
-                value: '計畫一覽表',
+                name: "step1",
+                value: "計畫一覽表",
               },
-            })
+            });
           },
         }}
       />
     </Container>
-  )
+  );
 }
 
 ToolBar.propTypes = {
   setting: PropTypes.shape().isRequired,
-}
+};
 
 WarnModal.propTypes = {
   setting: PropTypes.shape().isRequired,
-}
+};
 
-export default ToolBar
+export default ToolBar;

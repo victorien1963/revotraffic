@@ -22,6 +22,7 @@
           "semi": false,
           "singleQuote": true
         }
-      ]
+      ],
+       "no-console": "off"
     }
   }

@@ -39,6 +39,7 @@ import { description, description2, description3, remark2 } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext, ToastContext } from '../ContextProvider'
+import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
 
 function WarnModal({ setting }) {
   const { show, handleClose, content, hasCancel } = setting
@@ -1703,6 +1704,7 @@ function VISSIMModal({ setting }) {
 
 function Road({ setting }) {
   const { handleToolChange } = setting
+  const { checkPermission } = useRoleAndPermission()
 
   const [showWarn, setshowWarn] = useState({
     show: false,
@@ -1793,7 +1795,13 @@ function Road({ setting }) {
       placeholder: '',
       type: 'road',
       check: roads,
-      click: () => setshow(true),
+      click: () => {
+        if (!checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])) {
+          return
+        }
+
+        setshow(true)
+      },
       show: true,
     },
     {
@@ -1807,7 +1815,13 @@ function Road({ setting }) {
         roadAdjust.points.length === 4 &&
         roadAdjust.project &&
         roadAdjust.project.show,
-      click: () => setshowProject(true),
+      click: () => {
+        if (!checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])) {
+          return
+        }
+
+        setshowProject(true)
+      },
       show: data.type === '路段',
     },
     {
@@ -1817,6 +1831,10 @@ function Road({ setting }) {
       type: 'road',
       check: roadLine && roadLine.length === 2,
       click: () => {
+        if (!checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])) {
+          return
+        }
+
         if (!fixed) {
           setshowWarn({
             ...showWarn,
@@ -1981,6 +1999,12 @@ function Road({ setting }) {
                               }
                             }}
                             value={data.type}
+                            disabled={
+                              !checkPermission([
+                                Role.PROJECT_ADMIN,
+                                Role.PROJECT_DESIGNER,
+                              ])
+                            }
                           >
                             <option value="" className="d-none">
                               下拉選擇類型
@@ -2020,6 +2044,12 @@ function Road({ setting }) {
                               placeholder={f.placeholder}
                               onFocus={() => setshowDate(!showDate)}
                               readOnly
+                              disabled={
+                                !checkPermission([
+                                  Role.PROJECT_ADMIN,
+                                  Role.PROJECT_DESIGNER,
+                                ])
+                              }
                             />
                             <div
                               style={{
@@ -2085,6 +2115,12 @@ function Road({ setting }) {
                             onChange={onDataChange}
                             placeholder={f.placeholder}
                             onFocus={() => setshowDate(false)}
+                            disabled={
+                              !checkPermission([
+                                Role.PROJECT_ADMIN,
+                                Role.PROJECT_DESIGNER,
+                              ])
+                            }
                           />
                         </Col>
                       </Row>
@@ -2137,21 +2173,24 @@ function Road({ setting }) {
               >
                 預覽
               </Button>
-              <Button
-                variant="revo2"
-                className="mx-2"
-                onClick={() => {
-                  handleDataChange(data)
-                  handleToolChange({
-                    target: {
-                      name: 'step2',
-                      value: 'selector',
-                    },
-                  })
-                }}
-              >
-                確認
-              </Button>
+
+              {checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]) && (
+                <Button
+                  variant="revo2"
+                  className="mx-2"
+                  onClick={() => {
+                    handleDataChange(data)
+                    handleToolChange({
+                      target: {
+                        name: 'step2',
+                        value: 'selector',
+                      },
+                    })
+                  }}
+                >
+                  確認
+                </Button>
+              )}
             </div>
           </Col>
         </Row>
@@ -2330,6 +2369,7 @@ function Video({ setting }) {
   const { handleToolChange } = setting
   const { timeId, time = {}, setTimes } = useContext(DraftContext)
   const { videos = [] } = time.setting || {}
+  const { checkPermission } = useRoleAndPermission()
 
   // const [fileList, setfileList] = useState([])
   const [tempFile, settempFile] = useState(null)
@@ -2442,34 +2482,37 @@ function Video({ setting }) {
   return (
     <>
       <Row className="pt-3 pb-2 px-2" style={{ height: '10vh' }}>
-        <Col xs={2}>
-          <Button variant="revo">
-            <FormLabel
-              htmlFor="file"
-              className="mb-0"
-              style={{ cursor: 'pointer' }}
-            >
-              <FontAwesomeIcon icon={faFileArrowUp} />
-              &ensp;上傳影片檔案
-            </FormLabel>
-          </Button>
-          <Form.Control
-            id="file"
-            name="file"
-            type="file"
-            multiple
-            accept="video/*"
-            // value={fileList}
-            onChange={(e) => {
-              setuploading(true)
-              settempFile(e.target.files[0])
-              e.target.value = null
-            }}
-            style={{
-              visibility: 'hidden',
-            }}
-          />
-        </Col>
+        {checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]) && (
+          <Col xs={2}>
+            <Button variant="revo">
+              <FormLabel
+                htmlFor="file"
+                className="mb-0"
+                style={{ cursor: 'pointer' }}
+              >
+                <FontAwesomeIcon icon={faFileArrowUp} />
+                &ensp;上傳影片檔案
+              </FormLabel>
+            </Button>
+            <Form.Control
+              id="file"
+              name="file"
+              type="file"
+              multiple
+              accept="video/*"
+              // value={fileList}
+              onChange={(e) => {
+                setuploading(true)
+                settempFile(e.target.files[0])
+                e.target.value = null
+              }}
+              style={{
+                visibility: 'hidden',
+              }}
+            />
+          </Col>
+        )}
+
         <Col className="ps-0 pe-5">
           <Form.Control
             type="text"
@@ -2553,15 +2596,20 @@ function Video({ setting }) {
                     <source src={`/api/draft/video/${name}`} />
                   </video>
                 </div>
-                <Button
-                  variant="outline-danger"
-                  className="mb-auto mt-2 mx-auto"
-                  size="sm"
-                  onClick={() => handleRemoveVideo(i)}
-                >
-                  <FontAwesomeIcon icon={faTrashCan} />
-                  &ensp;移除
-                </Button>
+                {checkPermission([
+                  Role.PROJECT_ADMIN,
+                  Role.PROJECT_DESIGNER,
+                ]) && (
+                  <Button
+                    variant="outline-danger"
+                    className="mb-auto mt-2 mx-auto"
+                    size="sm"
+                    onClick={() => handleRemoveVideo(i)}
+                  >
+                    <FontAwesomeIcon icon={faTrashCan} />
+                    &ensp;移除
+                  </Button>
+                )}
               </Col>
             ))}
             <Col className="d-flex p-5 pe-0 pb-1">

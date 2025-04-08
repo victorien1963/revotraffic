@@ -41,6 +41,7 @@ function Welcome() {
     }
     document.cookie = `token=${token}; Domain=${window.location.hostname}; Path=/;`
     const { user } = await apiServices.me()
+
     setAuth({
       authed: true,
       ...user,
