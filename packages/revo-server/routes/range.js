@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 
 const pg = require('../services/pgService')
+const checkRole = require('../middlewares/is-role.middleware')
+const { Role } = require('../constants');
 
 router.get('/:draft_id', async (req, res) => {
     if (!req.user) return res.send([])
@@ -9,7 +11,7 @@ router.get('/:draft_id', async (req, res) => {
     return res.send(ranges)
 })
 
-router.post('/:draft_id', async (req, res) => {
+router.post('/:draft_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
     if (!req.user) return res.send({ error: 'user not found' })
     const range = await pg.exec('one', 'INSERT INTO ranges(draft_id, setting, created_on, updated_on) values($1, $2, current_timestamp, current_timestamp) RETURNING *', [req.params.draft_id, {
         ...req.body,
@@ -17,7 +19,7 @@ router.post('/:draft_id', async (req, res) => {
     return res.send(range)
 })
 
-router.put('/:range_id', async (req, res) => {
+router.put('/:range_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
     if (!req.user) return res.send({ error: 'user not found' })
     const old = await pg.exec('one', 'SELECT setting FROM ranges WHERE range_id = $1', [req.params.range_id])
     const range = await pg.exec('one', 'UPDATE ranges SET setting = $2 WHERE range_id = $1 RETURNING *', [req.params.range_id, {
@@ -27,7 +29,7 @@ router.put('/:range_id', async (req, res) => {
     return res.send(range)
 })
 
-router.delete('/:range_id', async (req, res) => {
+router.delete('/:range_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
     if (!req.user) return res.send({ error: 'user not found' })
     const deleted = await pg.exec('oneOrNone', 'DELETE FROM ranges WHERE range_id = $1 RETURNING *', [req.params.range_id])
     return res.send(deleted)

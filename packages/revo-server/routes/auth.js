@@ -11,7 +11,7 @@ const router = express.Router()
 
 const signin = (req, res) => {
     console.log(`${req.user.name} has logged in`)
-    const token = jwt.sign({ _id: req.user.user_id, email: req.user.email }, 'APPLE')
+    const token = jwt.sign({ _id: req.user.user_id, email: req.user.email, role: req.user.role }, 'APPLE')
     return res.send({ token })
 }
 
@@ -26,7 +26,7 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
   },
   async (email, password, done) => {
-    const user = await pg.exec('oneOrNone', 'SELECT user_id,name,password FROM users WHERE email = $1', [email])
+    const user = await pg.exec('oneOrNone', 'SELECT user_id,name,password,role FROM users WHERE email = $1', [email])
     if (!user) return done(null, false)
     const verified = await verify(password, user.password)
     if (!verified) { return done(null, false) }

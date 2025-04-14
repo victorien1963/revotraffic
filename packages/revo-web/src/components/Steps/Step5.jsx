@@ -10,6 +10,7 @@ import { scaleBand, scaleLinear, scaleOrdinal } from '@visx/scale'
 import ExcelJS from 'exceljs'
 import { DraftContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
+import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
 // import { report } from '../../assets'
 
 function SpeedTable({ setting }) {
@@ -241,6 +242,7 @@ function Step5() {
   }
   const [exports, setexports] = useState(initExport)
   const delayFunc = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+  const { checkPermission } = useRoleAndPermission()
 
   // this is list of results and files
   const { draftId, rangeId, timeId, time = {} } = useContext(DraftContext)
@@ -481,6 +483,12 @@ function Step5() {
                   aria-label="Default select example"
                   onChange={(e) => setselected(e.target.value)}
                   value={selected}
+                  disabled={
+                    !checkPermission([
+                      Role.PROJECT_ADMIN,
+                      Role.PROJECT_DESIGNER,
+                    ])
+                  }
                 >
                   <option value="" className="d-none">
                     下拉選擇報表
@@ -542,7 +550,13 @@ function Step5() {
                   variant="revo2"
                   className="text-nowrap"
                   onClick={handleDownload}
-                  disabled={!selected}
+                  disabled={
+                    !selected &&
+                    !checkPermission([
+                      Role.PROJECT_ADMIN,
+                      Role.PROJECT_DESIGNER,
+                    ])
+                  }
                 >
                   匯出
                 </Button>

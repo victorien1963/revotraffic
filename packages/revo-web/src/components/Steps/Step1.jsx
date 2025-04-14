@@ -26,6 +26,7 @@ import {
 } from 'react-bootstrap'
 import { DraftContext } from '../ContextProvider'
 import { architecture } from '../../assets'
+import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
 // import { nenerabi } from '../../assets'
 
 function DeleteModal({ setting }) {
@@ -235,6 +236,7 @@ function Projects() {
     handleTimeDelete,
     handleTimeEdit,
   } = useContext(DraftContext)
+  const { checkPermission } = useRoleAndPermission()
 
   const projectForm = [
     {
@@ -374,16 +376,19 @@ function Projects() {
         <Col xs={10} className="d-flex">
           <h5 className="my-auto text-revo-light fw-bold">{title}</h5>
         </Col>
-        <Col xs={2} className="d-flex ms-auto pe-0">
-          <Button
-            className="ms-auto"
-            variant="outline-revo2"
-            onClick={() => setshow(true)}
-          >
-            {btntext}&ensp;
-            <FontAwesomeIcon icon={faCirclePlus} />
-          </Button>
-        </Col>
+        {(checkPermission([Role.PROJECT_ADMIN]) ||
+          (draftId && checkPermission([Role.PROJECT_DESIGNER]))) && (
+          <Col xs={2} className="d-flex ms-auto pe-0">
+            <Button
+              className="ms-auto"
+              variant="outline-revo2"
+              onClick={() => setshow(true)}
+            >
+              {btntext}&ensp;
+              <FontAwesomeIcon icon={faCirclePlus} />
+            </Button>
+          </Col>
+        )}
       </Row>
       <Row className="flex-grow-1 pt-3 pb-5 px-5" style={{ overflowY: 'auto' }}>
         {list && list.length ? (
@@ -420,32 +425,42 @@ function Projects() {
                       <span className="fw-regular text-revo">建立時間：</span>
                       {moment(created_on).format('yyyy-MM-DD')}
                     </p>
-                    <Button
-                      className="ms-auto me-2"
-                      style={{ boxShadow: 'none' }}
-                      variant="outline-revo me-2"
-                      onClick={() => {
-                        setselectedId(time_id || range_id || draft_id)
-                        setshow(true)
-                      }}
-                      title="編 輯 編 號 ＆ 名 稱"
-                      size
-                    >
-                      編輯&ensp;
-                      <FontAwesomeIcon icon={faPenToSquare} />
-                    </Button>
-                    <Button
-                      style={{ boxShadow: 'none' }}
-                      variant="outline-red"
-                      onClick={() => {
-                        setselectedId(time_id || range_id || draft_id)
-                        setdeleteShow(true)
-                      }}
-                      title="刪 除 計 劃"
-                    >
-                      刪除&ensp;
-                      <FontAwesomeIcon icon={faTrashCan} />
-                    </Button>
+
+                    {checkPermission([
+                      Role.PROJECT_ADMIN,
+                      Role.PROJECT_DESIGNER,
+                    ]) && (
+                      <Button
+                        className="ms-auto me-2"
+                        style={{ boxShadow: 'none' }}
+                        variant="outline-revo me-2"
+                        onClick={() => {
+                          setselectedId(time_id || range_id || draft_id)
+                          setshow(true)
+                        }}
+                        title="編 輯 編 號 ＆ 名 稱"
+                        size
+                      >
+                        編輯&ensp;
+                        <FontAwesomeIcon icon={faPenToSquare} />
+                      </Button>
+                    )}
+
+                    {(checkPermission(Role.PROJECT_ADMIN) ||
+                      (draftId && checkPermission(Role.PROJECT_DESIGNER))) && (
+                      <Button
+                        style={{ boxShadow: 'none' }}
+                        variant="outline-red"
+                        onClick={() => {
+                          setselectedId(time_id || range_id || draft_id)
+                          setdeleteShow(true)
+                        }}
+                        title="刪 除 計 劃"
+                      >
+                        刪除&ensp;
+                        <FontAwesomeIcon icon={faTrashCan} />
+                      </Button>
+                    )}
 
                     <h2
                       className="my-auto text-grey"

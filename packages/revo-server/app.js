@@ -48,6 +48,7 @@ const rangeRouter = require('./routes/range')
 const timeRouter = require('./routes/time')
 const modelRouter = require('./routes/model')
 const vissimRouter = require('./routes/vissim')
+const { router:usersRouter } = require('./routes/users')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -66,7 +67,7 @@ async function getUser(req, res, next) {
   if (token) {
     try {
       const decoded = jwt.verify(token.replace('Bearer ', ''), 'APPLE')
-      const user = await pg.exec('oneOrNone', 'SELECT user_id,name,email,setting FROM users WHERE user_id = $1', [decoded._id])
+      const user = await pg.exec('oneOrNone', 'SELECT user_id,name,email,setting,role FROM users WHERE user_id = $1', [decoded._id])
       if (user) req.user = user
       else return res.status('401').send('auth failed')
     } catch (err) {
@@ -82,6 +83,7 @@ app.use('/range', getUser, rangeRouter)
 app.use('/time', getUser, timeRouter)
 app.use('/model', getUser, modelRouter)
 app.use('/vissim', getUser, vissimRouter)
+app.use('/users', getUser, usersRouter)
 app.get('/me', getUser, async (req, res) => {
   return res.send({
     user: req.user,
