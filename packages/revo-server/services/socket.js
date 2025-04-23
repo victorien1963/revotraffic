@@ -118,13 +118,13 @@ socket.init = (server, setting) => {
           const { clicks, draggables, tagSetting } = roads
           const { entry, outry } = clicks || {}
           if (entry) {
-            params.road_in_points = entry.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
+            params.road_in_points = entry.map(({ style }) => `${parseInt(style.left, 10) + 17},${parseInt(style.top, 10) + 24}`).join()
           }
           if (outry) {
-            params.road_out_points = outry.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
+            params.road_out_points = outry.map(({ style }) => `${parseInt(style.left, 10) + 17},${parseInt(style.top, 10) + 24}`).join()
           }
           if (tagSetting) {
-            params.road_in_points = tagSetting.map(({ style }) => `${parseInt(style.left, 10)},${parseInt(style.top, 10)}`).join()
+            params.road_in_points = tagSetting.map(({ style }) => `${parseInt(style.left, 10) + 17},${parseInt(style.top, 10) + 24}`).join()
             tagSetting.forEach((ts, i) => {
               params[`road_${i + 1}_name`] = ts.name || ''
             })
