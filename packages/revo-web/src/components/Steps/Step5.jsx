@@ -252,7 +252,7 @@ function Step5() {
     '停等車隊長度',
     '路段旅行速率',
     '成效比較總表',
-    '方法比較影片',
+    // '方法比較影片',
   ]
   const [list, setlist] = useState({})
   useEffect(() => {
@@ -415,55 +415,6 @@ function Step5() {
             result,
           }}
         />
-      ),
-    },
-    {
-      label: '方法比較影片',
-      hover: (
-        <Row className="flex-nowrap overflow-scroll">
-          {list['方法比較影片'] &&
-            list['方法比較影片'].map((l) => (
-              <Col>
-                {/* <FormLabel>固定</FormLabel> */}
-                <video width="auto" height="300px" controls>
-                  <track kind="captions" />
-                  <source
-                    src={
-                      list['方法比較影片']
-                        ? `/api/model/file/${draftId}/${rangeId}/${timeId}/${l.path}`
-                        : ''
-                    }
-                  />
-                </video>
-              </Col>
-            ))}
-          {/* <div className="w-50 p-3 d-flex flex-column">
-            <FormLabel>固定</FormLabel>
-            <video width="auto" height="300px" controls>
-              <track kind="captions" />
-              <source
-                src={
-                  list['方法比較影片']
-                    ? `/api/model/file/${draftId}/${rangeId}/${timeId}/${list['方法比較影片'][0].path}`
-                    : ''
-                }
-              />
-            </video>
-          </div>
-          <div className="w-50 p-3 d-flex flex-column">
-            <FormLabel>RL</FormLabel>
-            <video width="auto" height="300px" controls>
-              <track kind="captions" />
-              <source
-                src={
-                  list['方法比較影片']
-                    ? `/api/model/file/${draftId}/${rangeId}/${timeId}/${list['方法比較影片'][1].path}`
-                    : ''
-                }
-              />
-            </video>
-          </div> */}
-        </Row>
       ),
     },
   ]

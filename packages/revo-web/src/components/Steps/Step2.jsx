@@ -156,7 +156,40 @@ function LineModal({ setting }) {
     setpoints(points.filter((point) => id !== point.id))
   }
 
-  const imageRef = useRef(null)
+  const ref = useRef(null)
+  const [svgSize, setsvgSize] = useState({
+    scale: 1,
+  })
+  const getSize = () => {
+    if (ref.current) {
+      const style = getComputedStyle(ref.current)
+      const height =
+        ref.current.clientHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom)
+      const width = ref.current.clientWidth
+      const originHeight = ref.current.naturalHeight
+      const originWidth = ref.current.naturalWidth
+      return {
+        width,
+        height,
+        originHeight,
+        originWidth,
+        scale: width / originWidth,
+      }
+    }
+    return false
+  }
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      const size = getSize()
+      if (size.width !== svgSize.width || size.height !== svgSize.height)
+        setsvgSize(size)
+    })
+    observer.observe(ref.current)
+    return () => ref.current && observer.unobserve(ref.current)
+  }, [])
+  console.log(svgSize)
 
   const handleClose = (roadLine) => {
     if (!roadLine) {
@@ -165,25 +198,11 @@ function LineModal({ setting }) {
     }
 
     try {
-      let scale = {
-        wScale: 1,
-        hScale: 1,
-      }
-      try {
-        scale = {
-          wScale: imageRef.current.naturalWidth / imageRef.current.clientWidth,
-          hScale:
-            imageRef.current.naturalHeight / imageRef.current.clientHeight,
-        }
-      } catch (e) {
-        console.log('-----scale not included-----')
-      }
-      const { wScale, hScale } = scale
       const warpPixelRate =
         10 /
         Math.max(
-          Math.abs(points[0].style.top - points[1].style.top) * hScale,
-          Math.abs(points[0].style.left - points[1].style.left) * wScale
+          Math.abs(points[0].style.top - points[1].style.top),
+          Math.abs(points[0].style.left - points[1].style.left)
         )
       setting.handleClose({
         warpPixelRate,
@@ -202,7 +221,7 @@ function LineModal({ setting }) {
       style={{ zIndex: '1501' }}
       size="xl"
       show={show}
-      onHide={() => handleClose(points)}
+      onHide={() => handleClose()}
       className="p-2"
     >
       <Modal.Header className="h5 text-revo" closeButton>
@@ -211,7 +230,7 @@ function LineModal({ setting }) {
       <Modal.Body className="d-flex">
         <div className="d-flex position-relative w-75 mx-auto">
           <Image
-            ref={imageRef}
+            ref={ref}
             style={{ cursor: 'pointer' }}
             className="w-100"
             height="auto"
@@ -220,15 +239,15 @@ function LineModal({ setting }) {
             onClick={(e) => {
               if (points.length > 1) return
               const target = e.target.getBoundingClientRect()
-              const left = e.clientX - target.x - 15
-              const top = e.clientY - target.y - 20
+              const left = e.clientX - target.x
+              const top = e.clientY - target.y
               setpoints([
                 ...points,
                 {
                   id: points.length + 1,
                   style: {
-                    top,
-                    left,
+                    top: Math.max(top - 10, 0) / svgSize.scale,
+                    left: Math.max(left - 10, 0) / svgSize.scale,
                     width: '10px',
                     height: '10px',
                     color: 'red',
@@ -244,7 +263,14 @@ function LineModal({ setting }) {
                 setpoints(
                   points.map((point) =>
                     point.id === draging
-                      ? { ...point, style: { ...point.style, top, left } }
+                      ? {
+                          ...point,
+                          style: {
+                            ...point.style,
+                            top: Math.max(top - 10, 0) / svgSize.scale,
+                            left: Math.max(left - 10, 0) / svgSize.scale,
+                          },
+                        }
                       : point
                   )
                 )
@@ -258,7 +284,17 @@ function LineModal({ setting }) {
           {points.map((point) => (
             <PointTag
               key={point.id}
-              setting={{ ...point, handleRemovePoint, draging, setdraging }}
+              setting={{
+                ...point,
+                style: {
+                  ...point.style,
+                  top: point.style.top * svgSize.scale,
+                  left: point.style.left * svgSize.scale,
+                },
+                handleRemovePoint,
+                draging,
+                setdraging,
+              }}
             />
           ))}
           {points.length === 2 && (
@@ -267,19 +303,24 @@ function LineModal({ setting }) {
               style={{
                 border: '2px dashed #ffc107',
                 opacity: '1',
-                top: (points[0].style.top + points[1].style.top) / 2 + 5,
+                top:
+                  ((points[0].style.top + points[1].style.top) / 2 + 5) *
+                  svgSize.scale,
                 left:
-                  (points[0].style.left + points[1].style.left) / 2 -
+                  ((points[0].style.left + points[1].style.left) / 2 -
+                    Math.sqrt(
+                      Math.abs(points[0].style.top - points[1].style.top) ** 2 +
+                        Math.abs(points[0].style.left - points[1].style.left) **
+                          2
+                    ) /
+                      2 +
+                    10) *
+                  svgSize.scale,
+                width:
                   Math.sqrt(
                     Math.abs(points[0].style.top - points[1].style.top) ** 2 +
                       Math.abs(points[0].style.left - points[1].style.left) ** 2
-                  ) /
-                    2 +
-                  5,
-                width: Math.sqrt(
-                  Math.abs(points[0].style.top - points[1].style.top) ** 2 +
-                    Math.abs(points[0].style.left - points[1].style.left) ** 2
-                ),
+                  ) * svgSize.scale,
                 rotate: `${
                   90 -
                   (180 / Math.PI) *
@@ -514,7 +555,6 @@ function ProjectedModal({ setting }) {
                 const top = e.clientY - target.y
                 console.log(left)
                 console.log(top)
-                console.log()
                 setpoints([
                   ...points,
                   {
@@ -1312,7 +1352,7 @@ function Preview({ setting }) {
     thumbnail,
     data,
     fixed,
-    // roadLine = [],
+    roadLine = [],
     hasDraggable = false,
     hasRoadName = true,
   } = setting
@@ -1432,17 +1472,6 @@ function Preview({ setting }) {
   //   }
   // }, [show])
 
-  const roadLine = useMemo(() => {
-    if (!setting.roadLine) return []
-    return setting.roadLine.map((r) => ({
-      ...r,
-      style: {
-        ...r.style,
-        left: (r.style.left / 75) * 49,
-        top: (r.style.top / 75) * 49,
-      },
-    }))
-  }, [setting.roadLine])
   return (
     <Modal
       style={{ zIndex: '1501' }}
@@ -1501,7 +1530,6 @@ function Preview({ setting }) {
             <div className="position-relative w-100 flex-fill">
               {fixed ? (
                 <Image
-                  // ref={imageRef}
                   style={{ cursor: 'pointer' }}
                   className="w-100"
                   height="auto"
@@ -1520,6 +1548,11 @@ function Preview({ setting }) {
                   key={point.id}
                   setting={{
                     ...point,
+                    style: {
+                      ...point.style,
+                      left: point.style.left * svgSize.scale,
+                      top: point.style.top * svgSize.scale,
+                    },
                     handleRemovePoint: () => {},
                     draging: 1,
                     setdraging: () => {},
@@ -1533,26 +1566,37 @@ function Preview({ setting }) {
                     border: '2px dashed #ffc107',
                     opacity: '1',
                     top:
-                      (roadLine[0].style.top + roadLine[1].style.top) / 2 + 5,
+                      (roadLine[0].style.top * svgSize.scale +
+                        roadLine[1].style.top * svgSize.scale) /
+                        2 +
+                      5,
                     left:
-                      (roadLine[0].style.left + roadLine[1].style.left) / 2 -
+                      (roadLine[0].style.left * svgSize.scale +
+                        roadLine[1].style.left * svgSize.scale) /
+                        2 -
                       Math.sqrt(
                         Math.abs(
-                          roadLine[0].style.top - roadLine[1].style.top
+                          roadLine[0].style.top * svgSize.scale -
+                            roadLine[1].style.top * svgSize.scale
                         ) **
                           2 +
                           Math.abs(
-                            roadLine[0].style.left - roadLine[1].style.left
+                            roadLine[0].style.left * svgSize.scale -
+                              roadLine[1].style.left * svgSize.scale
                           ) **
                             2
                       ) /
                         2 +
-                      5,
+                      10,
                     width: Math.sqrt(
-                      Math.abs(roadLine[0].style.top - roadLine[1].style.top) **
+                      Math.abs(
+                        roadLine[0].style.top * svgSize.scale -
+                          roadLine[1].style.top * svgSize.scale
+                      ) **
                         2 +
                         Math.abs(
-                          roadLine[0].style.left - roadLine[1].style.left
+                          roadLine[0].style.left * svgSize.scale -
+                            roadLine[1].style.left * svgSize.scale
                         ) **
                           2
                     ),
@@ -1560,8 +1604,10 @@ function Preview({ setting }) {
                       90 -
                       (180 / Math.PI) *
                         Math.atan2(
-                          roadLine[0].style.left - roadLine[1].style.left,
-                          roadLine[0].style.top - roadLine[1].style.top
+                          roadLine[0].style.left * svgSize.scale -
+                            roadLine[1].style.left * svgSize.scale,
+                          roadLine[0].style.top * svgSize.scale -
+                            roadLine[1].style.top * svgSize.scale
                         )
                     }deg`,
                   }}
@@ -1723,8 +1769,38 @@ function Road({ setting }) {
   } = videos[selected] || {}
 
   const handleDataChange = async (data) => {
+    console.log(data)
+    console.log({
+      videos: videos.map(
+        (
+          {
+            result,
+            resultCarSpacing,
+            resultSpeed,
+            result_track_maps,
+            result_video,
+            result_video_warp,
+            ...v
+          },
+          i
+        ) => (i === selected ? { ...v, ...data } : v)
+      ),
+    })
     await handleTimeEdit(timeId, {
-      videos: videos.map((v, i) => (i === selected ? { ...v, ...data } : v)),
+      videos: videos.map(
+        (
+          {
+            result,
+            resultCarSpacing,
+            resultSpeed,
+            result_track_maps,
+            result_video,
+            result_video_warp,
+            ...v
+          },
+          i
+        ) => (i === selected ? { ...v, ...data } : v)
+      ),
     })
     return 'updated'
   }

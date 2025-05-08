@@ -594,7 +594,11 @@ function Step3({ setting }) {
                 </option>
                 {[
                   {
-                    label: '各方向交通量',
+                    label:
+                      videoData.type === '路口'
+                        ? '各方向交通量'
+                        : '各方向交通量（路段影像不適用）',
+                    disabled: videoData.type === '路段',
                   },
                   {
                     label:

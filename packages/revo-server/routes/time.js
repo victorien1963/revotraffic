@@ -32,10 +32,19 @@ router.post('/:range_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])
 router.put('/:time_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
     if (!req.user) return res.send({ error: 'user not found' })
     const old = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [req.params.time_id])
-    const time = await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [req.params.time_id, {
-        ...old.setting,
-        ...req.body,
-      }])
+    console.log('======updating time======')
+    console.log(old.setting)
+    console.log('======data here======')
+    console.log(req.body)
+    const updated = Object.keys(old.setting).reduce((prev, cur) => ({
+        ...prev,
+        [cur]: old.setting[cur].map ? old.setting[cur].map((p, i) => ({
+            ...p,
+            ...req.body[cur] ? req.body[cur][i] : {},
+        }))  : req.body[cur] || old.setting[cur]
+    }), {})
+    console.log('=====updated here=====')
+    const time = await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [req.params.time_id, updated])
     return res.send(time)
 })
 

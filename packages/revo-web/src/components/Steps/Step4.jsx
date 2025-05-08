@@ -480,7 +480,7 @@ function Results({ setting }) {
               '停等車隊長度',
               '路段旅行速率',
               '成效比較總表',
-              '方法比較影片',
+              // '方法比較影片',
             ].map((label, i) => (
               <option key={i} value={label}>
                 {label}
