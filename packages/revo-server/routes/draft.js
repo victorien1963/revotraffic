@@ -7,10 +7,52 @@ const { Role } = require("../constants");
 
 router.get("/", checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER, Role.VISITOR]), async (req, res) => {
   if (!req.user) return res.send([]);
-  const drafts = await pg.exec(
-    "any",
-    "SELECT *,(SELECT name as user_name FROM users u WHERE u.user_id = d.user_id) FROM drafts d"
-  );
+
+  const { user_id, role } = req.user;
+  let query = "";
+  let params = [];
+
+  if (role === Role.SUPER_ADMIN) {
+    // SUPER_ADMIN: Show all drafts without any restrictions
+    query = `
+      SELECT d.*, u.name as user_name
+      FROM drafts d
+      JOIN users u ON u.user_id = d.user_id
+    `;
+  } else if (role === Role.PROJECT_ADMIN) {
+    // PROJECT_ADMIN: Show drafts created by this admin + drafts shared with this admin
+    query = `
+      (
+        -- Drafts created by this PROJECT_ADMIN
+        SELECT d.*, u.name as user_name
+        FROM drafts d
+        JOIN users u ON u.user_id = d.user_id
+        WHERE d.user_id = $1
+      )
+      UNION
+      (
+        -- Drafts shared with this PROJECT_ADMIN via drafts_users
+        SELECT d.*, u.name as user_name
+        FROM drafts d
+        JOIN users u ON u.user_id = d.user_id
+        JOIN drafts_users du ON du.draft_id = d.draft_id
+        WHERE du.user_id = $1
+      )
+    `;
+    params.push(user_id);
+  } else {
+    // Other roles (PROJECT_DESIGNER, VISITOR): Show only drafts shared with this user
+    query = `
+      SELECT d.*, u.name as user_name
+      FROM drafts d
+      JOIN users u ON u.user_id = d.user_id
+      JOIN drafts_users du ON du.draft_id = d.draft_id
+      WHERE du.user_id = $1
+    `;
+    params.push(user_id);
+  }
+
+  const drafts = await pg.exec("any", query, params);
   return res.send(drafts);
 });
 
@@ -156,6 +198,46 @@ router.delete("/video/:draft_id/:index", async (req, res) => {
     ]
   );
   return res.send(draft);
+});
+
+router.get('/:draft_id/members', checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
+  if (!req.user) return res.send([]);
+  const members = await pg.exec(
+    "any",
+    "SELECT u.user_id, u.name, u.email, u.role, du.created_on, du.updated_on FROM drafts_users du JOIN users u ON du.user_id = u.user_id WHERE du.draft_id = $1",
+    [req.params.draft_id]
+  );
+  return res.send(members);
+});
+
+router.post('/:draft_id/members', checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
+  if (!req.user) return res.send({ error: "user not found" });
+  const { user_id } = req.user;
+  const { email } = req.body;
+  const user = await pg.exec(
+    "one",
+    "SELECT user_id FROM users WHERE email = $1",
+    [email]
+  );
+  if (!user) return res.send({ error: "user not found" });
+
+  const member = await pg.exec(
+    "one",
+    "INSERT INTO drafts_users(draft_id, user_id, created_by, created_on, updated_on) VALUES($1, $2, $3, current_timestamp, current_timestamp) RETURNING *",
+    [req.params.draft_id, user.user_id, user_id]
+  );
+  return res.send(member);
+});
+
+router.delete('/:draft_id/members/:user_id', checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
+  if (!req.params.user_id) return res.send({ error: "user not found" });
+
+  const deleted = await pg.exec(
+    "oneOrNone",
+    "DELETE FROM drafts_users WHERE draft_id = $1 AND user_id = $2 RETURNING *",
+    [req.params.draft_id, req.params.user_id]
+  );
+  return res.send(deleted);
 });
 
 module.exports = router;
