@@ -20,23 +20,44 @@ router.get('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
   }
 })
 
+router.get(
+  "/non-super-admin-users",
+  checkRole([Role.SUPER_ADMIN, Role.PROJECT_ADMIN]),
+  async (req, res) => {
+    const userId = req.user.user_id;
+    const query = req.query.q || "";
+    const searchQuery = `%${query}%`;
+    try {
+      const users = await pg.exec(
+        "any",
+        "SELECT user_id, name, email, role FROM users WHERE role != 'SUPER_ADMIN' AND user_id != $1 AND (name ILIKE $2 OR  email ILIKE $2) ORDER BY user_id",
+        [userId, searchQuery]
+      );
+      return res.send({ users });
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      return res.status(500).send({ error: "Failed to fetch users" });
+    }
+  }
+)
+
 // Get a specific user
-router.get('/:id', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
+router.get("/:id(\\d+)", checkRole([Role.SUPER_ADMIN]), async (req, res) => {
   try {
     const user = await pg.exec(
-      'oneOrNone',
-      'SELECT user_id, name, email, setting, created_on, last_login, role FROM users WHERE user_id = $1',
+      "oneOrNone",
+      "SELECT user_id, name, email, setting, created_on, last_login, role FROM users WHERE user_id = $1",
       [req.params.id]
-    )
+    );
     if (!user) {
-      return res.status(404).send({ error: 'User not found' })
+      return res.status(404).send({ error: "User not found" });
     }
-    return res.send({ user })
+    return res.send({ user });
   } catch (err) {
-    console.error('Error fetching user:', err)
-    return res.status(500).send({ error: 'Failed to fetch user' })
+    console.error("Error fetching user:", err);
+    return res.status(500).send({ error: "Failed to fetch user" });
   }
-})
+});
 
 // Create a new user
 router.post('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {

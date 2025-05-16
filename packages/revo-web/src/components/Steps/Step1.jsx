@@ -10,6 +10,7 @@ import {
   faPenToSquare,
   faRightToBracket,
   faTrashCan,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons'
 import { DateRange } from 'react-date-range'
 import {
@@ -27,6 +28,7 @@ import {
 import { DraftContext } from '../ContextProvider'
 import { architecture } from '../../assets'
 import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
+import ProjectMembersModal from './ProjectMembersModal'
 // import { nenerabi } from '../../assets'
 
 function DeleteModal({ setting }) {
@@ -370,6 +372,8 @@ function Projects() {
     setselectedId('')
   }
 
+  const [showMembers, setshowMembers] = useState(false)
+
   return (
     <>
       <Row className="px-5">
@@ -425,6 +429,23 @@ function Projects() {
                       <span className="fw-regular text-revo">建立時間：</span>
                       {moment(created_on).format('yyyy-MM-DD')}
                     </p>
+
+                    {checkPermission([Role.PROJECT_ADMIN]) && (
+                      <Button
+                        className="ms-auto me-2"
+                        style={{ boxShadow: 'none' }}
+                        variant="outline-revo me-2"
+                        onClick={() => {
+                          setselectedId(time_id || range_id || draft_id)
+                          setshowMembers(true)
+                        }}
+                        title="Members"
+                        size
+                      >
+                        Members&ensp;
+                        <FontAwesomeIcon icon={faUsers} />
+                      </Button>
+                    )}
 
                     {checkPermission([
                       Role.PROJECT_ADMIN,
@@ -509,6 +530,14 @@ function Projects() {
           )?.setting.name,
           handleClose: handleDeleteClose,
         }}
+      />
+
+      <ProjectMembersModal
+        show={showMembers}
+        onClose={() => setshowMembers(false)}
+        project={list.find(
+          (l) => (l.time_id || l.range_id || l.draft_id) === selectedId
+        )}
       />
     </>
   )
