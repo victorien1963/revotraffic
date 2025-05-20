@@ -46,6 +46,7 @@ const checkAll = async () => {
     await db.none('CREATE TABLE IF NOT EXISTS drafts (draft_id serial PRIMARY KEY, setting JSONB NOT NULL, user_id serial NOT NULL, created_on TIMESTAMP NOT NULL, updated_on TIMESTAMP NOT NULL, FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE cascade)')
     await db.none('CREATE TABLE IF NOT EXISTS ranges (range_id serial PRIMARY KEY, setting JSONB NOT NULL, draft_id serial NOT NULL, created_on TIMESTAMP NOT NULL, updated_on TIMESTAMP NOT NULL, FOREIGN KEY (draft_id) REFERENCES drafts (draft_id) ON DELETE cascade)')
     await db.none('CREATE TABLE IF NOT EXISTS times (time_id serial PRIMARY KEY, setting JSONB NOT NULL, range_id serial NOT NULL, created_on TIMESTAMP NOT NULL, updated_on TIMESTAMP NOT NULL, FOREIGN KEY (range_id) REFERENCES ranges (range_id) ON DELETE cascade)')
+    await db.none("CREATE TABLE IF NOT EXISTS drafts_users (draft_id integer NOT NULL, user_id integer NOT NULL, created_by integer NOT NULL, created_on TIMESTAMP NOT NULL, updated_on TIMESTAMP NOT NULL, PRIMARY KEY (draft_id, user_id), FOREIGN KEY (draft_id) REFERENCES drafts (draft_id) ON DELETE CASCADE, FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE, FOREIGN KEY (created_by) REFERENCES users (user_id) ON DELETE CASCADE)");
     console.log('All Table Checked')
 }
 
