@@ -20,7 +20,7 @@ import {
 import moment from 'moment'
 import { AuthContext, ToastContext } from '../components/ContextProvider'
 import apiServices from '../services/apiServices'
-import useRoleAndPermission, { Role } from '../hooks/useRoleAndPermission'
+import { Role, usePermissions } from '../hooks/useRoleAndPermission'
 
 // User form component for create/edit operations
 function UserForm({ show, user, onClose, onSave }) {
@@ -28,7 +28,7 @@ function UserForm({ show, user, onClose, onSave }) {
     name: '',
     email: '',
     password: '',
-    role: Role.VISITOR,
+    role: Role.USER,
   })
   const [showPassword, setShowPassword] = useState(!user)
 
@@ -39,7 +39,7 @@ function UserForm({ show, user, onClose, onSave }) {
         name: user.name || '',
         email: user.email || '',
         password: '',
-        role: user?.role || Role.VISITOR,
+        role: user?.role || Role.USER,
       })
       setShowPassword(false)
     } else {
@@ -47,7 +47,7 @@ function UserForm({ show, user, onClose, onSave }) {
         name: '',
         email: '',
         password: '',
-        role: Role.VISITOR,
+        role: Role.USER,
       })
       setShowPassword(true)
     }
@@ -149,11 +149,9 @@ function UserForm({ show, user, onClose, onSave }) {
               value={formData.role}
               onChange={handleChange}
               required
-              disabled={user?.role === Role.SUPER_ADMIN}
+              disabled
             >
-              <option value="PROJECT_ADMIN">系統管理員</option>
-              <option value="PROJECT_DESIGNER">系統設計師</option>
-              <option value="VISITOR">訪客</option>
+              <option value={Role.USER}>使用者</option>
             </Form.Select>
           </Form.Group>
         </Form>
@@ -203,17 +201,13 @@ function RoleBadge({ role }) {
   let label = '未知'
 
   switch (role) {
-    case 'PROJECT_ADMIN':
+    case Role.SYSTEM_ADMIN:
       variant = 'danger'
-      label = '系統管理員'
+      label = '超級管理員'
       break
-    case 'PROJECT_DESIGNER':
-      variant = 'success'
-      label = '系統設計師'
-      break
-    case 'VISITOR':
+    case Role.USER:
       variant = 'info'
-      label = '訪客'
+      label = '使用者'
       break
     default:
       break
@@ -231,7 +225,7 @@ function UserManagement() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const { auth } = useContext(AuthContext)
   const { setToast } = useContext(ToastContext)
-  const { checkPermission } = useRoleAndPermission()
+  const { hasPermission } = usePermissions()
 
   // Function to fetch users from API
   const fetchUsers = async () => {
@@ -368,9 +362,9 @@ function UserManagement() {
   }
 
   // Check if current user is an admin
-  const isUserAdmin = checkPermission([Role.PROJECT_ADMIN])
+  const canCURDUser = hasPermission('canCURDUser')
 
-  if (!isUserAdmin) {
+  if (!canCURDUser) {
     return (
       <Container fluid className="py-4">
         <Row>
@@ -443,7 +437,7 @@ function UserManagement() {
                       <td>{user.name}</td>
                       <td>{user.email}</td>
                       <td>
-                        <RoleBadge role={user.role || 'VISITOR'} />
+                        <RoleBadge role={user.role} />
                       </td>
                       <td>
                         {moment(user.created_on).format('YYYY-MM-DD HH:mm')}
@@ -468,7 +462,7 @@ function UserManagement() {
 
                         {/* Don't allow deleting your own account or the main admin */}
                         {user.user_id !== auth.user_id &&
-                          user.role !== Role.SUPER_ADMIN && (
+                          user.role !== Role.SYSTEM_ADMIN && (
                             <Button
                               variant="outline-danger"
                               size="sm"
@@ -549,7 +543,7 @@ RoleBadge.propTypes = {
 }
 
 RoleBadge.defaultProps = {
-  role: 'VISITOR',
+  role: 'USER',
 }
 
 UserForm.defaultProps = {

@@ -10,7 +10,7 @@ import { scaleBand, scaleLinear, scaleOrdinal } from '@visx/scale'
 import ExcelJS from 'exceljs'
 import { DraftContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
-import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
+import { usePermissions } from '../../hooks/useRoleAndPermission'
 // import { report } from '../../assets'
 
 function SpeedTable({ setting }) {
@@ -242,10 +242,16 @@ function Step5() {
   }
   const [exports, setexports] = useState(initExport)
   const delayFunc = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-  const { checkPermission } = useRoleAndPermission()
+  const { hasPermission } = usePermissions()
 
   // this is list of results and files
-  const { draftId, rangeId, timeId, time = {} } = useContext(DraftContext)
+  const {
+    draftId,
+    rangeId,
+    timeId,
+    time = {},
+    draft,
+  } = useContext(DraftContext)
   const { results = [] } = time.setting || {}
   const labels = [
     '路口延滯時間',
@@ -435,10 +441,7 @@ function Step5() {
                   onChange={(e) => setselected(e.target.value)}
                   value={selected}
                   disabled={
-                    !checkPermission([
-                      Role.PROJECT_ADMIN,
-                      Role.PROJECT_DESIGNER,
-                    ])
+                    !hasPermission('editProject', draft.draft_user_role)
                   }
                 >
                   <option value="" className="d-none">
@@ -503,10 +506,7 @@ function Step5() {
                   onClick={handleDownload}
                   disabled={
                     !selected &&
-                    !checkPermission([
-                      Role.PROJECT_ADMIN,
-                      Role.PROJECT_DESIGNER,
-                    ])
+                    !hasPermission('editProject', draft.draft_user_role)
                   }
                 >
                   匯出

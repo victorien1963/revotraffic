@@ -3,47 +3,26 @@ const router = express.Router();
 const { upload, partial, download, getSize } = require("../services/minio");
 const pg = require("../services/pgService");
 const checkRole = require("../middlewares/is-role.middleware");
-const { Role } = require("../constants");
+const { Role, DraftUserRole } = require("../constants");
 
-router.get("/", checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER, Role.VISITOR]), async (req, res) => {
+router.get("/", checkRole([Role.USER]), async (req, res) => {
   if (!req.user) return res.send([]);
 
   const { user_id, role } = req.user;
   let query = "";
   let params = [];
 
-  if (role === Role.SUPER_ADMIN) {
-    // SUPER_ADMIN: Show all drafts without any restrictions
+  if (role === Role.SYSTEM_ADMIN) {
+    // SYSTEM_ADMIN: Show all drafts without any restrictions
     query = `
       SELECT d.*, u.name as user_name
       FROM drafts d
       JOIN users u ON u.user_id = d.user_id
     `;
-  } else if (role === Role.PROJECT_ADMIN) {
-    // PROJECT_ADMIN: Show drafts created by this admin + drafts shared with this admin
+  } else{
+    // Other roles (USER): Show only drafts shared with this user
     query = `
-      (
-        -- Drafts created by this PROJECT_ADMIN
-        SELECT d.*, u.name as user_name
-        FROM drafts d
-        JOIN users u ON u.user_id = d.user_id
-        WHERE d.user_id = $1
-      )
-      UNION
-      (
-        -- Drafts shared with this PROJECT_ADMIN via drafts_users
-        SELECT d.*, u.name as user_name
-        FROM drafts d
-        JOIN users u ON u.user_id = d.user_id
-        JOIN drafts_users du ON du.draft_id = d.draft_id
-        WHERE du.user_id = $1
-      )
-    `;
-    params.push(user_id);
-  } else {
-    // Other roles (PROJECT_DESIGNER, VISITOR): Show only drafts shared with this user
-    query = `
-      SELECT d.*, u.name as user_name
+      SELECT d.*, u.name as user_name, du.role as draft_user_role
       FROM drafts d
       JOIN users u ON u.user_id = d.user_id
       JOIN drafts_users du ON du.draft_id = d.draft_id
@@ -56,8 +35,8 @@ router.get("/", checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER, Role.VISIT
   return res.send(drafts);
 });
 
-router.post("/", checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
-  if (!req.user) return res.send({ error: "user not found" });
+router.post("/", checkRole([]), async (req, res) => {
+  
   const { user_id, name } = req.user;
   const draft = await pg.exec(
     "one",
@@ -72,8 +51,8 @@ router.post("/", checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
   return res.send({ ...draft, user_name: name });
 });
 
-router.put("/:draft_id", checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
-  if (!req.user) return res.send({ error: "user not found" });
+router.put("/:draft_id", checkRole([Role.USER]), async (req, res) => {
+ 
   const old = await pg.exec(
     "one",
     "SELECT setting FROM drafts WHERE draft_id = $1",
@@ -93,8 +72,8 @@ router.put("/:draft_id", checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]),
   return res.send(draft);
 });
 
-router.delete("/:draft_id", checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
-  if (!req.user) return res.send({ error: "user not found" });
+router.delete("/:draft_id", checkRole([Role.USER]), async (req, res) => {
+  
   const deleted = await pg.exec(
     "oneOrNone",
     "DELETE FROM drafts WHERE draft_id = $1 RETURNING *",
@@ -200,20 +179,38 @@ router.delete("/video/:draft_id/:index", async (req, res) => {
   return res.send(draft);
 });
 
-router.get('/:draft_id/members', checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
-  if (!req.user) return res.send([]);
-  const members = await pg.exec(
-    "any",
-    "SELECT u.user_id, u.name, u.email, u.role, du.created_on, du.updated_on FROM drafts_users du JOIN users u ON du.user_id = u.user_id WHERE du.draft_id = $1",
-    [req.params.draft_id]
-  );
+router.get('/:draft_id/members', checkRole([Role.USER]), async (req, res) => {
+  const { role } = req.user;
+
+  let query = "";
+  let params = [req.params.draft_id];
+
+  if (role === Role.SYSTEM_ADMIN) {
+    // SYSTEM_ADMIN: Show only PROJECT_ADMIN members
+    query = `
+      SELECT u.user_id, u.name, u.email, u.role, du.created_on, du.role as draft_user_role, du.updated_on 
+      FROM drafts_users du 
+      JOIN users u ON du.user_id = u.user_id 
+      WHERE du.draft_id = $1 AND du.role = '${DraftUserRole.PROJECT_ADMIN}'
+    `;
+  } else {
+    // USER role: Show only PROJECT_DESIGNER or VISITOR members
+    query = `
+      SELECT u.user_id, u.name, u.email, u.role, du.created_on, du.role as draft_user_role, du.updated_on 
+      FROM drafts_users du 
+      JOIN users u ON du.user_id = u.user_id 
+      WHERE du.draft_id = $1 AND du.role IN ('${DraftUserRole.PROJECT_DESIGNER}', '${DraftUserRole.VISITOR}')
+    `;
+  }
+
+  const members = await pg.exec("any", query, params);
   return res.send(members);
 });
 
-router.post('/:draft_id/members', checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
+router.post('/:draft_id/members', checkRole([Role.USER]), async (req, res) => {
   if (!req.user) return res.send({ error: "user not found" });
   const { user_id } = req.user;
-  const { email } = req.body;
+  const { email, role } = req.body;
   const user = await pg.exec(
     "one",
     "SELECT user_id FROM users WHERE email = $1",
@@ -223,13 +220,13 @@ router.post('/:draft_id/members', checkRole([Role.PROJECT_ADMIN]), async (req, r
 
   const member = await pg.exec(
     "one",
-    "INSERT INTO drafts_users(draft_id, user_id, created_by, created_on, updated_on) VALUES($1, $2, $3, current_timestamp, current_timestamp) RETURNING *",
-    [req.params.draft_id, user.user_id, user_id]
+    "INSERT INTO drafts_users(draft_id, user_id, role, created_by, created_on, updated_on) VALUES($1, $2, $3, $4, current_timestamp, current_timestamp) RETURNING *",
+    [req.params.draft_id, user.user_id, role, user_id]
   );
   return res.send(member);
 });
 
-router.delete('/:draft_id/members/:user_id', checkRole([Role.PROJECT_ADMIN]), async (req, res) => {
+router.delete('/:draft_id/members/:user_id', checkRole([Role.USER]), async (req, res) => {
   if (!req.params.user_id) return res.send({ error: "user not found" });
 
   const deleted = await pg.exec(

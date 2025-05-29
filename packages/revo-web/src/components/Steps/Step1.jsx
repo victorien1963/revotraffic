@@ -27,7 +27,7 @@ import {
 } from 'react-bootstrap'
 import { DraftContext } from '../ContextProvider'
 import { architecture } from '../../assets'
-import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
+import { usePermissions } from '../../hooks/useRoleAndPermission'
 import ProjectMembersModal from './ProjectMembersModal'
 // import { nenerabi } from '../../assets'
 
@@ -238,7 +238,7 @@ function Projects() {
     handleTimeDelete,
     handleTimeEdit,
   } = useContext(DraftContext)
-  const { checkPermission } = useRoleAndPermission()
+  const { hasPermission } = usePermissions()
 
   const projectForm = [
     {
@@ -372,7 +372,7 @@ function Projects() {
     setselectedId('')
   }
 
-  const [showMembers, setshowMembers] = useState(false)
+  const [showMembers, setShowMembers] = useState(false)
 
   return (
     <>
@@ -380,8 +380,10 @@ function Projects() {
         <Col xs={10} className="d-flex">
           <h5 className="my-auto text-revo-light fw-bold">{title}</h5>
         </Col>
-        {(checkPermission([Role.PROJECT_ADMIN]) ||
-          (draftId && checkPermission([Role.PROJECT_DESIGNER]))) && (
+
+        {(hasPermission('createProject') ||
+          (draftId &&
+            hasPermission('editProject', draft?.draft_user_role))) && (
           <Col xs={2} className="d-flex ms-auto pe-0">
             <Button
               className="ms-auto"
@@ -410,6 +412,7 @@ function Projects() {
                     setting,
                     created_on,
                     user_name,
+                    draft_user_role,
                   },
                   i
                 ) => (
@@ -430,27 +433,31 @@ function Projects() {
                       {moment(created_on).format('yyyy-MM-DD')}
                     </p>
 
-                    {checkPermission([Role.PROJECT_ADMIN]) && (
+                    {(hasPermission('assignProjectAdmin') ||
+                      (!draftId &&
+                        hasPermission('editMembers', draft_user_role))) && (
                       <Button
                         className="ms-auto me-2"
                         style={{ boxShadow: 'none' }}
                         variant="outline-revo me-2"
                         onClick={() => {
                           setselectedId(time_id || range_id || draft_id)
-                          setshowMembers(true)
+                          setShowMembers(true)
                         }}
                         title="Members"
                         size
                       >
-                        Members&ensp;
+                        成員&ensp;
                         <FontAwesomeIcon icon={faUsers} />
                       </Button>
                     )}
 
-                    {checkPermission([
-                      Role.PROJECT_ADMIN,
-                      Role.PROJECT_DESIGNER,
-                    ]) && (
+                    {(hasPermission('editProject', draft_user_role) ||
+                      (draftId &&
+                        hasPermission(
+                          'editProject',
+                          draft.draft_user_role
+                        ))) && (
                       <Button
                         className="ms-auto me-2"
                         style={{ boxShadow: 'none' }}
@@ -467,8 +474,12 @@ function Projects() {
                       </Button>
                     )}
 
-                    {(checkPermission(Role.PROJECT_ADMIN) ||
-                      (draftId && checkPermission(Role.PROJECT_DESIGNER))) && (
+                    {(hasPermission('createProject') ||
+                      (draftId &&
+                        hasPermission(
+                          'editProject',
+                          draft.draft_user_role
+                        ))) && (
                       <Button
                         style={{ boxShadow: 'none' }}
                         variant="outline-red"
@@ -483,23 +494,31 @@ function Projects() {
                       </Button>
                     )}
 
-                    <h2
-                      className="my-auto text-grey"
-                      style={{ userSelect: 'none' }}
-                    >
-                      ｜
-                    </h2>
-
-                    <Button
-                      className="me-0"
-                      style={{ boxShadow: 'none' }}
-                      variant="revo"
-                      onClick={() => setId(time_id || range_id || draft_id)}
-                      title="選 擇 此 計 劃"
-                    >
-                      選擇&ensp;
-                      <FontAwesomeIcon icon={faRightToBracket} />
-                    </Button>
+                    {(hasPermission('viewProject', draft_user_role) ||
+                      (draftId &&
+                        hasPermission(
+                          'viewProject',
+                          draft.draft_user_role
+                        ))) && (
+                      <>
+                        <h2
+                          className="my-auto text-grey"
+                          style={{ userSelect: 'none' }}
+                        >
+                          ｜
+                        </h2>
+                        <Button
+                          className="me-0"
+                          style={{ boxShadow: 'none' }}
+                          variant="revo"
+                          onClick={() => setId(time_id || range_id || draft_id)}
+                          title="選 擇 此 計 劃"
+                        >
+                          選擇&ensp;
+                          <FontAwesomeIcon icon={faRightToBracket} />
+                        </Button>
+                      </>
+                    )}
                   </ListGroupItem>
                 )
               )}
@@ -534,7 +553,7 @@ function Projects() {
 
       <ProjectMembersModal
         show={showMembers}
-        onClose={() => setshowMembers(false)}
+        onClose={() => setShowMembers(false)}
         project={list.find(
           (l) => (l.time_id || l.range_id || l.draft_id) === selectedId
         )}
