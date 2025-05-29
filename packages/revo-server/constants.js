@@ -1,8 +1,12 @@
 const Role = Object.freeze({
-  PROJECT_ADMIN: 'PROJECT_ADMIN',
-  PROJECT_DESIGNER: 'PROJECT_DESIGNER',
-  VISITOR: 'VISITOR',
-  SUPER_ADMIN: 'SUPER_ADMIN',
+  SYSTEM_ADMIN: "SYSTEM_ADMIN",
+  USER: "USER",
 });
 
-module.exports = { Role };
+const DraftUserRole = Object.freeze({
+  PROJECT_ADMIN: "PROJECT_ADMIN",
+  PROJECT_DESIGNER: "PROJECT_DESIGNER",
+  VISITOR: "VISITOR",
+});
+
+module.exports = { Role, DraftUserRole };

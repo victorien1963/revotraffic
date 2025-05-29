@@ -12,7 +12,11 @@ const { Role } = require("../constants");
 
 const checkRole = (acceptRoles) => {
   return (req, res, next) => {
-      if (req.user && [...acceptRoles, Role.SUPER_ADMIN].includes(req.user.role)) {
+      if (!req.user) {
+          return res.status(401).json({ message: "Unauthorized: No user found" });
+      }
+      
+      if (req.user && [...acceptRoles, Role.SYSTEM_ADMIN].includes(req.user.role)) {
           next(); 
       } else {
           res.status(403).json({ message: "Forbidden: Insufficient permissions" });

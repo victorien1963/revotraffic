@@ -6,7 +6,7 @@ const checkRole = require('../middlewares/is-role.middleware')
 const { Role } = require('../constants');
 
 // Get all users
-router.get('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
+router.get('/', checkRole([]), async (req, res) => {
   try {
     const users = await pg.exec(
       'any',
@@ -22,7 +22,7 @@ router.get('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
 
 router.get(
   "/non-super-admin-users",
-  checkRole([Role.SUPER_ADMIN, Role.PROJECT_ADMIN]),
+  checkRole([Role.USER]),
   async (req, res) => {
     const userId = req.user.user_id;
     const query = req.query.q || "";
@@ -30,7 +30,7 @@ router.get(
     try {
       const users = await pg.exec(
         "any",
-        "SELECT user_id, name, email, role FROM users WHERE role != 'SUPER_ADMIN' AND user_id != $1 AND (name ILIKE $2 OR  email ILIKE $2) ORDER BY user_id",
+        "SELECT user_id, name, email, role FROM users WHERE role != 'SYSTEM_ADMIN' AND user_id != $1 AND (name ILIKE $2 OR  email ILIKE $2) ORDER BY user_id",
         [userId, searchQuery]
       );
       return res.send({ users });
@@ -42,7 +42,7 @@ router.get(
 )
 
 // Get a specific user
-router.get("/:id(\\d+)", checkRole([Role.SUPER_ADMIN]), async (req, res) => {
+router.get("/:id(\\d+)", checkRole([]), async (req, res) => {
   try {
     const user = await pg.exec(
       "oneOrNone",
@@ -60,7 +60,7 @@ router.get("/:id(\\d+)", checkRole([Role.SUPER_ADMIN]), async (req, res) => {
 });
 
 // Create a new user
-router.post('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
+router.post('/', checkRole([]), async (req, res) => {
   const { name, email, password, role } = req.body
 
   if (!name || !email || !password || !role) {
@@ -68,7 +68,7 @@ router.post('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
   }
 
   // Validate role
-  const validRoles = [Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER, Role.VISITOR]
+  const validRoles = [Role.USER]
   if (!validRoles.includes(role)) {
     return res.status(400).send({ error: 'Invalid role' })
   }
@@ -90,7 +90,7 @@ router.post('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
     
     // Create settings object with role
     const setting = {
-      admin: role === Role.PROJECT_ADMIN // Only PROJECT_ADMIN gets admin privileges
+      admin: false
     }
 
     // Insert new user
@@ -108,7 +108,7 @@ router.post('/', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
 })
 
 // Update a user
-router.put('/:id', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
+router.put('/:id', checkRole([]), async (req, res) => {
   const { name, email, password, role } = req.body
   const userId = req.params.id
 
@@ -118,7 +118,7 @@ router.put('/:id', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
 
   // Validate role if provided
   if (role) {
-    const validRoles = [Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER, Role.VISITOR]
+    const validRoles = [Role.USER]
     if (!validRoles.includes(role)) {
       return res.status(400).send({ error: 'Invalid role' })
     }
@@ -204,7 +204,7 @@ router.put('/:id', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
 })
 
 // Delete a user
-router.delete('/:id', checkRole([Role.SUPER_ADMIN]), async (req, res) => {
+router.delete('/:id', checkRole([]), async (req, res) => {
   const userId = req.params.id
 
   // Prevent deleting the main admin account

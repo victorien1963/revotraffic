@@ -20,8 +20,8 @@ router.get('/:range_id', async (req, res) => {
     return res.send(times)
 })
 
-router.post('/:range_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
-    if (!req.user) return res.send({ error: 'user not found' })
+router.post('/:range_id', checkRole([Role.USER]), async (req, res) => {
+    
     const time = await pg.exec('one', 'INSERT INTO times(range_id, setting, created_on, updated_on) values($1, $2, current_timestamp, current_timestamp) RETURNING *', [req.params.range_id, {
         ...req.body,
         videos: [],
@@ -29,8 +29,8 @@ router.post('/:range_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])
     return res.send(time)
 })
 
-router.put('/:time_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
-    if (!req.user) return res.send({ error: 'user not found' })
+router.put('/:time_id', checkRole([Role.USER]), async (req, res) => {
+   
     const old = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [req.params.time_id])
     console.log('======updating time======')
     console.log(old.setting)
@@ -48,15 +48,15 @@ router.put('/:time_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), 
     return res.send(time)
 })
 
-router.delete('/:time_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
-    if (!req.user) return res.send({ error: 'user not found' })
+router.delete('/:time_id', checkRole([Role.USER]), async (req, res) => {
+   
     const deleted = await pg.exec('oneOrNone', 'DELETE FROM times WHERE time_id = $1 RETURNING *', [req.params.time_id])
     return res.send(deleted)
 })
 
-router.post('/file/:time_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), Multer({ storage: Multer.memoryStorage() }).single("file"), async (req, res) => {
+router.post('/file/:time_id', checkRole([Role.USER]), Multer({ storage: Multer.memoryStorage() }).single("file"), async (req, res) => {
     try {
-        if (!req.user) return res.send({ error: 'user not found' })
+       
         console.log(req.file)
         const { originalname, buffer } = req.file
         const uploaded = await upload({ Key: originalname, Body: buffer })
@@ -68,8 +68,8 @@ router.post('/file/:time_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGN
     }
 })
 
-router.post('/video/:time_id', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
-    if (!req.user) return res.send({ error: 'user not found' })
+router.post('/video/:time_id', checkRole([Role.USER]), async (req, res) => {
+  
     const uploads = await Promise.all(JSON.parse(req.body.files).map((file) => {
         return upload({ Key: file.name, Body: Buffer.from(file.data) })
     }))
@@ -122,8 +122,8 @@ router.get('/video/:name', async (req, res) => {
     file.pipe(res)
   })
 
-router.delete('/video/:time_id/:index', checkRole([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]), async (req, res) => {
-    if (!req.user) return res.send({ error: 'user not found' })
+router.delete('/video/:time_id/:index', checkRole([Role.USER]), async (req, res) => {
+  
     const old = await pg.exec('one', 'SELECT setting FROM times WHERE time_id = $1', [req.params.time_id])
     const time = await pg.exec('one', 'UPDATE times set setting = $2, updated_on = current_timestamp WHERE time_id = $1 RETURNING time_id,setting', [req.params.time_id, { ...old.setting, videos: old.setting.videos.filter((v, i) => i !== parseInt(req.params.index, 10) ) }])
     return res.send(time)

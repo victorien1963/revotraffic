@@ -3,12 +3,12 @@ import { Container, Navbar, Image, Button } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { RTLogo2 } from '../assets'
 import { AuthContext } from './ContextProvider'
-import useRoleAndPermission, { Role } from '../hooks/useRoleAndPermission'
+import { usePermissions } from '../hooks/useRoleAndPermission'
 
 function NavBar() {
   const { setAuth } = useContext(AuthContext)
   const navigate = useNavigate()
-  const { checkPermission } = useRoleAndPermission()
+  const { hasPermission } = usePermissions()
 
   const handleLogout = () => {
     document.cookie = `token=; Domain=${window.location.hostname}; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
@@ -34,7 +34,7 @@ function NavBar() {
         </Navbar.Brand>
 
         <div>
-          {checkPermission([Role.SUPER_ADMIN]) && (
+          {hasPermission('canCURDUser') && (
             <Button
               className="fw-bolder my-auto"
               style={{ cursor: 'pointer', marginRight: '1rem' }}

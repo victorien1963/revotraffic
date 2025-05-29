@@ -19,7 +19,7 @@ import {
   faUserTag,
   faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
-import { Role } from '../../hooks/useRoleAndPermission'
+import { DraftUserRole, usePermissions } from '../../hooks/useRoleAndPermission'
 import apiServices from '../../services/apiServices'
 import { ToastContext } from '../ContextProvider'
 import CustomComboBox from '../CustomComboBox'
@@ -30,15 +30,15 @@ function RoleBadge({ role }) {
   let label = 'Unknown'
 
   switch (role) {
-    case Role.PROJECT_ADMIN:
+    case DraftUserRole.PROJECT_ADMIN:
       variant = 'danger'
       label = '系統管理員'
       break
-    case Role.PROJECT_DESIGNER:
+    case DraftUserRole.PROJECT_DESIGNER:
       variant = 'success'
       label = '系統設計師'
       break
-    case Role.VISITOR:
+    case DraftUserRole.VISITOR:
       variant = 'info'
       label = '訪客'
       break
@@ -100,6 +100,8 @@ function RemoveConfirmModal({ show, user, onClose, onConfirm, loading }) {
 }
 
 function ProjectMembersModal({ show, onClose, project }) {
+  const { hasPermission } = usePermissions()
+
   // State for the list of users with access
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(false)
@@ -118,7 +120,9 @@ function ProjectMembersModal({ show, onClose, project }) {
   // State for the new user form
   const [newUser, setNewUser] = useState({
     email: '',
-    role: Role.VISITOR,
+    role: hasPermission('assignProjectAdmin')
+      ? DraftUserRole.PROJECT_ADMIN
+      : DraftUserRole.VISITOR,
   })
 
   // Fetch members when component mounts or project changes
@@ -222,7 +226,7 @@ function ProjectMembersModal({ show, onClose, project }) {
       const response = await apiServices.data({
         path: `draft/${project.draft_id}/members`,
         method: 'post',
-        data: { email: newUser.email },
+        data: { email: newUser.email, role: newUser.role },
       })
 
       if (response.error) {
@@ -261,7 +265,9 @@ function ProjectMembersModal({ show, onClose, project }) {
       setLoading(false)
       setNewUser({
         email: '',
-        role: Role.VISITOR,
+        role: hasPermission('assignProjectAdmin')
+          ? DraftUserRole.PROJECT_ADMIN
+          : DraftUserRole.VISITOR,
       })
     }
   }
@@ -359,7 +365,7 @@ function ProjectMembersModal({ show, onClose, project }) {
                     <div className="me-3">
                       <strong>{user.name}</strong>
                     </div>
-                    <RoleBadge role={user.role} />
+                    <RoleBadge role={user.draft_user_role} />
                   </div>
                   <div className="text-muted small">
                     <FontAwesomeIcon icon={faEnvelope} className="me-1" />
@@ -402,6 +408,35 @@ function ProjectMembersModal({ show, onClose, project }) {
                     loadingUsers ? '載入中...' : '沒有符合的使用者'
                   }
                 />
+              </Form.Group>
+            </Col>
+
+            <Col md={4}>
+              <Form.Group className="mb-3">
+                <Form.Label>角色</Form.Label>
+                <Form.Select
+                  name="role"
+                  value={newUser.role}
+                  onChange={(e) => {
+                    setNewUser({ ...newUser, role: e.target.value })
+                  }}
+                  required
+                  disabled={loading}
+                >
+                  {hasPermission('assignProjectAdmin') && (
+                    <option value={DraftUserRole.PROJECT_ADMIN}>
+                      系統管理員
+                    </option>
+                  )}
+                  {hasPermission('editMembers', project?.draft_user_role) && (
+                    <>
+                      <option value={DraftUserRole.PROJECT_DESIGNER}>
+                        系統設計師
+                      </option>
+                      <option value={DraftUserRole.VISITOR}>訪客</option>
+                    </>
+                  )}
+                </Form.Select>
               </Form.Group>
             </Col>
 
@@ -451,7 +486,12 @@ ProjectMembersModal.propTypes = {
       name: PropTypes.string.isRequired,
     }).isRequired,
     draft_id: PropTypes.number.isRequired,
-  }).isRequired,
+    draft_user_role: PropTypes.string.isRequired,
+  }),
+}
+
+ProjectMembersModal.defaultProps = {
+  project: null,
 }
 
 RoleBadge.propTypes = {

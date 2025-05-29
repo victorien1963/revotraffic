@@ -39,7 +39,7 @@ import { description, description2, description3, remark2 } from '../../assets'
 import LoadingButton from '../LoadingButton'
 import apiServices from '../../services/apiServices'
 import { DraftContext, ToastContext } from '../ContextProvider'
-import useRoleAndPermission, { Role } from '../../hooks/useRoleAndPermission'
+import { usePermissions } from '../../hooks/useRoleAndPermission'
 
 function WarnModal({ setting }) {
   const { show, handleClose, content, hasCancel } = setting
@@ -1750,14 +1750,14 @@ function VISSIMModal({ setting }) {
 
 function Road({ setting }) {
   const { handleToolChange } = setting
-  const { checkPermission } = useRoleAndPermission()
+  const { hasPermission } = usePermissions()
 
   const [showWarn, setshowWarn] = useState({
     show: false,
     content: 'Oops! 請先完成投影轉換再進行距離基準標記',
     handleClose: () => {},
   })
-  const { timeId, time = {}, handleTimeEdit } = useContext(DraftContext)
+  const { timeId, time = {}, handleTimeEdit, draft } = useContext(DraftContext)
   const { videos = [] } = time.setting || {}
   const [selected, setselected] = useState('')
   const {
@@ -1872,7 +1872,7 @@ function Road({ setting }) {
       type: 'road',
       check: roads,
       click: () => {
-        if (!checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])) {
+        if (!hasPermission('editProject', draft.draft_user_role)) {
           return
         }
 
@@ -1892,7 +1892,7 @@ function Road({ setting }) {
         roadAdjust.project &&
         roadAdjust.project.show,
       click: () => {
-        if (!checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])) {
+        if (!hasPermission('editProject', draft.draft_user_role)) {
           return
         }
 
@@ -1907,7 +1907,7 @@ function Road({ setting }) {
       type: 'road',
       check: roadLine && roadLine.length === 2,
       click: () => {
-        if (!checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER])) {
+        if (!hasPermission('editProject', draft.draft_user_role)) {
           return
         }
 
@@ -2076,10 +2076,10 @@ function Road({ setting }) {
                             }}
                             value={data.type}
                             disabled={
-                              !checkPermission([
-                                Role.PROJECT_ADMIN,
-                                Role.PROJECT_DESIGNER,
-                              ])
+                              !hasPermission(
+                                'editProject',
+                                draft.draft_user_role
+                              )
                             }
                           >
                             <option value="" className="d-none">
@@ -2121,10 +2121,10 @@ function Road({ setting }) {
                               onFocus={() => setshowDate(!showDate)}
                               readOnly
                               disabled={
-                                !checkPermission([
-                                  Role.PROJECT_ADMIN,
-                                  Role.PROJECT_DESIGNER,
-                                ])
+                                !hasPermission(
+                                  'editProject',
+                                  draft.draft_user_role
+                                )
                               }
                             />
                             <div
@@ -2192,10 +2192,10 @@ function Road({ setting }) {
                             placeholder={f.placeholder}
                             onFocus={() => setshowDate(false)}
                             disabled={
-                              !checkPermission([
-                                Role.PROJECT_ADMIN,
-                                Role.PROJECT_DESIGNER,
-                              ])
+                              !hasPermission(
+                                'editProject',
+                                draft.draft_user_role
+                              )
                             }
                           />
                         </Col>
@@ -2250,7 +2250,7 @@ function Road({ setting }) {
                 預覽
               </Button>
 
-              {checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]) && (
+              {hasPermission('editProject', draft.draft_user_role) && (
                 <Button
                   variant="revo2"
                   className="mx-2"
@@ -2443,9 +2443,9 @@ function Road({ setting }) {
 
 function Video({ setting }) {
   const { handleToolChange } = setting
-  const { timeId, time = {}, setTimes } = useContext(DraftContext)
+  const { timeId, time = {}, setTimes, draft } = useContext(DraftContext)
   const { videos = [] } = time.setting || {}
-  const { checkPermission } = useRoleAndPermission()
+  const { hasPermission } = usePermissions()
 
   // const [fileList, setfileList] = useState([])
   const [tempFile, settempFile] = useState(null)
@@ -2558,7 +2558,7 @@ function Video({ setting }) {
   return (
     <>
       <Row className="pt-3 pb-2 px-2" style={{ height: '10vh' }}>
-        {checkPermission([Role.PROJECT_ADMIN, Role.PROJECT_DESIGNER]) && (
+        {hasPermission('editProject', draft.draft_user_role) && (
           <Col xs={2}>
             <Button variant="revo">
               <FormLabel
@@ -2672,10 +2672,7 @@ function Video({ setting }) {
                     <source src={`/api/draft/video/${name}`} />
                   </video>
                 </div>
-                {checkPermission([
-                  Role.PROJECT_ADMIN,
-                  Role.PROJECT_DESIGNER,
-                ]) && (
+                {hasPermission('editProject', draft.draft_user_role) && (
                   <Button
                     variant="outline-danger"
                     className="mb-auto mt-2 mx-auto"
