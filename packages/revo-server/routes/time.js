@@ -45,8 +45,8 @@ router.put('/:time_id', checkRole([Role.USER]), async (req, res) => {
     }), {})
     console.log('=====updated here=====')
     const time = await pg.exec('one', 'UPDATE times SET setting = $2 WHERE time_id = $1 RETURNING *', [req.params.time_id, {
-        ...updated, 
-        ...req.body
+        ...req.body,
+        ...updated
     }])
     return res.send(time)
 })
