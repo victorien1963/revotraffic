@@ -341,20 +341,36 @@ function Results({ setting }) {
                     }
                   />
                 ) : (
-                  <p className="w-8 my-auto text-start">
+                  <p
+                    className="w-8 my-auto text-start oneLineEllipsis"
+                    title={name.split('_')[name.split('_').length - 1]}
+                  >
                     {name.split('_')[name.split('_').length - 1]}
                   </p>
                 )}
-                <p className="w-15 my-auto text-start">建立者：{user}</p>
-                <p className="w-20 my-auto text-start">
+                <p
+                  className="w-15 my-auto text-start oneLineEllipsis"
+                  title={user}
+                >
+                  建立者：{user}
+                </p>
+                <p
+                  className="w-20 my-auto text-start oneLineEllipsis"
+                  title={created_on}
+                >
                   建立時間：{created_on}
                 </p>
                 {type && (
-                  <p className="w-15 my-auto text-start">檔案類型：{type}</p>
+                  <p
+                    className="w-10 my-auto text-start oneLineEllipsis"
+                    title={type}
+                  >
+                    檔案類型：{type}
+                  </p>
                 )}
 
-                <div className="w-15 my-auto d-flex">
-                  <p className="text-nowrap my-auto">備註：</p>
+                <div className="w-10 my-auto d-flex oneLineEllipsis">
+                  <p className="my-auto oneLineEllipsis">備註：</p>
                   {editing === i ? (
                     <Form.Control
                       className="my-auto text-start"
