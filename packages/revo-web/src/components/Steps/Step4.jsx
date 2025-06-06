@@ -326,7 +326,10 @@ function Results({ setting }) {
               >
                 {editing === i ? (
                   <Form.Control
-                    className="w-8 my-auto text-start"
+                    className="w-10 my-auto text-start oneLineEllipsis"
+                    title={
+                      modelName.split('_')[modelName.split('_').length - 1]
+                    }
                     value={
                       modelName.split('_')[modelName.split('_').length - 1]
                     }
@@ -349,7 +352,7 @@ function Results({ setting }) {
                   </p>
                 )}
                 <p
-                  className="w-15 my-auto text-start oneLineEllipsis"
+                  className="w-10 my-auto text-start oneLineEllipsis"
                   title={user}
                 >
                   建立者：{user}
