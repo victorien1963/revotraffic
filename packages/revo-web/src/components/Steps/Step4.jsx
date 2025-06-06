@@ -326,7 +326,7 @@ function Results({ setting }) {
               >
                 {editing === i ? (
                   <Form.Control
-                    className="w-8 my-auto text-start oneLineEllipsis"
+                    className="w-15 my-auto text-start oneLineEllipsis"
                     title={
                       modelName.split('_')[modelName.split('_').length - 1]
                     }
@@ -345,7 +345,7 @@ function Results({ setting }) {
                   />
                 ) : (
                   <p
-                    className="w-8 my-auto text-start oneLineEllipsis"
+                    className="w-15 my-auto text-start oneLineEllipsis"
                     title={name.split('_')[name.split('_').length - 1]}
                   >
                     {name.split('_')[name.split('_').length - 1]}
@@ -365,7 +365,7 @@ function Results({ setting }) {
                 </p>
                 {type && (
                   <p
-                    className="w-10 my-auto text-start oneLineEllipsis"
+                    className="w-15 my-auto text-start oneLineEllipsis"
                     title={type}
                   >
                     檔案類型：{type}
