@@ -502,7 +502,7 @@ function Projects() {
                         ))) && (
                       <>
                         <h2
-                          className="my-auto text-grey"
+                          className="my-auto text-grey ms-auto"
                           style={{ userSelect: 'none' }}
                         >
                           ｜

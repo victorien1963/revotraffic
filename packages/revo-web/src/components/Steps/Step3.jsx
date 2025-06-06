@@ -341,9 +341,7 @@ function Step3({ setting }) {
   const [trueValue, settrueValue] = useState({})
   useEffect(() => {
     const t = videoData.trueValue?.traffic15
-    if (t && !t.length) {
-      settrueValue(t)
-    }
+    settrueValue(t || {})
   }, [videoData, selected])
 
   // page
