@@ -32,11 +32,11 @@ function RoleBadge({ role }) {
   switch (role) {
     case DraftUserRole.PROJECT_ADMIN:
       variant = 'danger'
-      label = '系統管理員'
+      label = '計畫管理員'
       break
     case DraftUserRole.PROJECT_DESIGNER:
       variant = 'success'
-      label = '系統設計師'
+      label = '工程師'
       break
     case DraftUserRole.VISITOR:
       variant = 'info'
@@ -425,13 +425,13 @@ function ProjectMembersModal({ show, onClose, project }) {
                 >
                   {hasPermission('assignProjectAdmin') && (
                     <option value={DraftUserRole.PROJECT_ADMIN}>
-                      系統管理員
+                      計畫管理員
                     </option>
                   )}
                   {hasPermission('editMembers', project?.draft_user_role) && (
                     <>
                       <option value={DraftUserRole.PROJECT_DESIGNER}>
-                        系統設計師
+                        工程師
                       </option>
                       <option value={DraftUserRole.VISITOR}>訪客</option>
                     </>
