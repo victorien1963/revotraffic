@@ -2591,7 +2591,12 @@ function Video({ setting }) {
                   const maxSize = 500 * 1024 * 1024
                   if (file.size > maxSize) {
                     e.target.value = '' // Clear the input
-                    setToast({ show: true, text: '上傳影片大小超過500mb。' })
+                    setToast({
+                      show: true,
+                      text: '上傳影片大小超過500mb。',
+                      position: 'middle-center',
+                      bg: 'danger',
+                    })
                   } else {
                     setuploading(true)
                     settempFile(e.target.files[0])
