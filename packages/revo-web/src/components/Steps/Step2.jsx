@@ -2446,6 +2446,7 @@ function Video({ setting }) {
   const { timeId, time = {}, setTimes, draft } = useContext(DraftContext)
   const { videos = [] } = time.setting || {}
   const { hasPermission } = usePermissions()
+  const { setToast } = useContext(ToastContext)
 
   // const [fileList, setfileList] = useState([])
   const [tempFile, settempFile] = useState(null)
@@ -2557,7 +2558,7 @@ function Video({ setting }) {
   }
   return (
     <>
-      <Row className="pt-3 pb-2 px-2" style={{ height: '10vh' }}>
+      <Row className="pt-3 pb-2 px-2" style={{ height: '12vh' }}>
         {hasPermission('editProject', draft.draft_user_role) && (
           <Col xs={2}>
             <Button variant="revo">
@@ -2570,6 +2571,12 @@ function Video({ setting }) {
                 &ensp;上傳影片檔案
               </FormLabel>
             </Button>
+            <p
+              className="text-center mt-1"
+              style={{ fontSize: '12px', color: '#666' }}
+            >
+              上傳影片大小限制為500mb。
+            </p>
             <Form.Control
               id="file"
               name="file"
@@ -2578,9 +2585,19 @@ function Video({ setting }) {
               accept="video/*"
               // value={fileList}
               onChange={(e) => {
-                setuploading(true)
-                settempFile(e.target.files[0])
-                e.target.value = null
+                const file = e.target.files?.[0]
+                if (file) {
+                  // Check if file size exceeds 500MB (500 * 1024 * 1024 bytes)
+                  const maxSize = 500 * 1024 * 1024
+                  if (file.size > maxSize) {
+                    e.target.value = '' // Clear the input
+                    setToast({ show: true, text: '上傳影片大小超過500mb。' })
+                  } else {
+                    setuploading(true)
+                    settempFile(e.target.files[0])
+                    e.target.value = null
+                  }
+                }
               }}
               style={{
                 visibility: 'hidden',
