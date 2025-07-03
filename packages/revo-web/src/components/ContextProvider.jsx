@@ -233,7 +233,11 @@ function ContextProvider(props) {
     if (authed) initDrafts()
   }, [authed])
 
-  const [toast, setToast] = useState({ show: false, text: '' })
+  const [toast, setToast] = useState({
+    show: false,
+    text: '',
+    position: 'bottom-end',
+  })
   const toastValue = useMemo(() => ({ toast, setToast }), [toast])
   return (
     <>
@@ -248,13 +252,14 @@ function ContextProvider(props) {
         </AuthContext.Provider>
       </ToastContext.Provider>
       {/* </NotiContext.Provider> */}
-      <ToastContainer className="p-3" position="bottom-end">
+      <ToastContainer className="p-3" position={toast.position ?? 'bottom-end'}>
         <Toast
           onClose={() => setToast({ ...toast, show: false })}
           show={toast.show}
           delay={3000}
           autohide
           style={{ width: '100%' }}
+          bg={toast.bg}
         >
           <Toast.Body>{toast.text}</Toast.Body>
         </Toast>
