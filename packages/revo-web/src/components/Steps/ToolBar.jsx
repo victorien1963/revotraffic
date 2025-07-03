@@ -96,22 +96,27 @@ function ToolBar({ setting }) {
     {
       label: 'AI影像辨識',
       name: 'step3',
-      click: {
-        name: 'step3',
-        value: '影像辨識',
-      },
-      // dropdowns: [
-      //   {
-      //     label: '影像辨識',
-      //     name: 'step3',
-      //     value: '影像辨識',
-      //   },
-      // {
-      //   label: '交通量檢核',
+      // click: {
       //   name: 'step3',
-      //   value: '交通量檢核',
+      //   value: '影像辨識',
       // },
-      // ],
+      dropdowns: [
+        {
+          label: '資料標記平台 (CVAT)',
+          name: 'step3',
+          value: '資料標記平台 (CVAT)',
+          onClick: (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            window.open('https://cvat.ai', '_blank', 'noopener,noreferrer')
+          },
+        },
+        {
+          label: 'AI影像辨識',
+          name: 'step3',
+          value: '影像辨識',
+        },
+      ],
     },
     {
       label: 'AI號控調校',
@@ -173,7 +178,11 @@ function ToolBar({ setting }) {
                     <li key={d.value}>
                       <a
                         className="dropdown-item"
-                        onClick={() => {
+                        onClick={(e) => {
+                          if (d.onClick) {
+                            d.onClick(e)
+                            return
+                          }
                           if (!timeId && d.name !== 'step1') {
                             setShow(true)
                           } else {
