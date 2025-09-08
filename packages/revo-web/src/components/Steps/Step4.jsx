@@ -20,11 +20,11 @@ import {
   faCircleExclamation,
   faCirclePlus,
   faCloudArrowUp,
-  faCubes,
-  faFlaskVial,
   faPenToSquare,
   faTrashCan,
   faDownload,
+  faWifi,
+  faCog,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faCircleCheck,
@@ -1175,24 +1175,18 @@ function Step4({ setting }) {
       <Row className="h-100 justify-content-center">
         {[
           {
-            label: '模型訓練檔案生成',
+            label: '適應性號誌',
             name: 'step4',
-            value: '模型訓練檔案生成',
+            value: '適應性號誌',
             check: modals.length > 0,
-            icon: faCubes,
+            icon: faCog,
           },
           {
-            label: '模型檔案管理',
+            label: '感應性號誌',
             name: 'step4',
-            value: '模型檔案管理',
+            value: '感應性號誌',
             check: modals.length > 0,
-            icon: faCubes,
-          },
-          {
-            label: '實驗檔案管理',
-            name: 'step4',
-            value: '實驗檔案管理',
-            icon: faFlaskVial,
+            icon: faWifi,
           },
         ].map((s) => (
           <Col xs={3} className="d-flex" key={s.value}>
@@ -1229,10 +1223,10 @@ function Step4({ setting }) {
         ))}
       </Row>
     ),
-    模型訓練檔案生成: (
+    適應性號誌: (
       <iframe title="vissim" height="100%" src="https://vissim.punwave.com/" />
     ),
-    // 模型訓練檔案生成: (
+    // 適應性號誌: (
     //   <VISSIM
     //     setting={{
     //       handleDataChange,
@@ -1240,12 +1234,11 @@ function Step4({ setting }) {
     //     }}
     //   />
     // ),
-    模型檔案管理: (
-      <Files
-        setting={{
-          handleDataChange,
-          handleToolChange,
-        }}
+    感應性號誌: (
+      <iframe
+        title="vissim"
+        height="100%"
+        src="https://vissim.punwave.com/responsive"
       />
     ),
     實驗檔案管理: (
