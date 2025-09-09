@@ -1,0 +1,7 @@
+node_modules
+build
+dist
+coverage
+packages/revo-web/build
+packages/revo-web/server/node_modules
+packages/revo-server/node_modules

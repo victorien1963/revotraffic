@@ -56,9 +56,7 @@ function ContextProvider(props) {
       path: `draft/${draft_id}`,
       method: 'delete',
     })
-    setDrafts((prevState) =>
-      prevState.filter((p) => res.draft_id !== p.draft_id)
-    )
+    setDrafts((prevState) => prevState.filter((p) => res.draft_id !== p.draft_id))
   }
   const handleDraftEdit = async (draft_id, data) => {
     const res = await apiServices.data({
@@ -66,15 +64,10 @@ function ContextProvider(props) {
       method: 'put',
       data,
     })
-    setDrafts((prevState) =>
-      prevState.map((p) => (p.draft_id === draft_id ? { ...p, ...res } : p))
-    )
+    setDrafts((prevState) => prevState.map((p) => (p.draft_id === draft_id ? { ...p, ...res } : p)))
   }
   const draft = useMemo(
-    () =>
-      drafts && draftId
-        ? drafts.find(({ draft_id }) => draft_id === draftId)
-        : false,
+    () => (drafts && draftId ? drafts.find(({ draft_id }) => draft_id === draftId) : false),
     [drafts, draftId]
   )
   const initDrafts = async () => {
@@ -100,9 +93,7 @@ function ContextProvider(props) {
       path: `range/${range_id}`,
       method: 'delete',
     })
-    setRanges((prevState) =>
-      prevState.filter((p) => res.range_id !== p.range_id)
-    )
+    setRanges((prevState) => prevState.filter((p) => res.range_id !== p.range_id))
   }
   const handleRangeEdit = async (range_id, data) => {
     const res = await apiServices.data({
@@ -110,15 +101,10 @@ function ContextProvider(props) {
       method: 'put',
       data,
     })
-    setRanges((prevState) =>
-      prevState.map((p) => (p.range_id === range_id ? res : p))
-    )
+    setRanges((prevState) => prevState.map((p) => (p.range_id === range_id ? res : p)))
   }
   const range = useMemo(
-    () =>
-      ranges && rangeId
-        ? ranges.find(({ range_id }) => range_id === rangeId)
-        : false,
+    () => (ranges && rangeId ? ranges.find(({ range_id }) => range_id === rangeId) : false),
     [ranges, rangeId]
   )
   useEffect(() => {
@@ -160,13 +146,10 @@ function ContextProvider(props) {
       method: 'put',
       data,
     })
-    setTimes((prevState) =>
-      prevState.map((p) => (p.time_id === time_id ? res : p))
-    )
+    setTimes((prevState) => prevState.map((p) => (p.time_id === time_id ? res : p)))
   }
   const time = useMemo(
-    () =>
-      times && timeId ? times.find(({ time_id }) => time_id === timeId) : false,
+    () => (times && timeId ? times.find(({ time_id }) => time_id === timeId) : false),
     [times, timeId]
   )
   useEffect(() => {
@@ -245,9 +228,7 @@ function ContextProvider(props) {
       <ToastContext.Provider value={toastValue}>
         <AuthContext.Provider value={authValue}>
           <DraftContext.Provider value={draftValue}>
-            <SocketContext.Provider value={socketValue}>
-              {children}
-            </SocketContext.Provider>
+            <SocketContext.Provider value={socketValue}>{children}</SocketContext.Provider>
           </DraftContext.Provider>
         </AuthContext.Provider>
       </ToastContext.Provider>

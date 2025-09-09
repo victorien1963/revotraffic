@@ -26,22 +26,16 @@ import {
   faWifi,
   faCog,
 } from '@fortawesome/free-solid-svg-icons'
-import {
-  faCircleCheck,
-  faCircleXmark,
-} from '@fortawesome/free-regular-svg-icons'
+import { faCircleCheck, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { AuthContext, DraftContext, ToastContext } from '../ContextProvider'
 import apiServices from '../../services/apiServices'
+import DefaultSignal from '../../pages/CreateVissimRl/default'
+import ResponsiveSignal from '../../pages/CreateVissimRl/responsive'
 
 function WarnModal({ setting }) {
   const { show, text, handleClose } = setting
   return (
-    <Modal
-      style={{ zIndex: '1501' }}
-      show={show}
-      onHide={handleClose}
-      className="py-2 px-4"
-    >
+    <Modal style={{ zIndex: '1501' }} show={show} onHide={handleClose} className="py-2 px-4">
       <Modal.Header closeButton>
         <h4>通知</h4>
       </Modal.Header>
@@ -153,13 +147,7 @@ function Results({ setting }) {
   const { handleToolChange } = setting
   const [uploading, setuploading] = useState(0)
   const { auth } = useContext(AuthContext)
-  const {
-    timeId,
-    rangeId,
-    draftId,
-    time = {},
-    setTimes,
-  } = useContext(DraftContext)
+  const { timeId, rangeId, draftId, time = {}, setTimes } = useContext(DraftContext)
   const { results = [] } = time.setting || {}
   const [selected, setselected] = useState('')
   const [warning, setwarning] = useState({
@@ -195,9 +183,7 @@ function Results({ setting }) {
         ],
       },
     })
-    setTimes((prevState) =>
-      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
-    )
+    setTimes((prevState) => prevState.map((ps) => (ps.time_id === timeId ? res : ps)))
     setnewFiles([])
     setuploading(0)
   }
@@ -210,9 +196,7 @@ function Results({ setting }) {
         results: newModels,
       },
     })
-    setTimes((prevState) =>
-      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
-    )
+    setTimes((prevState) => prevState.map((ps) => (ps.time_id === timeId ? res : ps)))
   }
 
   const [modelName, setmodelName] = useState('')
@@ -327,12 +311,8 @@ function Results({ setting }) {
                 {editing === i ? (
                   <Form.Control
                     className="w-15 my-auto text-start oneLineEllipsis"
-                    title={
-                      modelName.split('_')[modelName.split('_').length - 1]
-                    }
-                    value={
-                      modelName.split('_')[modelName.split('_').length - 1]
-                    }
+                    title={modelName.split('_')[modelName.split('_').length - 1]}
+                    value={modelName.split('_')[modelName.split('_').length - 1]}
                     onChange={(e) =>
                       setmodelName(
                         modelName
@@ -351,23 +331,14 @@ function Results({ setting }) {
                     {name.split('_')[name.split('_').length - 1]}
                   </p>
                 )}
-                <p
-                  className="w-15 my-auto text-start oneLineEllipsis"
-                  title={user}
-                >
+                <p className="w-15 my-auto text-start oneLineEllipsis" title={user}>
                   建立者：{user}
                 </p>
-                <p
-                  className="w-20 my-auto text-start oneLineEllipsis"
-                  title={created_on}
-                >
+                <p className="w-20 my-auto text-start oneLineEllipsis" title={created_on}>
                   建立時間：{created_on}
                 </p>
                 {type && (
-                  <p
-                    className="w-15 my-auto text-start oneLineEllipsis"
-                    title={type}
-                  >
+                  <p className="w-15 my-auto text-start oneLineEllipsis" title={type}>
                     檔案類型：{type}
                   </p>
                 )}
@@ -393,9 +364,7 @@ function Results({ setting }) {
                       onClick={() => {
                         handleEdit(
                           results.map((m, j) =>
-                            i !== j
-                              ? m
-                              : { ...m, name: modelName, note: modelNote }
+                            i !== j ? m : { ...m, name: modelName, note: modelNote }
                           )
                         )
                         setediting(-1)
@@ -404,10 +373,7 @@ function Results({ setting }) {
                       size
                     >
                       <p className="text-nowrap">確定&ensp;</p>
-                      <FontAwesomeIcon
-                        className="my-auto"
-                        icon={faCircleCheck}
-                      />
+                      <FontAwesomeIcon className="my-auto" icon={faCircleCheck} />
                     </Button>
                     <Button
                       className="me-2 d-flex flex-nowrap"
@@ -418,10 +384,7 @@ function Results({ setting }) {
                       size
                     >
                       <p className="text-nowrap">取消&ensp;</p>
-                      <FontAwesomeIcon
-                        className="my-auto"
-                        icon={faCircleXmark}
-                      />
+                      <FontAwesomeIcon className="my-auto" icon={faCircleXmark} />
                     </Button>
                   </>
                 ) : (
@@ -562,8 +525,7 @@ function Results({ setting }) {
           multiple
           onChange={(e) => {
             const length =
-              Array.from(e.target.files).length +
-              results.filter((r) => r.type === selected).length
+              Array.from(e.target.files).length + results.filter((r) => r.type === selected).length
             if (length > limit[selected]) {
               setwarning({
                 ...warning,
@@ -653,10 +615,7 @@ function Results({ setting }) {
           {uploading ? (
             <span className="my-auto spinner-border spinner-border-sm" />
           ) : (
-            <FontAwesomeIcon
-              icon={faCloudArrowUp}
-              className="my-auto fs-5 text-dai-lighter fs-8"
-            />
+            <FontAwesomeIcon icon={faCloudArrowUp} className="my-auto fs-5 text-dai-lighter fs-8" />
           )}
         </Button>
       </Row>
@@ -725,26 +684,17 @@ function VISSIM({ setting }) {
         </Row> */}
         <Row className="mb-3 justify-content-center">
           <Col xs={3}>
-            <Button
-              variant="revo2"
-              onClick={() => downloadFilePost('requirements.txt', {})}
-            >
+            <Button variant="revo2" onClick={() => downloadFilePost('requirements.txt', {})}>
               下載requirement.txt
             </Button>
           </Col>
           <Col xs={3}>
-            <Button
-              variant="revo2"
-              onClick={() => downloadFilePost('setting.json', {})}
-            >
+            <Button variant="revo2" onClick={() => downloadFilePost('setting.json', {})}>
               下載設定檔範本
             </Button>
           </Col>
           <Col xs={3}>
-            <Button
-              variant="revo2"
-              onClick={() => downloadFilePost('setting_explain.pdf', {})}
-            >
+            <Button variant="revo2" onClick={() => downloadFilePost('setting_explain.pdf', {})}>
               下載設定檔說明文件
             </Button>
           </Col>
@@ -806,13 +756,7 @@ function Files({ setting }) {
   const { handleToolChange } = setting
   const [uploading, setuploading] = useState(0)
   const { auth } = useContext(AuthContext)
-  const {
-    timeId,
-    rangeId,
-    draftId,
-    time = {},
-    setTimes,
-  } = useContext(DraftContext)
+  const { timeId, rangeId, draftId, time = {}, setTimes } = useContext(DraftContext)
   const { models = [] } = time.setting || {}
 
   const handleDownload = async (name) => {
@@ -856,9 +800,7 @@ function Files({ setting }) {
         ],
       },
     })
-    setTimes((prevState) =>
-      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
-    )
+    setTimes((prevState) => prevState.map((ps) => (ps.time_id === timeId ? res : ps)))
     setnewFiles([])
     setuploading(0)
   }
@@ -871,9 +813,7 @@ function Files({ setting }) {
         models: newModels,
       },
     })
-    setTimes((prevState) =>
-      prevState.map((ps) => (ps.time_id === timeId ? res : ps))
-    )
+    setTimes((prevState) => prevState.map((ps) => (ps.time_id === timeId ? res : ps)))
   }
 
   const [modelName, setmodelName] = useState('')
@@ -934,23 +874,15 @@ function Files({ setting }) {
                     value={modelName.split('_').slice(1).join('_')}
                     onChange={(e) =>
                       setmodelName(
-                        modelName
-                          .split('_')
-                          .slice(0, 1)
-                          .concat(e.target.value)
-                          .join('_')
+                        modelName.split('_').slice(0, 1).concat(e.target.value).join('_')
                       )
                     }
                   />
                 ) : (
-                  <p className="w-30 my-auto text-start">
-                    {name.split('_').slice(1).join('_')}
-                  </p>
+                  <p className="w-30 my-auto text-start">{name.split('_').slice(1).join('_')}</p>
                 )}
                 <p className="w-25 my-auto text-start">建立者：{user}</p>
-                <p className="w-25 my-auto text-start">
-                  建立時間：{created_on}
-                </p>
+                <p className="w-25 my-auto text-start">建立時間：{created_on}</p>
                 {editing === i ? (
                   <>
                     <Button
@@ -958,21 +890,14 @@ function Files({ setting }) {
                       style={{ boxShadow: 'none' }}
                       variant="outline-revo"
                       onClick={() => {
-                        handleEdit(
-                          models.map((m, j) =>
-                            i !== j ? m : { ...m, name: modelName }
-                          )
-                        )
+                        handleEdit(models.map((m, j) => (i !== j ? m : { ...m, name: modelName })))
                         setediting(-1)
                       }}
                       title="確定"
                       size
                     >
                       <p className="text-nowrap">確定&ensp;</p>
-                      <FontAwesomeIcon
-                        className="my-auto"
-                        icon={faCircleCheck}
-                      />
+                      <FontAwesomeIcon className="my-auto" icon={faCircleCheck} />
                     </Button>
                     <Button
                       className="me-2 d-flex flex-nowrap"
@@ -983,10 +908,7 @@ function Files({ setting }) {
                       size
                     >
                       <p className="text-nowrap">取消&ensp;</p>
-                      <FontAwesomeIcon
-                        className="my-auto"
-                        icon={faCircleXmark}
-                      />
+                      <FontAwesomeIcon className="my-auto" icon={faCircleXmark} />
                     </Button>
                   </>
                 ) : (
@@ -1155,10 +1077,7 @@ function Files({ setting }) {
           {uploading ? (
             <span className="my-auto spinner-border spinner-border-sm" />
           ) : (
-            <FontAwesomeIcon
-              icon={faCloudArrowUp}
-              className="my-auto fs-5 text-dai-lighter fs-8"
-            />
+            <FontAwesomeIcon icon={faCloudArrowUp} className="my-auto fs-5 text-dai-lighter fs-8" />
           )}
         </Button>
       </Row>
@@ -1206,10 +1125,7 @@ function Step4({ setting }) {
                   })
                 }
               >
-                <FontAwesomeIcon
-                  icon={s.icon}
-                  className="fs-2 text-revo mx-auto mt-auto pb-3"
-                />
+                <FontAwesomeIcon icon={s.icon} className="fs-2 text-revo mx-auto mt-auto pb-3" />
                 <div className="mx-auto mb-auto">{s.label}</div>
               </Card>
               {/* <FontAwesomeIcon
@@ -1223,9 +1139,7 @@ function Step4({ setting }) {
         ))}
       </Row>
     ),
-    適應性號誌: (
-      <iframe title="vissim" height="100%" src="https://vissim.punwave.com/" />
-    ),
+    適應性號誌: <DefaultSignal />,
     // 適應性號誌: (
     //   <VISSIM
     //     setting={{
@@ -1234,13 +1148,7 @@ function Step4({ setting }) {
     //     }}
     //   />
     // ),
-    感應性號誌: (
-      <iframe
-        title="vissim"
-        height="100%"
-        src="https://vissim.punwave.com/responsive"
-      />
-    ),
+    感應性號誌: <ResponsiveSignal />,
     實驗檔案管理: (
       <Results
         setting={{
@@ -1252,7 +1160,7 @@ function Step4({ setting }) {
   }
 
   return (
-    <Container className="h-100 d-flex flex-column" fluid>
+    <Container fluid className="overflow-auto h-100">
       {components[toolState.step4]}
     </Container>
   )

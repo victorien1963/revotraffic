@@ -18,15 +18,7 @@ const getCookie = (cname) => {
   return false
 }
 
-const getConfig = (
-  url,
-  method,
-  data,
-  responseType,
-  token,
-  params = {},
-  contentType = ''
-) => {
+const getConfig = (url, method, data, responseType, token, params = {}, contentType = '') => {
   const config = {
     headers:
       token || getCookie('token')

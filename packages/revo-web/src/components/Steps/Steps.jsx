@@ -114,10 +114,7 @@ function Steps() {
   }, [draft, range, time, step, toolState])
 
   return (
-    <Container
-      fluid
-      className="w-100 h-100 d-flex flex-column p-0 overflow-hidden"
-    >
+    <Container fluid className="w-100 h-100 d-flex flex-column p-0 overflow-hidden">
       <ToolBar
         setting={{
           step,
